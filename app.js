@@ -1,10 +1,13 @@
 const API_URL = "https://bmg-fitness.onrender.com/api";
+const SESSION_KEY = "usuarioLogueado";
+const SESSION_TIMEOUT = 300000;
 let usuarioActual = "";
 let contrasenaActual = "";
 
 function mostrarTab(tab) {
     const formLogin = document.getElementById("form-login");
     const formRegister = document.getElementById("form-register");
+    const formReset = document.getElementById("form-reset");
     const tabLogin = document.getElementById("tab-login");
     const tabRegister = document.getElementById("tab-register");
     const alertMsg = document.getElementById("alert-msg");
@@ -14,14 +17,23 @@ function mostrarTab(tab) {
     if (tab === 'login') {
         formLogin.classList.remove("hidden");
         formRegister.classList.add("hidden");
+        formReset.classList.add("hidden");
         tabLogin.classList.add("active");
         tabRegister.classList.remove("active");
     } else {
         formLogin.classList.add("hidden");
         formRegister.classList.remove("hidden");
+        formReset.classList.add("hidden");
         tabLogin.classList.remove("active");
         tabRegister.classList.add("active");
     }
+}
+
+function mostrarRecuperacion() {
+    document.getElementById("form-login").classList.add("hidden");
+    document.getElementById("form-register").classList.add("hidden");
+    document.getElementById("form-reset").classList.remove("hidden");
+    document.getElementById("alert-msg").innerText = "";
 }
 
 async function ejecutarRegistro(e) {
@@ -30,6 +42,7 @@ async function ejecutarRegistro(e) {
     
     const usuario = document.getElementById("reg-user").value;
     const contrasena = document.getElementById("reg-pass").value;
+    const correo = document.getElementById("reg-correo").value;
     const edad = parseInt(document.getElementById("reg-edad").value);
     const sexo = document.getElementById("reg-sexo").value;
     const peso = parseFloat(document.getElementById("reg-peso").value);
@@ -44,7 +57,7 @@ async function ejecutarRegistro(e) {
         const respuesta = await fetch(`${API_URL}/registro`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ usuario, contrasena, edad, sexo, peso, estatura, actividad, objetivo })
+            body: JSON.stringify({ usuario, contrasena, correo, edad, sexo, peso, estatura, actividad, objetivo })
         });
 
         const data = await respuesta.json();
@@ -83,6 +96,10 @@ async function ejecutarLogin(e) {
         if (respuesta.ok) {
             usuarioActual = data.usuario;
             contrasenaActual = contrasena;
+            localStorage.setItem(SESSION_KEY, JSON.stringify({
+                usuario: usuarioActual,
+                lastActivity: Date.now()
+            }));
             document.getElementById("auth-box").classList.add("hidden");
             document.getElementById("dashboard").classList.remove("hidden");
             
@@ -97,6 +114,33 @@ async function ejecutarLogin(e) {
     } catch (error) {
         alertMsg.style.color = "#ff5252";
         alertMsg.innerText = "Error al conectar con el servidor backend.";
+    }
+}
+
+async function solicitarRecuperacion(e) {
+    e.preventDefault();
+    const alertMsg = document.getElementById("alert-msg");
+    const usuario = document.getElementById("reset-user").value.trim();
+    const correo = document.getElementById("reset-correo").value.trim();
+
+    alertMsg.style.color = "#94a3b8";
+    alertMsg.innerText = "Enviando solicitud...";
+
+    try {
+        const respuesta = await fetch(`${API_URL}/reset-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ usuario, correo })
+        });
+        const data = await respuesta.json();
+        if (!respuesta.ok) throw new Error(data.detail || "No se pudo solicitar la recuperación.");
+
+        alertMsg.style.color = "#00e676";
+        alertMsg.innerText = data.mensaje;
+        document.getElementById("form-reset").reset();
+    } catch (error) {
+        alertMsg.style.color = "#ff5252";
+        alertMsg.innerText = error.message;
     }
 }
 
@@ -181,19 +225,37 @@ async function guardarPerfil(e) {
     }
 }
 
+function crearIlustracionSVG(nombreEjercicio) {
+    const nombre = String(nombreEjercicio || "Ejercicio");
+    const grupo = /pierna|sentadilla|prensa|gemelo|cuádriceps/i.test(nombre) ? "PIERNAS" : "ENTRENAMIENTO";
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360">
+        <rect width="600" height="360" fill="#111827"/>
+        <circle cx="300" cy="105" r="32" fill="#00e676"/>
+        <path d="M300 140 L300 225 M300 165 L220 205 M300 165 L380 205 M300 225 L240 310 M300 225 L360 310" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round" fill="none"/>
+        <path d="M205 178 H395" stroke="#00e676" stroke-width="10" stroke-linecap="round"/>
+        <text x="300" y="330" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="18">${grupo}</text>
+    </svg>`;
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 function renderizarRutina(rutina) {
     const routineContainer = document.getElementById("routine-container");
     routineContainer.innerHTML = rutina.map((dia) => `
         <section class="day-plan">
             <h4>Día ${dia.dia}: ${dia.nombre}</h4>
-            ${dia.ejercicios.map((item) => `
+            ${dia.ejercicios.map((item) => {
+                const imagen = typeof item.imagen_url === "string" && /^https?:\/\//.test(item.imagen_url)
+                    ? item.imagen_url
+                    : crearIlustracionSVG(item.ejercicio);
+                return `
                 <div class="exercise-card">
-                    <img src="${item.imagen_url}" alt="${item.ejercicio}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80';" class="ejercicio-img" loading="lazy">
+                    <img src="${imagen}" alt="${item.ejercicio}" onerror="this.onerror=null; this.src=crearIlustracionSVG(this.alt);" class="ejercicio-img" loading="lazy">
                     <h5>${item.ejercicio}</h5>
                     <p class="series">${item.series}</p>
                     <p class="enfoque"><strong>Enfoque:</strong> ${item.enfoque}</p>
                 </div>
-            `).join("")}
+            `;
+            }).join("")}
         </section>
     `).join("");
 }
@@ -273,9 +335,53 @@ async function guardarSeguimiento(e) {
     }
 }
 
+function actualizarActividad() {
+    const sesionGuardada = localStorage.getItem(SESSION_KEY);
+    if (!sesionGuardada) return;
+
+    try {
+        const sesion = JSON.parse(sesionGuardada);
+        localStorage.setItem(SESSION_KEY, JSON.stringify({
+            usuario: sesion.usuario,
+            lastActivity: Date.now()
+        }));
+    } catch (error) {
+        localStorage.removeItem(SESSION_KEY);
+    }
+}
+
+function verificarSesion() {
+    const sesionGuardada = localStorage.getItem(SESSION_KEY);
+    if (!sesionGuardada) return;
+
+    try {
+        const sesion = JSON.parse(sesionGuardada);
+        if (!sesion.lastActivity || Date.now() - sesion.lastActivity > SESSION_TIMEOUT) {
+            localStorage.removeItem(SESSION_KEY);
+            usuarioActual = "";
+            contrasenaActual = "";
+            document.getElementById("dashboard").classList.add("hidden");
+            document.getElementById("auth-box").classList.remove("hidden");
+            mostrarTab("login");
+            window.alert("Sesión expirada por inactividad");
+        }
+    } catch (error) {
+        localStorage.removeItem(SESSION_KEY);
+    }
+}
+
+document.addEventListener("mousemove", actualizarActividad);
+document.addEventListener("keydown", actualizarActividad);
+document.addEventListener("click", actualizarActividad);
+document.addEventListener("DOMContentLoaded", () => {
+    verificarSesion();
+    setInterval(verificarSesion, 30000);
+});
+
 function cerrarSesion() {
     usuarioActual = "";
     contrasenaActual = "";
+    localStorage.removeItem(SESSION_KEY);
     document.getElementById("dashboard").classList.add("hidden");
     document.getElementById("auth-box").classList.remove("hidden");
     document.getElementById("form-login").reset();

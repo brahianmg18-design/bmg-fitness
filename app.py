@@ -21,13 +21,20 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USERS_FILE = os.path.join(BASE_DIR, "usuarios.csv")
 SEGUIMIENTO_FILE = os.path.join(BASE_DIR, "seguimiento.csv")
 USER_COLUMNS = [
-    "Usuario", "Contraseña", "Edad", "Sexo", "Peso", "Estatura",
+    "Usuario", "Contraseña", "Correo", "Edad", "Sexo", "Peso", "Estatura",
     "Actividad", "Objetivo", "DiasEntrenamiento"
 ]
 LEGACY_USER_COLUMNS = [
     "Usuario", "Contraseña", "Objetivo", "Edad", "Sexo", "Peso", "Estatura", "Actividad"
 ]
 SEGUIMIENTO_COLUMNS = ["Usuario", "Fecha", "Peso"]
+EXERCISE_IMAGE_URLS = {
+    "Sentadilla con barra": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80",
+    "Peso muerto rumano": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80",
+    "Prensa de pierna": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80",
+    "Extensión de cuádriceps": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80",
+    "Elevación de gemelos": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80",
+}
 
 
 def normalizar_csv_usuarios(df: pd.DataFrame) -> pd.DataFrame:
@@ -41,6 +48,8 @@ def normalizar_csv_usuarios(df: pd.DataFrame) -> pd.DataFrame:
         "usuario": "Usuario",
         "contraseña": "Contraseña",
         "contrasena": "Contraseña",
+        "correo": "Correo",
+        "email": "Correo",
         "edad": "Edad",
         "sexo": "Sexo",
         "peso": "Peso",
@@ -105,6 +114,7 @@ def normalizar_csv_seguimiento(df: pd.DataFrame) -> pd.DataFrame:
 class UsuarioRegistro(BaseModel):
     usuario: str
     contrasena: str
+    correo: str
     edad: int = 30
     sexo: str = "masculino"
     peso: float = 70.0
@@ -129,6 +139,11 @@ class UsuarioLogin(BaseModel):
     contrasena: str
 
 
+class SolicitudResetPassword(BaseModel):
+    usuario: str
+    correo: str
+
+
 class SeguimientoRegistro(BaseModel):
     fecha: str
     peso: float
@@ -147,6 +162,11 @@ def validar_seguridad(usuario: str, contrasena: str):
             status_code=400,
             detail="La contraseña debe tener mínimo 8 caracteres, incluir al menos 1 letra mayúscula, 1 número y 1 carácter especial (@, #, $, !, etc.)."
         )
+
+
+def validar_correo(correo: str):
+    if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", correo):
+        raise HTTPException(status_code=400, detail="Introduce un correo electrónico válido.")
 
 
 def cargar_usuarios():
@@ -231,10 +251,14 @@ def crear_rutina(objetivo: str, dias: int):
             ("Movilidad y core", [("Puente de glúteos", "3 x 15", "Glúteos"), ("Bird-dog", "3 x 10", "Estabilidad"), ("Paseo del granjero", "3 x 40 m", "Core"), ("Movilidad de cadera", "10 min", "Movilidad"), ("Plancha lateral", "3 x 30 seg", "Core")]),
         ]
 
-    imagen_url = "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1a?auto=format&fit=crop&w=640&q=80"
     return [
         {"dia": index + 1, "nombre": ejercicios[index % len(ejercicios)][0], "ejercicios": [
-            {"ejercicio": nombre, "series": series, "enfoque": enfoque, "imagen_url": imagen_url}
+            {
+                "ejercicio": nombre,
+                "series": series,
+                "enfoque": enfoque,
+                "imagen_url": EXERCISE_IMAGE_URLS.get(nombre),
+            }
             for nombre, series, enfoque in ejercicios[index % len(ejercicios)][1]
         ]}
         for index in range(max(1, min(dias, 7)))
@@ -287,6 +311,7 @@ def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entre
 @app.post("/api/registro")
 def registrar(datos: UsuarioRegistro):
     validar_seguridad(datos.usuario.strip(), datos.contrasena.strip())
+    validar_correo(datos.correo.strip())
 
     df = cargar_usuarios()
     u_clean = datos.usuario.strip().lower()
@@ -297,6 +322,7 @@ def registrar(datos: UsuarioRegistro):
     nuevo_reg = pd.DataFrame([{
         "Usuario": datos.usuario.strip(),
         "Contraseña": datos.contrasena.strip(),
+        "Correo": datos.correo.strip().lower(),
         "Edad": datos.edad,
         "Sexo": datos.sexo,
         "Peso": datos.peso,
@@ -457,6 +483,26 @@ def login(datos: UsuarioLogin):
         "explicacion_nutricional": explicacion_nutricional,
         "rutina": rutina,
     }
+
+
+@app.post("/api/reset-password")
+def solicitar_reset_password(datos: SolicitudResetPassword):
+    usuario = datos.usuario.strip().lower()
+    correo = datos.correo.strip().lower()
+
+    if not usuario or not correo:
+        raise HTTPException(status_code=400, detail="El usuario y el correo son obligatorios.")
+
+    df = cargar_usuarios()
+    coincidencia = df[
+        (df["Usuario"].fillna("").str.strip().str.lower() == usuario)
+        & (df["Correo"].fillna("").str.strip().str.lower() == correo)
+    ]
+
+    if coincidencia.empty:
+        raise HTTPException(status_code=404, detail="No encontramos una cuenta con esos datos.")
+
+    return {"mensaje": "Si los datos coinciden, recibirás instrucciones para recuperar tu contraseña."}
 
 
 @app.get("/api/seguimiento/{usuario}")

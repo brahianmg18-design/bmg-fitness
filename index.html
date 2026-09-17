@@ -22,6 +22,15 @@
                 <input type="text" id="login-user" placeholder="Usuario" required>
                 <input type="password" id="login-pass" placeholder="Contraseña" required>
                 <button type="submit">Ingresar a la Plataforma</button>
+                <button type="button" class="link-button" onclick="mostrarRecuperacion()">¿Olvidaste tu contraseña?</button>
+            </form>
+
+            <form id="form-reset" class="hidden" onsubmit="solicitarRecuperacion(event)">
+                <div class="section-title">Recuperar contraseña</div>
+                <input type="text" id="reset-user" placeholder="Usuario" required>
+                <input type="email" id="reset-correo" placeholder="Correo electrónico" required>
+                <button type="submit">Solicitar recuperación</button>
+                <button type="button" class="link-button" onclick="mostrarTab('login')">Volver al inicio de sesión</button>
             </form>
 
             <!-- Formulario Registro -->
@@ -29,6 +38,7 @@
                 <div class="section-title">Credenciales de Acceso</div>
                 <input type="text" id="reg-user" placeholder="Usuario (6-15 letras/números)" required>
                 <input type="password" id="reg-pass" placeholder="Contraseña (Min 8 car, 1 Mayús, 1 Num, 1 Esp)" required>
+                <input type="email" id="reg-correo" placeholder="Correo electrónico" required>
                 
                 <div class="section-title">Datos Antropométricos</div>
                 <div class="grid-2">
