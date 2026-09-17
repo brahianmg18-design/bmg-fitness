@@ -17,8 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-USERS_FILE = "usuarios.csv"
-SEGUIMIENTO_FILE = "seguimiento.csv"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+USERS_FILE = os.path.join(BASE_DIR, "usuarios.csv")
+SEGUIMIENTO_FILE = os.path.join(BASE_DIR, "seguimiento.csv")
 USER_COLUMNS = [
     "Usuario", "Contraseña", "Edad", "Sexo", "Peso", "Estatura",
     "Actividad", "Objetivo", "DiasEntrenamiento"
@@ -495,4 +496,4 @@ def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro):
     return {"mensaje": "Registro guardado correctamente.", **construir_resumen_seguimiento(usuario)}
 
 
-app.mount("/", StaticFiles(directory=".", html=True), name="frontend")
+app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="frontend")
