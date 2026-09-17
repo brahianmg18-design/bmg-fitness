@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma BMG Fitness</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Caja de Autenticación -->
+        <div id="auth-box" class="card">
+            <h2>BMG Fitness Platform</h2>
+            
+            <div class="tabs">
+                <button id="tab-login" class="active" onclick="mostrarTab('login')">Iniciar Sesión</button>
+                <button id="tab-register" onclick="mostrarTab('register')">Crear Cuenta</button>
+            </div>
+
+            <!-- Formulario Login -->
+            <form id="form-login" onsubmit="ejecutarLogin(event)">
+                <input type="text" id="login-user" placeholder="Usuario" required>
+                <input type="password" id="login-pass" placeholder="Contraseña" required>
+                <button type="submit">Ingresar a la Plataforma</button>
+            </form>
+
+            <!-- Formulario Registro -->
+            <form id="form-register" class="hidden" onsubmit="ejecutarRegistro(event)">
+                <div class="section-title">Credenciales de Acceso</div>
+                <input type="text" id="reg-user" placeholder="Usuario (6-15 letras/números)" required>
+                <input type="password" id="reg-pass" placeholder="Contraseña (Min 8 car, 1 Mayús, 1 Num, 1 Esp)" required>
+                
+                <div class="section-title">Datos Antropométricos</div>
+                <div class="grid-2">
+                    <input type="number" id="reg-edad" placeholder="Edad" min="14" max="90" required>
+                    <select id="reg-sexo" required>
+                        <option value="" disabled selected>Sexo</option>
+                        <option value="masculino">Masculino</option>
+                        <option value="femenino">Femenino</option>
+                    </select>
+                </div>
+                <div class="grid-2">
+                    <input type="number" step="0.1" id="reg-peso" placeholder="Peso en kg, ejemplo 70" required>
+                       <label>Estatura (m)
+                           <select id="reg-estatura" required>
+                               <option value="" disabled selected>Ejemplo: 1.68</option>
+                               <option value="1.50">1.50 m</option><option value="1.55">1.55 m</option>
+                               <option value="1.60">1.60 m</option><option value="1.65">1.65 m</option>
+                               <option value="1.68">1.68 m</option><option value="1.70">1.70 m</option>
+                               <option value="1.75">1.75 m</option><option value="1.80">1.80 m</option>
+                               <option value="1.85">1.85 m</option><option value="1.90">1.90 m</option>
+                               <option value="1.95">1.95 m</option><option value="2.00">2.00 m</option>
+                           </select>
+                       </label>
+                </div>
+
+                <select id="reg-actividad" required>
+                    <option value="" disabled selected>Nivel de Actividad Física</option>
+                    <option value="1.2">Sedentario (Poco o ningún ejercicio)</option>
+                    <option value="1.375">Ligero (1 a 3 días/semana)</option>
+                    <option value="1.55">Moderado (3 a 5 días/semana)</option>
+                    <option value="1.725">Intenso (6 a 7 días/semana)</option>
+                </select>
+
+                <select id="reg-objetivo" required>
+                    <option value="" disabled selected>Objetivo Principal</option>
+                    <option value="Ganar masa muscular">Ganar masa muscular</option>
+                    <option value="Perder grasa">Perder grasa</option>
+                    <option value="Mantenimiento y Definición">Mantenimiento y Definición</option>
+                </select>
+
+                <button type="submit">Registrar Cuenta</button>
+            </form>
+
+            <p id="alert-msg"></p>
+        </div>
+
+        <!-- Dashboard del Usuario -->
+        <div id="dashboard" class="dashboard-card hidden">
+            <header class="dashboard-header">
+                <div>
+                    <p class="eyebrow">BMG FITNESS / PANEL PERSONAL</p>
+                    <h2 id="welcome-title">Bienvenido</h2>
+                    <p class="subtitle">Tu información, nutrición y entrenamiento en un solo lugar.</p>
+                </div>
+                <button onclick="cerrarSesion()" class="btn-danger">Cerrar sesión</button>
+            </header>
+
+            <nav class="dashboard-nav" aria-label="Navegación del dashboard">
+                <button class="dashboard-tab active" data-section="inicio" onclick="mostrarSeccion('inicio')">Inicio</button>
+                <button class="dashboard-tab" data-section="perfil" onclick="mostrarSeccion('perfil')">Mi perfil</button>
+                <button class="dashboard-tab" data-section="nutricion" onclick="mostrarSeccion('nutricion')">Plan nutricional</button>
+                <button class="dashboard-tab" data-section="rutina" onclick="mostrarSeccion('rutina')">Rutina de ejercicios</button>
+                <button class="dashboard-tab" data-section="seguimiento" onclick="mostrarSeccion('seguimiento')">Seguimiento</button>
+            </nav>
+
+            <main>
+                <section id="section-inicio" class="dashboard-section">
+                    <div class="section-heading">
+                        <p class="eyebrow">RESUMEN DE HOY</p>
+                        <h3>Avanza con intención</h3>
+                        <p class="subtitle">Consulta tus métricas y entra directamente a la sección que necesitas.</p>
+                    </div>
+                    <div class="metrics-grid compact-metrics">
+                        <div class="metric-box"><span>IMC</span><strong id="home-imc">-</strong></div>
+                        <div class="metric-box highlight"><span>Meta calórica</span><strong id="home-calorias">- kcal</strong></div>
+                        <div class="metric-box"><span>Objetivo</span><strong id="home-objetivo">-</strong></div>
+                    </div>
+                    <div class="quick-links">
+                        <button onclick="mostrarSeccion('perfil')"><strong>Revisar mi perfil</strong><span>Actualiza tus datos personales</span></button>
+                        <button onclick="mostrarSeccion('nutricion')"><strong>Ver mi nutrición</strong><span>Consulta calorías y macronutrientes</span></button>
+                        <button onclick="mostrarSeccion('rutina')"><strong>Entrenar hoy</strong><span>Abre tus ejercicios programados</span></button>
+                    </div>
+                </section>
+
+                <section id="section-perfil" class="dashboard-section hidden">
+                    <div class="section-heading">
+                        <p class="eyebrow">DATOS PERSONALES</p>
+                        <h3>Mi perfil</h3>
+                        <p class="subtitle">Actualiza tus datos para recalcular tu plan.</p>
+                    </div>
+                        <div class="profile-summary" aria-label="Datos actuales del perfil">
+                            <div><span>Edad</span><strong id="current-edad">-</strong></div>
+                            <div><span>Sexo</span><strong id="current-sexo">-</strong></div>
+                            <div><span>Peso</span><strong id="current-peso">-</strong></div>
+                            <div><span>Estatura</span><strong id="current-estatura">-</strong></div>
+                            <div><span>Nivel de actividad</span><strong id="current-actividad">-</strong></div>
+                            <div><span>Objetivo</span><strong id="current-objetivo">-</strong></div>
+                        </div>
+                    <form id="form-profile" onsubmit="guardarPerfil(event)">
+                    <div class="grid-2">
+                        <label>Edad<input type="number" id="profile-edad" min="14" max="90" required></label>
+                        <label>Sexo<select id="profile-sexo" required>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                        </select></label>
+                    </div>
+                    <div class="grid-2">
+                                <label>Peso (kg)<input type="number" id="profile-peso" min="1" step="0.1" placeholder="Ejemplo: 70" required></label>
+                           <label>Estatura (m)<select id="profile-estatura" required>
+                               <option value="1.50">1.50 m</option><option value="1.55">1.55 m</option>
+                               <option value="1.60">1.60 m</option><option value="1.65">1.65 m</option>
+                               <option value="1.68">1.68 m</option><option value="1.70">1.70 m</option>
+                               <option value="1.75">1.75 m</option><option value="1.80">1.80 m</option>
+                               <option value="1.85">1.85 m</option><option value="1.90">1.90 m</option>
+                               <option value="1.95">1.95 m</option><option value="2.00">2.00 m</option>
+                           </select><small>Ejemplo habitual: 1.68 m</small></label>
+                    </div>
+                    <label>Actividad física<select id="profile-actividad" required>
+                        <option value="1.2">Sedentario</option>
+                        <option value="1.375">Ligero</option>
+                        <option value="1.55">Moderado</option>
+                        <option value="1.725">Intenso</option>
+                    </select></label>
+                    <label>Objetivo<select id="profile-objetivo" required>
+                        <option value="Ganar masa muscular">Ganar masa muscular</option>
+                        <option value="Perder grasa">Perder grasa</option>
+                        <option value="Mantenimiento y Definición">Mantenimiento y Definición</option>
+                    </select></label>
+                    <label>Días de entrenamiento por semana<input type="number" id="profile-dias" min="1" max="7" required></label>
+                    <button type="submit">Guardar cambios</button>
+                </form>
+                    <p id="profile-msg"></p>
+                </section>
+
+                <section id="section-nutricion" class="dashboard-section hidden">
+                    <div class="section-heading">
+                        <p class="eyebrow">PLAN NUTRICIONAL</p>
+                        <h3>Tu combustible diario</h3>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-box"><span>IMC</span><strong id="res-imc">-</strong></div>
+                        <div class="metric-box highlight"><span>Meta calórica</span><strong id="res-calorias">- kcal</strong></div>
+                        <div class="metric-box"><span>Proteínas</span><strong id="res-proteinas">- g</strong></div>
+                        <div class="metric-box"><span>Carbohidratos</span><strong id="res-carbos">- g</strong></div>
+                        <div class="metric-box"><span>Grasas</span><strong id="res-grasas">- g</strong></div>
+                    </div>
+                    <div class="info-banner"><strong>Enfoque nutricional</strong><p id="res-explicacion">-</p></div>
+                </section>
+
+                <section id="section-rutina" class="dashboard-section hidden">
+                    <div class="section-heading">
+                        <p class="eyebrow">PLAN DE ENTRENAMIENTO</p>
+                        <h3>Rutina adaptada a tu objetivo</h3>
+                        <p class="subtitle">Cinco ejercicios por día para entrenar con estructura.</p>
+                    </div>
+                    <div id="routine-container" class="routine-grid"></div>
+                </section>
+
+                <section id="section-seguimiento" class="dashboard-section hidden">
+                    <div class="section-heading">
+                        <p class="eyebrow">SEGUIMIENTO Y CONTROL</p>
+                        <h3>Registro semanal o mensual</h3>
+                        <p class="subtitle">Guarda tu peso actual para comparar tu progreso.</p>
+                    </div>
+
+                    <div class="seguimiento-grid">
+                        <form id="form-seguimiento" class="seguimiento-form" onsubmit="guardarSeguimiento(event)">
+                            <label>Fecha
+                                <input type="date" id="seguimiento-fecha" required>
+                            </label>
+                            <label>Peso actual (kg)
+                                <input type="number" id="seguimiento-peso" min="1" step="0.1" placeholder="Ejemplo: 68.5" required>
+                            </label>
+                            <button type="submit">Guardar registro</button>
+                        </form>
+
+                        <div class="seguimiento-panel">
+                            <h4>Progreso</h4>
+                            <p id="seguimiento-progreso" class="progreso-text">Sin registros aún.</p>
+                        </div>
+                    </div>
+
+                    <div class="seguimiento-panel historial-panel">
+                        <h4>Historial de registros</h4>
+                        <div class="seguimiento-table-wrap">
+                            <table class="seguimiento-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Peso</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="seguimiento-registros">
+                                    <tr>
+                                        <td colspan="2">Sin registros disponibles.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <p id="seguimiento-msg" class="seguimiento-msg"></p>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
