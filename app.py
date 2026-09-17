@@ -114,7 +114,7 @@ def normalizar_csv_seguimiento(df: pd.DataFrame) -> pd.DataFrame:
 class UsuarioRegistro(BaseModel):
     usuario: str
     contrasena: str
-    correo: str
+    email: str
     edad: int = 30
     sexo: str = "masculino"
     peso: float = 70.0
@@ -132,6 +132,7 @@ class UsuarioPerfilUpdate(BaseModel):
     actividad: Optional[float] = None
     objetivo: Optional[str] = None
     dias_entrenamiento: Optional[int] = None
+    email: Optional[str] = None
 
 
 class UsuarioLogin(BaseModel):
@@ -311,7 +312,7 @@ def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entre
 @app.post("/api/registro")
 def registrar(datos: UsuarioRegistro):
     validar_seguridad(datos.usuario.strip(), datos.contrasena.strip())
-    validar_correo(datos.correo.strip())
+    validar_correo(datos.email.strip())
 
     df = cargar_usuarios()
     u_clean = datos.usuario.strip().lower()
@@ -322,7 +323,7 @@ def registrar(datos: UsuarioRegistro):
     nuevo_reg = pd.DataFrame([{
         "Usuario": datos.usuario.strip(),
         "Contraseña": datos.contrasena.strip(),
-        "Correo": datos.correo.strip().lower(),
+        "Correo": datos.email.strip().lower(),
         "Edad": datos.edad,
         "Sexo": datos.sexo,
         "Peso": datos.peso,
@@ -354,6 +355,7 @@ def obtener_perfil(usuario: str):
 
     return {
         "usuario": user_row["Usuario"],
+        "email": valor_o_default("Correo", ""),
         "edad": valor_o_default("Edad", 30),
         "sexo": valor_o_default("Sexo", "masculino"),
         "peso": valor_o_default("Peso", 70),
@@ -366,6 +368,9 @@ def obtener_perfil(usuario: str):
 
 @app.put("/api/perfil/{usuario}")
 def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
+    if datos.email is not None:
+        validar_correo(datos.email.strip())
+
     df = cargar_usuarios()
     match = df[df["Usuario"].str.strip().str.lower() == usuario.strip().lower()]
 
@@ -381,6 +386,7 @@ def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
         "Actividad": datos.actividad,
         "Objetivo": datos.objetivo,
         "DiasEntrenamiento": datos.dias_entrenamiento,
+        "Correo": datos.email.strip().lower() if datos.email is not None else None,
     }
 
     for campo, valor in campos.items():
@@ -475,6 +481,7 @@ def login(datos: UsuarioLogin):
         "usuario": user_row["Usuario"],
         "objetivo": objetivo,
         "dias_entrenamiento": dias_entrenamiento,
+        "email": "" if pd.isna(user_row.get("Correo", "")) else str(user_row.get("Correo", "") or ""),
         "imc": imc,
         "calorias": calorias,
         "proteinas": proteinas,

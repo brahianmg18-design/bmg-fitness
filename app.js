@@ -1,6 +1,6 @@
 const API_URL = "https://bmg-fitness.onrender.com/api";
-const SESSION_KEY = "usuarioLogueado";
-const SESSION_TIMEOUT = 300000;
+const SESSION_KEY = "sessionUser";
+const SESSION_TIMEOUT = 180000;
 let usuarioActual = "";
 let contrasenaActual = "";
 
@@ -42,7 +42,7 @@ async function ejecutarRegistro(e) {
     
     const usuario = document.getElementById("reg-user").value;
     const contrasena = document.getElementById("reg-pass").value;
-    const correo = document.getElementById("reg-correo").value;
+    const email = document.getElementById("reg-email").value;
     const edad = parseInt(document.getElementById("reg-edad").value);
     const sexo = document.getElementById("reg-sexo").value;
     const peso = parseFloat(document.getElementById("reg-peso").value);
@@ -57,7 +57,7 @@ async function ejecutarRegistro(e) {
         const respuesta = await fetch(`${API_URL}/registro`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ usuario, contrasena, correo, edad, sexo, peso, estatura, actividad, objetivo })
+            body: JSON.stringify({ usuario, contrasena, email, edad, sexo, peso, estatura, actividad, objetivo })
         });
 
         const data = await respuesta.json();
@@ -97,8 +97,9 @@ async function ejecutarLogin(e) {
             usuarioActual = data.usuario;
             contrasenaActual = contrasena;
             localStorage.setItem(SESSION_KEY, JSON.stringify({
-                usuario: usuarioActual,
-                lastActivity: Date.now()
+                username: usuarioActual,
+                loginTime: Date.now(),
+                userData: data
             }));
             document.getElementById("auth-box").classList.add("hidden");
             document.getElementById("dashboard").classList.remove("hidden");
@@ -173,6 +174,7 @@ function mostrarSeccion(seccion) {
 }
 
 function mostrarPerfil(perfil) {
+    document.getElementById("profile-email").value = perfil.email || "";
     document.getElementById("profile-edad").value = perfil.edad ?? "";
     document.getElementById("profile-sexo").value = perfil.sexo || "masculino";
     document.getElementById("profile-peso").value = perfil.peso ?? "";
@@ -203,7 +205,8 @@ async function guardarPerfil(e) {
         estatura: parseFloat(document.getElementById("profile-estatura").value),
         actividad: parseFloat(document.getElementById("profile-actividad").value),
         objetivo: document.getElementById("profile-objetivo").value,
-        dias_entrenamiento: parseInt(document.getElementById("profile-dias").value)
+        dias_entrenamiento: parseInt(document.getElementById("profile-dias").value),
+        email: document.getElementById("profile-email").value.trim()
     };
 
     profileMsg.style.color = "#94a3b8";
@@ -341,10 +344,7 @@ function actualizarActividad() {
 
     try {
         const sesion = JSON.parse(sesionGuardada);
-        localStorage.setItem(SESSION_KEY, JSON.stringify({
-            usuario: sesion.usuario,
-            lastActivity: Date.now()
-        }));
+        localStorage.setItem(SESSION_KEY, JSON.stringify(sesion));
     } catch (error) {
         localStorage.removeItem(SESSION_KEY);
     }
@@ -356,7 +356,7 @@ function verificarSesion() {
 
     try {
         const sesion = JSON.parse(sesionGuardada);
-        if (!sesion.lastActivity || Date.now() - sesion.lastActivity > SESSION_TIMEOUT) {
+        if (!sesion.loginTime || Date.now() - sesion.loginTime >= SESSION_TIMEOUT) {
             localStorage.removeItem(SESSION_KEY);
             usuarioActual = "";
             contrasenaActual = "";
@@ -370,11 +370,34 @@ function verificarSesion() {
     }
 }
 
+async function restaurarSesion() {
+    const sesionGuardada = localStorage.getItem(SESSION_KEY);
+    if (!sesionGuardada) return;
+
+    try {
+        const sesion = JSON.parse(sesionGuardada);
+        if (!sesion.username || !sesion.userData) {
+            localStorage.removeItem(SESSION_KEY);
+            return;
+        }
+
+        usuarioActual = sesion.username;
+        document.getElementById("auth-box").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        document.getElementById("welcome-title").innerText = `Bienvenido, ${usuarioActual}`;
+        await actualizarDashboard(sesion.userData);
+        mostrarSeccion("inicio");
+    } catch (error) {
+        localStorage.removeItem(SESSION_KEY);
+    }
+}
+
 document.addEventListener("mousemove", actualizarActividad);
 document.addEventListener("keydown", actualizarActividad);
 document.addEventListener("click", actualizarActividad);
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     verificarSesion();
+    await restaurarSesion();
     setInterval(verificarSesion, 30000);
 });
 
