@@ -13,6 +13,8 @@ function mostrarTab(tab) {
     const alertMsg = document.getElementById("alert-msg");
 
     alertMsg.innerText = "";
+    document.getElementById("reset-password-fields").classList.add("hidden");
+    document.getElementById("reset-submit").innerText = "Verificar datos";
 
     if (tab === 'login') {
         formLogin.classList.remove("hidden");
@@ -33,6 +35,8 @@ function mostrarRecuperacion() {
     document.getElementById("form-login").classList.add("hidden");
     document.getElementById("form-register").classList.add("hidden");
     document.getElementById("form-reset").classList.remove("hidden");
+    document.getElementById("reset-password-fields").classList.add("hidden");
+    document.getElementById("reset-submit").innerText = "Verificar datos";
     document.getElementById("alert-msg").innerText = "";
 }
 
@@ -123,22 +127,40 @@ async function solicitarRecuperacion(e) {
     const alertMsg = document.getElementById("alert-msg");
     const usuario = document.getElementById("reset-user").value.trim();
     const correo = document.getElementById("reset-correo").value.trim();
+    const passwordFields = document.getElementById("reset-password-fields");
+    const nuevaContrasena = document.getElementById("reset-new-password").value;
+    const confirmarContrasena = document.getElementById("reset-confirm-password").value;
 
     alertMsg.style.color = "#94a3b8";
     alertMsg.innerText = "Enviando solicitud...";
 
     try {
+        const datos = { usuario, correo };
+        if (!passwordFields.classList.contains("hidden")) {
+            datos.nueva_contrasena = nuevaContrasena;
+            datos.confirmar_contrasena = confirmarContrasena;
+        }
+
         const respuesta = await fetch(`${API_URL}/reset-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ usuario, correo })
+            body: JSON.stringify(datos)
         });
         const data = await respuesta.json();
         if (!respuesta.ok) throw new Error(data.detail || "No se pudo solicitar la recuperación.");
 
-        alertMsg.style.color = "#00e676";
-        alertMsg.innerText = data.mensaje;
-        document.getElementById("form-reset").reset();
+        if (passwordFields.classList.contains("hidden")) {
+            passwordFields.classList.remove("hidden");
+            document.getElementById("reset-submit").innerText = "Cambiar contraseña";
+            alertMsg.style.color = "#00e676";
+            alertMsg.innerText = "Datos verificados. Define tu nueva contraseña.";
+        } else {
+            window.alert("Contraseña actualizada correctamente. Ya puedes iniciar sesión");
+            document.getElementById("form-reset").reset();
+            passwordFields.classList.add("hidden");
+            document.getElementById("reset-submit").innerText = "Verificar datos";
+            mostrarTab("login");
+        }
     } catch (error) {
         alertMsg.style.color = "#ff5252";
         alertMsg.innerText = error.message;
@@ -171,6 +193,24 @@ function mostrarSeccion(seccion) {
     if (seccion === "seguimiento" && usuarioActual) {
         cargarSeguimiento();
     }
+    if (seccion === "perfil" && usuarioActual) {
+        cargarPerfil();
+    }
+}
+
+async function cargarPerfil() {
+    if (!usuarioActual) return;
+
+    const profileMsg = document.getElementById("profile-msg");
+    try {
+        const respuesta = await fetch(`${API_URL}/get-profile?username=${encodeURIComponent(usuarioActual)}`);
+        const perfil = await respuesta.json();
+        if (!respuesta.ok) throw new Error(perfil.detail || "No se pudo cargar el perfil.");
+        mostrarPerfil(perfil);
+    } catch (error) {
+        profileMsg.style.color = "#ff5252";
+        profileMsg.innerText = error.message;
+    }
 }
 
 function mostrarPerfil(perfil) {
@@ -188,6 +228,8 @@ function mostrarPerfil(perfil) {
     document.getElementById("current-estatura").innerText = `${perfil.estatura ?? "-"} m`;
     document.getElementById("current-actividad").innerText = nombreActividad(perfil.actividad);
     document.getElementById("current-objetivo").innerText = perfil.objetivo || "-";
+    document.getElementById("current-dias").innerText = `${perfil.dias_entrenamiento ?? "-"} días`;
+    document.getElementById("current-email").innerText = perfil.email || "-";
 }
 
 function nombreActividad(valor) {
@@ -199,27 +241,29 @@ async function guardarPerfil(e) {
     e.preventDefault();
     const profileMsg = document.getElementById("profile-msg");
     const datos = {
+        username: usuarioActual,
         edad: parseInt(document.getElementById("profile-edad").value),
         sexo: document.getElementById("profile-sexo").value,
         peso: parseFloat(document.getElementById("profile-peso").value),
         estatura: parseFloat(document.getElementById("profile-estatura").value),
         actividad: parseFloat(document.getElementById("profile-actividad").value),
         objetivo: document.getElementById("profile-objetivo").value,
-        dias_entrenamiento: parseInt(document.getElementById("profile-dias").value),
+        dias: parseInt(document.getElementById("profile-dias").value),
         email: document.getElementById("profile-email").value.trim()
     };
 
     profileMsg.style.color = "#94a3b8";
     profileMsg.innerText = "Guardando cambios...";
     try {
-        const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
-            method: "PUT",
+        const respuesta = await fetch(`${API_URL}/update-profile`, {
+            method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos)
         });
         const data = await respuesta.json();
         if (!respuesta.ok) throw new Error(data.detail || "No se pudo guardar el perfil.");
         await actualizarDashboard(data);
+        window.alert("Perfil actualizado con éxito");
         profileMsg.style.color = "#00e676";
         profileMsg.innerText = data.mensaje;
     } catch (error) {
@@ -228,17 +272,11 @@ async function guardarPerfil(e) {
     }
 }
 
-function crearIlustracionSVG(nombreEjercicio) {
-    const nombre = String(nombreEjercicio || "Ejercicio");
-    const grupo = /pierna|sentadilla|prensa|gemelo|cuádriceps/i.test(nombre) ? "PIERNAS" : "ENTRENAMIENTO";
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360">
-        <rect width="600" height="360" fill="#111827"/>
-        <circle cx="300" cy="105" r="32" fill="#00e676"/>
-        <path d="M300 140 L300 225 M300 165 L220 205 M300 165 L380 205 M300 225 L240 310 M300 225 L360 310" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round" fill="none"/>
-        <path d="M205 178 H395" stroke="#00e676" stroke-width="10" stroke-linecap="round"/>
-        <text x="300" y="330" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="18">${grupo}</text>
-    </svg>`;
-    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+function crearTarjetaEjercicio(nombreEjercicio) {
+    return `<div class="exercise-visual" aria-label="${nombreEjercicio}">
+        <span class="fitness-icon" aria-hidden="true">&#9878;</span>
+        <strong>${nombreEjercicio}</strong>
+    </div>`;
 }
 
 function renderizarRutina(rutina) {
@@ -247,12 +285,9 @@ function renderizarRutina(rutina) {
         <section class="day-plan">
             <h4>Día ${dia.dia}: ${dia.nombre}</h4>
             ${dia.ejercicios.map((item) => {
-                const imagen = typeof item.imagen_url === "string" && /^https?:\/\//.test(item.imagen_url)
-                    ? item.imagen_url
-                    : crearIlustracionSVG(item.ejercicio);
                 return `
                 <div class="exercise-card">
-                    <img src="${imagen}" alt="${item.ejercicio}" onerror="this.onerror=null; this.src=crearIlustracionSVG(this.alt);" class="ejercicio-img" loading="lazy">
+                    ${crearTarjetaEjercicio(item.ejercicio)}
                     <h5>${item.ejercicio}</h5>
                     <p class="series">${item.series}</p>
                     <p class="enfoque"><strong>Enfoque:</strong> ${item.enfoque}</p>

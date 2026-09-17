@@ -143,6 +143,20 @@ class UsuarioLogin(BaseModel):
 class SolicitudResetPassword(BaseModel):
     usuario: str
     correo: str
+    nueva_contrasena: Optional[str] = None
+    confirmar_contrasena: Optional[str] = None
+
+
+class PerfilFrontendUpdate(BaseModel):
+    username: str
+    edad: int
+    sexo: str
+    peso: float
+    estatura: float
+    actividad: float
+    objetivo: str
+    dias: int
+    email: str
 
 
 class SeguimientoRegistro(BaseModel):
@@ -403,6 +417,26 @@ def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
     return {"mensaje": "Perfil actualizado correctamente.", **perfil, **resumen}
 
 
+@app.get("/api/get-profile")
+def obtener_perfil_frontend(username: str):
+    return obtener_perfil(username)
+
+
+@app.post("/api/update-profile")
+def actualizar_perfil_frontend(datos: PerfilFrontendUpdate):
+    datos_perfil = UsuarioPerfilUpdate(
+        edad=datos.edad,
+        sexo=datos.sexo,
+        peso=datos.peso,
+        estatura=datos.estatura,
+        actividad=datos.actividad,
+        objetivo=datos.objetivo,
+        dias_entrenamiento=datos.dias,
+        email=datos.email,
+    )
+    return actualizar_perfil(datos.username, datos_perfil)
+
+
 @app.post("/api/login")
 def login(datos: UsuarioLogin):
     df = cargar_usuarios()
@@ -508,6 +542,15 @@ def solicitar_reset_password(datos: SolicitudResetPassword):
 
     if coincidencia.empty:
         raise HTTPException(status_code=404, detail="No encontramos una cuenta con esos datos.")
+
+    if datos.nueva_contrasena is not None or datos.confirmar_contrasena is not None:
+        if not datos.nueva_contrasena or datos.nueva_contrasena != datos.confirmar_contrasena:
+            raise HTTPException(status_code=400, detail="Las contraseñas no coinciden.")
+        validar_seguridad(usuario, datos.nueva_contrasena)
+        idx = coincidencia.index[0]
+        df.loc[idx, "Contraseña"] = datos.nueva_contrasena
+        df.to_csv(USERS_FILE, index=False)
+        return {"mensaje": "Contraseña actualizada correctamente. Ya puedes iniciar sesión"}
 
     return {"mensaje": "Si los datos coinciden, recibirás instrucciones para recuperar tu contraseña."}
 

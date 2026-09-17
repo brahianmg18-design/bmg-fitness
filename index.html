@@ -29,7 +29,11 @@
                 <div class="section-title">Recuperar contraseña</div>
                 <input type="text" id="reset-user" placeholder="Usuario" required>
                 <input type="email" id="reset-correo" placeholder="Correo electrónico" required>
-                <button type="submit">Solicitar recuperación</button>
+                <div id="reset-password-fields" class="hidden">
+                    <input type="password" id="reset-new-password" placeholder="Nueva contraseña" minlength="8">
+                    <input type="password" id="reset-confirm-password" placeholder="Confirmar nueva contraseña" minlength="8">
+                </div>
+                <button id="reset-submit" type="submit">Verificar datos</button>
                 <button type="button" class="link-button" onclick="mostrarTab('login')">Volver al inicio de sesión</button>
             </form>
 
@@ -136,6 +140,8 @@
                             <div><span>Estatura</span><strong id="current-estatura">-</strong></div>
                             <div><span>Nivel de actividad</span><strong id="current-actividad">-</strong></div>
                             <div><span>Objetivo</span><strong id="current-objetivo">-</strong></div>
+                            <div><span>Días de entrenamiento</span><strong id="current-dias">-</strong></div>
+                            <div><span>Correo electrónico</span><strong id="current-email">-</strong></div>
                         </div>
                     <form id="form-profile" onsubmit="guardarPerfil(event)">
                     <div class="grid-2">
