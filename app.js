@@ -188,7 +188,7 @@ function renderizarRutina(rutina) {
             <h4>Día ${dia.dia}: ${dia.nombre}</h4>
             ${dia.ejercicios.map((item) => `
                 <div class="exercise-card">
-                    <img src="${item.imagen_url}" alt="${item.ejercicio}" class="ejercicio-img" loading="lazy">
+                    <img src="${item.imagen_url}" alt="${item.ejercicio}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80';" class="ejercicio-img" loading="lazy">
                     <h5>${item.ejercicio}</h5>
                     <p class="series">${item.series}</p>
                     <p class="enfoque"><strong>Enfoque:</strong> ${item.enfoque}</p>
