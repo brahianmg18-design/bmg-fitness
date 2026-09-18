@@ -19,18 +19,24 @@
 
             <!-- Formulario Login -->
             <form id="form-login" onsubmit="ejecutarLogin(event)">
-                <input type="text" id="login-user" placeholder="Usuario" required>
-                <input type="password" id="login-pass" placeholder="Contraseña" required>
+                <label for="login-user" class="sr-only">Usuario</label>
+                <input type="text" id="login-user" placeholder="Usuario" autocomplete="username" required>
+                <label for="login-pass" class="sr-only">Contraseña</label>
+                <input type="password" id="login-pass" placeholder="Contraseña" autocomplete="current-password" required>
                 <button type="submit">Ingresar a la Plataforma</button>
                 <button type="button" class="link-button" onclick="mostrarRecuperacion()">¿Olvidaste tu contraseña?</button>
             </form>
 
             <form id="form-reset" class="hidden" onsubmit="solicitarRecuperacion(event)">
                 <div class="section-title">Recuperar contraseña</div>
+                <label for="reset-user" class="sr-only">Usuario</label>
                 <input type="text" id="reset-user" placeholder="Usuario" required>
+                <label for="reset-correo" class="sr-only">Correo electrónico</label>
                 <input type="email" id="reset-correo" placeholder="Correo electrónico" required>
                 <div id="reset-password-fields" class="hidden">
+                    <label for="reset-new-password" class="sr-only">Nueva contraseña</label>
                     <input type="password" id="reset-new-password" placeholder="Nueva contraseña" minlength="8">
+                    <label for="reset-confirm-password" class="sr-only">Confirmar nueva contraseña</label>
                     <input type="password" id="reset-confirm-password" placeholder="Confirmar nueva contraseña" minlength="8">
                 </div>
                 <button id="reset-submit" type="submit">Verificar datos</button>
@@ -40,23 +46,34 @@
             <!-- Formulario Registro -->
             <form id="form-register" class="hidden" onsubmit="ejecutarRegistro(event)">
                 <div class="section-title">Credenciales de Acceso</div>
-                <input type="text" id="reg-user" placeholder="Usuario (6-15 letras/números)" required>
-                <input type="password" id="reg-pass" placeholder="Contraseña (Min 8 car, 1 Mayús, 1 Num, 1 Esp)" required>
+                <label for="reg-user" class="sr-only">Usuario</label>
+                <input type="text" id="reg-user" placeholder="Usuario (6-15 letras/números)" autocomplete="username" required>
+                <label for="reg-pass" class="sr-only">Contraseña</label>
+                <input type="password" id="reg-pass" placeholder="Contraseña (Min 8 car, 1 Mayús, 1 Num, 1 Esp)" autocomplete="new-password" required>
+                <label for="reg-email" class="sr-only">Correo electrónico</label>
                 <input type="email" id="reg-email" placeholder="Correo electrónico" required>
                 
                 <div class="section-title">Datos Antropométricos</div>
                 <div class="grid-2">
-                    <input type="number" id="reg-edad" placeholder="Edad" min="14" max="90" required>
-                    <select id="reg-sexo" required>
-                        <option value="" disabled selected>Sexo</option>
-                        <option value="masculino">Masculino</option>
-                        <option value="femenino">Femenino</option>
-                    </select>
+                    <div>
+                        <label for="reg-edad" class="sr-only">Edad</label>
+                        <input type="number" id="reg-edad" placeholder="Edad" min="14" max="90" required>
+                    </div>
+                    <div>
+                        <label for="reg-sexo" class="sr-only">Sexo</label>
+                        <select id="reg-sexo" required>
+                            <option value="" disabled selected>Sexo</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="grid-2">
+                    <label for="reg-peso" class="sr-only">Peso en kilogramos</label>
                     <input type="number" step="0.1" id="reg-peso" placeholder="Peso en kg, ejemplo 70" required>
-                       <label>Estatura (m)
-                           <select id="reg-estatura" required>
+                    <div>
+                        <label for="reg-estatura">Estatura (m)</label>
+                        <select id="reg-estatura" required>
                                <option value="" disabled selected>Ejemplo: 1.68</option>
                                <option value="1.50">1.50 m</option><option value="1.55">1.55 m</option>
                                <option value="1.60">1.60 m</option><option value="1.65">1.65 m</option>
@@ -64,10 +81,11 @@
                                <option value="1.75">1.75 m</option><option value="1.80">1.80 m</option>
                                <option value="1.85">1.85 m</option><option value="1.90">1.90 m</option>
                                <option value="1.95">1.95 m</option><option value="2.00">2.00 m</option>
-                           </select>
-                       </label>
+                        </select>
+                    </div>
                 </div>
 
+                <label for="reg-actividad" class="sr-only">Nivel de actividad física</label>
                 <select id="reg-actividad" required>
                     <option value="" disabled selected>Nivel de Actividad Física</option>
                     <option value="1.2">Sedentario (Poco o ningún ejercicio)</option>
@@ -76,6 +94,7 @@
                     <option value="1.725">Intenso (6 a 7 días/semana)</option>
                 </select>
 
+                <label for="reg-objetivo" class="sr-only">Objetivo principal</label>
                 <select id="reg-objetivo" required>
                     <option value="" disabled selected>Objetivo Principal</option>
                     <option value="Ganar masa muscular">Ganar masa muscular</option>
@@ -86,7 +105,7 @@
                 <button type="submit">Registrar Cuenta</button>
             </form>
 
-            <p id="alert-msg"></p>
+            <p id="alert-msg" aria-live="polite"></p>
         </div>
 
         <!-- Dashboard del Usuario -->
@@ -145,39 +164,56 @@
                         </div>
                     <form id="form-profile" onsubmit="guardarPerfil(event)">
                     <div class="grid-2">
-                        <label>Edad<input type="number" id="profile-edad" min="14" max="90" required></label>
-                        <label>Sexo<select id="profile-sexo" required>
-                            <option value="masculino">Masculino</option>
-                            <option value="femenino">Femenino</option>
-                        </select></label>
+                        <div>
+                            <label for="profile-edad">Edad</label>
+                            <input type="number" id="profile-edad" min="14" max="90" required>
+                        </div>
+                        <div>
+                            <label for="profile-sexo">Sexo</label>
+                            <select id="profile-sexo" required>
+                                <option value="masculino">Masculino</option>
+                                <option value="femenino">Femenino</option>
+                            </select>
+                        </div>
                     </div>
-                    <label>Correo electrónico<input type="email" id="profile-email" required></label>
+                    <label for="profile-email">Correo electrónico</label>
+                    <input type="email" id="profile-email" required>
                     <div class="grid-2">
-                                <label>Peso (kg)<input type="number" id="profile-peso" min="1" step="0.1" placeholder="Ejemplo: 70" required></label>
-                           <label>Estatura (m)<select id="profile-estatura" required>
+                        <div>
+                            <label for="profile-peso">Peso (kg)</label>
+                            <input type="number" id="profile-peso" min="1" step="0.1" placeholder="Ejemplo: 70" required>
+                        </div>
+                        <div>
+                            <label for="profile-estatura">Estatura (m)</label>
+                            <select id="profile-estatura" required>
                                <option value="1.50">1.50 m</option><option value="1.55">1.55 m</option>
                                <option value="1.60">1.60 m</option><option value="1.65">1.65 m</option>
                                <option value="1.68">1.68 m</option><option value="1.70">1.70 m</option>
                                <option value="1.75">1.75 m</option><option value="1.80">1.80 m</option>
                                <option value="1.85">1.85 m</option><option value="1.90">1.90 m</option>
                                <option value="1.95">1.95 m</option><option value="2.00">2.00 m</option>
-                           </select><small>Ejemplo habitual: 1.68 m</small></label>
+                            </select>
+                            <small>Ejemplo habitual: 1.68 m</small>
+                        </div>
                     </div>
-                    <label>Actividad física<select id="profile-actividad" required>
+                    <label for="profile-actividad">Actividad física</label>
+                    <select id="profile-actividad" required>
                         <option value="1.2">Sedentario</option>
                         <option value="1.375">Ligero</option>
                         <option value="1.55">Moderado</option>
                         <option value="1.725">Intenso</option>
-                    </select></label>
-                    <label>Objetivo<select id="profile-objetivo" required>
+                    </select>
+                    <label for="profile-objetivo">Objetivo</label>
+                    <select id="profile-objetivo" required>
                         <option value="Ganar masa muscular">Ganar masa muscular</option>
                         <option value="Perder grasa">Perder grasa</option>
                         <option value="Mantenimiento y Definición">Mantenimiento y Definición</option>
-                    </select></label>
-                    <label>Días de entrenamiento por semana<input type="number" id="profile-dias" min="1" max="7" required></label>
+                    </select>
+                    <label for="profile-dias">Días de entrenamiento por semana</label>
+                    <input type="number" id="profile-dias" min="1" max="7" required>
                     <button type="submit">Guardar cambios</button>
                 </form>
-                    <p id="profile-msg"></p>
+                    <p id="profile-msg" aria-live="polite"></p>
                 </section>
 
                 <section id="section-nutricion" class="dashboard-section hidden">
@@ -213,12 +249,10 @@
 
                     <div class="seguimiento-grid">
                         <form id="form-seguimiento" class="seguimiento-form" onsubmit="guardarSeguimiento(event)">
-                            <label>Fecha
-                                <input type="date" id="seguimiento-fecha" required>
-                            </label>
-                            <label>Peso actual (kg)
-                                <input type="number" id="seguimiento-peso" min="1" step="0.1" placeholder="Ejemplo: 68.5" required>
-                            </label>
+                            <label for="seguimiento-fecha">Fecha</label>
+                            <input type="date" id="seguimiento-fecha" required>
+                            <label for="seguimiento-peso">Peso actual (kg)</label>
+                            <input type="number" id="seguimiento-peso" min="1" step="0.1" placeholder="Ejemplo: 68.5" required>
                             <button type="submit">Guardar registro</button>
                         </form>
 
@@ -247,7 +281,7 @@
                         </div>
                     </div>
 
-                    <p id="seguimiento-msg" class="seguimiento-msg"></p>
+                    <p id="seguimiento-msg" class="seguimiento-msg" aria-live="polite"></p>
                 </section>
             </main>
         </div>

@@ -392,12 +392,7 @@ function verificarSesion() {
     try {
         const sesion = JSON.parse(sesionGuardada);
         if (!sesion.loginTime || Date.now() - sesion.loginTime >= SESSION_TIMEOUT) {
-            localStorage.removeItem(SESSION_KEY);
-            usuarioActual = "";
-            contrasenaActual = "";
-            document.getElementById("dashboard").classList.add("hidden");
-            document.getElementById("auth-box").classList.remove("hidden");
-            mostrarTab("login");
+            cerrarSesion();
             window.alert("Sesión expirada por inactividad");
         }
     } catch (error) {
@@ -444,4 +439,5 @@ function cerrarSesion() {
     document.getElementById("auth-box").classList.remove("hidden");
     document.getElementById("form-login").reset();
     document.getElementById("form-seguimiento").reset();
+    mostrarTab("login");
 }
