@@ -288,34 +288,57 @@ function nombreActividad(valor) {
 async function guardarPerfil(e) {
     e.preventDefault();
     const profileMsg = document.getElementById("profile-msg");
+
+    const usuarioActivo = localStorage.getItem("usuarioActual") || sessionStorage.getItem("usuarioActual");
+
+    if (!usuarioActivo) {
+        if (profileMsg) profileMsg.textContent = "Error: No hay una sesión activa de usuario.";
+        return;
+    }
+
+    const edadVal = parseInt(document.getElementById("profile-edad").value);
+    const pesoVal = parseFloat(document.getElementById("profile-peso").value);
+    const estaturaVal = parseFloat(document.getElementById("profile-estatura").value);
+    const actividadVal = parseFloat(document.getElementById("profile-actividad").value);
+    const diasVal = parseInt(document.getElementById("profile-dias").value);
+    const emailInput = document.getElementById("profile-email");
+
     const datos = {
-        edad: parseInt(document.getElementById("profile-edad").value),
+        edad: isNaN(edadVal) ? null : edadVal,
         sexo: document.getElementById("profile-sexo").value,
-        peso: parseFloat(document.getElementById("profile-peso").value),
-        estatura: parseFloat(document.getElementById("profile-estatura").value),
-        actividad: parseFloat(document.getElementById("profile-actividad").value),
+        peso: isNaN(pesoVal) ? null : pesoVal,
+        estatura: isNaN(estaturaVal) ? null : estaturaVal,
+        actividad: isNaN(actividadVal) ? null : actividadVal,
         objetivo: document.getElementById("profile-objetivo").value,
-        dias_entrenamiento: parseInt(document.getElementById("profile-dias").value),
-        email: document.getElementById("profile-email").value.trim()
+        dias_entrenamiento: isNaN(diasVal) ? null : diasVal,
+        email: emailInput && emailInput.value ? emailInput.value.trim() : null
     };
 
-    profileMsg.style.color = "#94a3b8";
-    profileMsg.innerText = "Guardando cambios...";
     try {
-        const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
+        if (profileMsg) profileMsg.textContent = "Guardando cambios...";
+
+        const response = await fetch(`/api/perfil/${encodeURIComponent(usuarioActivo)}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(datos)
         });
-        const data = await leerRespuesta(respuesta, "No se pudo guardar el perfil.");
-        actualizarSesion(data);
-        await actualizarDashboard(data);
-        window.alert("Perfil actualizado con éxito");
-        profileMsg.style.color = "#00e676";
-        profileMsg.innerText = data.mensaje;
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.detail || result.mensaje || "Error al actualizar el perfil.");
+        }
+
+        if (profileMsg) profileMsg.textContent = "¡Perfil actualizado correctamente!";
+
+        if (typeof renderizarPerfil === "function") {
+            renderizarPerfil(result);
+        }
     } catch (error) {
-        profileMsg.style.color = "#ff5252";
-        profileMsg.innerText = error.message;
+        console.error("Error en guardarPerfil:", error);
+        if (profileMsg) profileMsg.textContent = error.message || "No ha sido posible conectarse con el servidor.";
     }
 }
 
