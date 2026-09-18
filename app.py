@@ -1,6 +1,7 @@
-﻿from fastapi import FastAPI, HTTPException
+﻿from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 import pandas as pd
@@ -9,8 +10,17 @@ import re
 import hashlib
 import hmac
 import secrets
+import shutil
 
 app = FastAPI(title="BMG Fitness API")
+
+
+@app.exception_handler(Exception)
+async def manejar_error_no_controlado(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Error interno del servidor. Inténtalo de nuevo más tarde."},
+    )
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,8 +31,19 @@ app.add_middleware(
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-USERS_FILE = os.path.join(BASE_DIR, "usuarios.csv")
-SEGUIMIENTO_FILE = os.path.join(BASE_DIR, "seguimiento.csv")
+if os.getenv("VERCEL"):
+    STORAGE_DIR = os.getenv("BMG_STORAGE_DIR", "/tmp/bmg-fitness")
+else:
+    STORAGE_DIR = os.getenv("BMG_STORAGE_DIR", BASE_DIR)
+os.makedirs(STORAGE_DIR, exist_ok=True)
+USERS_FILE = os.path.join(STORAGE_DIR, "usuarios.csv")
+SEGUIMIENTO_FILE = os.path.join(STORAGE_DIR, "seguimiento.csv")
+
+for nombre_archivo in ("usuarios.csv", "seguimiento.csv"):
+    origen = os.path.join(BASE_DIR, nombre_archivo)
+    destino = os.path.join(STORAGE_DIR, nombre_archivo)
+    if STORAGE_DIR != BASE_DIR and os.path.exists(origen) and not os.path.exists(destino):
+        shutil.copyfile(origen, destino)
 USER_COLUMNS = [
     "Usuario", "Contraseña", "Correo", "Edad", "Sexo", "Peso", "Estatura",
     "Actividad", "Objetivo", "DiasEntrenamiento", "PesoInicial"
@@ -38,7 +59,6 @@ EXERCISE_IMAGE_URLS = {
     "Extensión de cuádriceps": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80",
     "Elevación de gemelos": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80",
 }
-EXERCISE_PLACEHOLDER_URL = "https://placehold.co/600x400/0f172a/38bdf8?text=Ejercicio"
 
 
 def normalizar_csv_usuarios(df: pd.DataFrame) -> pd.DataFrame:
@@ -322,7 +342,7 @@ def crear_rutina(objetivo: str, dias: int):
                 "ejercicio": nombre,
                 "series": series,
                 "enfoque": enfoque,
-                "imagen_url": EXERCISE_IMAGE_URLS.get(nombre, EXERCISE_PLACEHOLDER_URL),
+                "imagen_url": EXERCISE_IMAGE_URLS.get(nombre),
             }
             for nombre, series, enfoque in ejercicios[index % len(ejercicios)][1]
         ]}
@@ -591,8 +611,7 @@ def login(datos: UsuarioLogin):
     }
 
 
-@app.post("/api/reset-password")
-def solicitar_reset_password(datos: SolicitudResetPassword):
+def buscar_usuario_reset(datos: SolicitudResetPassword):
     usuario = datos.usuario.strip().lower()
     correo = datos.correo.strip().lower()
 
@@ -608,16 +627,37 @@ def solicitar_reset_password(datos: SolicitudResetPassword):
     if coincidencia.empty:
         raise HTTPException(status_code=404, detail="No encontramos una cuenta con esos datos.")
 
-    if datos.nueva_contrasena is not None or datos.confirmar_contrasena is not None:
-        if not datos.nueva_contrasena or datos.nueva_contrasena != datos.confirmar_contrasena:
-            raise HTTPException(status_code=400, detail="Las contraseñas no coinciden.")
-        validar_seguridad(usuario, datos.nueva_contrasena)
-        idx = coincidencia.index[0]
-        df.loc[idx, "Contraseña"] = hash_password(datos.nueva_contrasena.strip())
-        df.to_csv(USERS_FILE, index=False)
-        return {"mensaje": "Contraseña actualizada correctamente. Ya puedes iniciar sesión"}
+    return df, coincidencia
 
-    return {"mensaje": "Si los datos coinciden, recibirás instrucciones para recuperar tu contraseña."}
+
+@app.post("/api/verificar-usuario")
+def verificar_usuario_reset(datos: SolicitudResetPassword):
+    buscar_usuario_reset(datos)
+    return {"mensaje": "Datos verificados. Define tu nueva contraseña."}
+
+
+@app.post("/api/restablecer-password")
+def restablecer_password(datos: SolicitudResetPassword):
+    if not datos.nueva_contrasena or not datos.confirmar_contrasena:
+        raise HTTPException(status_code=400, detail="La nueva contraseña y su confirmación son obligatorias.")
+    if datos.nueva_contrasena != datos.confirmar_contrasena:
+        raise HTTPException(status_code=400, detail="Las contraseñas no coinciden.")
+
+    df, coincidencia = buscar_usuario_reset(datos)
+    validar_seguridad(datos.usuario.strip(), datos.nueva_contrasena.strip())
+    idx = coincidencia.index[0]
+    df.loc[idx, "Contraseña"] = hash_password(datos.nueva_contrasena.strip())
+    df.to_csv(USERS_FILE, index=False)
+    return {"mensaje": "Contraseña actualizada correctamente. Ya puedes iniciar sesión."}
+
+
+@app.post("/api/reset-password")
+def solicitar_reset_password(datos: SolicitudResetPassword):
+    if datos.nueva_contrasena is not None or datos.confirmar_contrasena is not None:
+        return restablecer_password(datos)
+
+    buscar_usuario_reset(datos)
+    return {"mensaje": "Datos verificados. Define tu nueva contraseña."}
 
 
 @app.get("/api/seguimiento/{usuario}")

@@ -3,9 +3,37 @@ const API_URL = window.location.protocol === "file:"
     : "/api";
 const SESSION_KEY = "sessionUser";
 const SESSION_TIMEOUT = 180000;
-const EXERCISE_PLACEHOLDER = "https://placehold.co/600x400/0f172a/38bdf8?text=Ejercicio";
+const IMAGENES_EJERCICIOS = {
+    "Sentadilla con barra": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=900&q=85",
+    "Peso muerto rumano": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=900&q=85",
+    "Prensa de pierna": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=900&q=85",
+    "Extensión de cuádriceps": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=900&q=85",
+    "Elevación de gemelos": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=900&q=85"
+};
 let usuarioActual = "";
 let contrasenaActual = "";
+
+async function leerRespuesta(respuesta, mensajePorDefecto) {
+    const texto = await respuesta.text();
+    let datos = {};
+
+    if (texto) {
+        try {
+            datos = JSON.parse(texto);
+        } catch (error) {
+            if (!respuesta.ok) {
+                throw new Error(`${mensajePorDefecto} (HTTP ${respuesta.status})`);
+            }
+            throw new Error("El servidor devolvió una respuesta no válida.");
+        }
+    }
+
+    if (!respuesta.ok) {
+        throw new Error(datos.detail || datos.message || `${mensajePorDefecto} (HTTP ${respuesta.status})`);
+    }
+
+    return datos;
+}
 
 function mostrarTab(tab) {
     const formLogin = document.getElementById("form-login");
@@ -17,6 +45,8 @@ function mostrarTab(tab) {
 
     alertMsg.innerText = "";
     document.getElementById("reset-password-fields").classList.add("hidden");
+    document.getElementById("reset-new-password").required = false;
+    document.getElementById("reset-confirm-password").required = false;
     document.getElementById("reset-submit").innerText = "Verificar datos";
 
     if (tab === 'login') {
@@ -39,6 +69,8 @@ function mostrarRecuperacion() {
     document.getElementById("form-register").classList.add("hidden");
     document.getElementById("form-reset").classList.remove("hidden");
     document.getElementById("reset-password-fields").classList.add("hidden");
+    document.getElementById("reset-new-password").required = false;
+    document.getElementById("reset-confirm-password").required = false;
     document.getElementById("reset-submit").innerText = "Verificar datos";
     document.getElementById("alert-msg").innerText = "";
 }
@@ -67,7 +99,7 @@ async function ejecutarRegistro(e) {
             body: JSON.stringify({ usuario, contrasena, email, edad, sexo, peso, estatura, actividad, objetivo })
         });
 
-        const data = await respuesta.json();
+        const data = await leerRespuesta(respuesta, "No se pudo completar el registro.");
 
         if (respuesta.ok) {
             alertMsg.style.color = "#00e676";
@@ -98,7 +130,7 @@ async function ejecutarLogin(e) {
             body: JSON.stringify({ usuario, contrasena })
         });
 
-        const data = await respuesta.json();
+        const data = await leerRespuesta(respuesta, "No se pudo iniciar sesión.");
 
         if (respuesta.ok) {
             usuarioActual = data.usuario;
@@ -147,29 +179,34 @@ async function solicitarRecuperacion(e) {
             }
         }
 
+        const segundoPaso = !passwordFields.classList.contains("hidden");
         const datos = { usuario, correo };
-        if (!passwordFields.classList.contains("hidden")) {
+        if (segundoPaso) {
             datos.nueva_contrasena = nuevaContrasena;
             datos.confirmar_contrasena = confirmarContrasena;
         }
 
-        const respuesta = await fetch(`${API_URL}/reset-password`, {
+        const endpoint = segundoPaso ? "/restablecer-password" : "/verificar-usuario";
+        const respuesta = await fetch(`${API_URL}${endpoint}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos)
         });
-        const data = await respuesta.json();
-        if (!respuesta.ok) throw new Error(data.detail || "No se pudo solicitar la recuperación.");
+        const data = await leerRespuesta(respuesta, "No se pudo solicitar la recuperación.");
 
-        if (passwordFields.classList.contains("hidden")) {
+        if (!segundoPaso) {
             passwordFields.classList.remove("hidden");
-            document.getElementById("reset-submit").innerText = "Cambiar contraseña";
+            document.getElementById("reset-new-password").required = true;
+            document.getElementById("reset-confirm-password").required = true;
+            document.getElementById("reset-submit").innerText = "Guardar nueva contraseña";
             alertMsg.style.color = "#00e676";
             alertMsg.innerText = "Datos verificados. Define tu nueva contraseña.";
         } else {
             window.alert("Contraseña actualizada correctamente. Ya puedes iniciar sesión");
             document.getElementById("form-reset").reset();
             passwordFields.classList.add("hidden");
+            document.getElementById("reset-new-password").required = false;
+            document.getElementById("reset-confirm-password").required = false;
             document.getElementById("reset-submit").innerText = "Verificar datos";
             mostrarTab("login");
         }
@@ -216,8 +253,7 @@ async function cargarPerfil() {
     const profileMsg = document.getElementById("profile-msg");
     try {
         const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`);
-        const perfil = await respuesta.json();
-        if (!respuesta.ok) throw new Error(perfil.detail || "No se pudo cargar el perfil.");
+        const perfil = await leerRespuesta(respuesta, "No se pudo cargar el perfil.");
         mostrarPerfil(perfil);
     } catch (error) {
         profileMsg.style.color = "#ff5252";
@@ -271,8 +307,7 @@ async function guardarPerfil(e) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos)
         });
-        const data = await respuesta.json();
-        if (!respuesta.ok) throw new Error(data.detail || "No se pudo guardar el perfil.");
+        const data = await leerRespuesta(respuesta, "No se pudo guardar el perfil.");
         actualizarSesion(data);
         await actualizarDashboard(data);
         window.alert("Perfil actualizado con éxito");
@@ -295,9 +330,15 @@ function escaparHtml(valor) {
 
 function crearTarjetaEjercicio(nombreEjercicio, imagenUrl) {
     const nombreSeguro = escaparHtml(nombreEjercicio);
-    const imagenSegura = escaparHtml(imagenUrl || EXERCISE_PLACEHOLDER);
+    const imagenSegura = escaparHtml(imagenUrl || IMAGENES_EJERCICIOS[nombreEjercicio] || "");
+    const tieneImagen = Boolean(imagenSegura);
     return `<div class="exercise-visual" aria-label="${nombreSeguro}">
-        <img src="${imagenSegura}" alt="Demostración de ${nombreSeguro}" loading="lazy" onerror="this.onerror=null;this.src='${EXERCISE_PLACEHOLDER}'">
+        ${tieneImagen ? `<img src="${imagenSegura}" alt="Demostración de ${nombreSeguro}" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.classList.remove('hidden')">` : ""}
+        <div class="exercise-fallback${tieneImagen ? " hidden" : ""}" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img" focusable="false">
+                <path d="M16 26v12M11 29v6M21 22v20M43 22v20M48 26v12M53 29v6M21 32h22" />
+            </svg>
+        </div>
         <strong>${nombreSeguro}</strong>
     </div>`;
 }
@@ -330,9 +371,7 @@ async function cargarSeguimiento() {
 
     try {
         const respuesta = await fetch(`${API_URL}/seguimiento/${encodeURIComponent(usuarioActual)}`);
-        const data = await respuesta.json();
-
-        if (!respuesta.ok) throw new Error(data.detail || "No se pudo cargar el seguimiento.");
+        const data = await leerRespuesta(respuesta, "No se pudo cargar el seguimiento.");
 
         if (!data.registros || !data.registros.length) {
             tbody.innerHTML = `<tr><td colspan="2">Sin registros disponibles.</td></tr>`;
@@ -380,9 +419,7 @@ async function guardarSeguimiento(e) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fecha, peso })
         });
-        const data = await respuesta.json();
-
-        if (!respuesta.ok) throw new Error(data.detail || "No se pudo guardar el registro.");
+        const data = await leerRespuesta(respuesta, "No se pudo guardar el registro.");
 
         document.getElementById("form-seguimiento").reset();
         document.getElementById("seguimiento-progreso").innerText = data.progreso || "Sin registros aún.";
