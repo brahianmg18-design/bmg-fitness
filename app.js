@@ -1,6 +1,9 @@
-const API_URL = "https://bmg-fitness.onrender.com/api";
+const API_URL = window.location.protocol === "file:"
+    ? "http://127.0.0.1:8000/api"
+    : "/api";
 const SESSION_KEY = "sessionUser";
 const SESSION_TIMEOUT = 180000;
+const EXERCISE_PLACEHOLDER = "https://placehold.co/600x400/0f172a/38bdf8?text=Ejercicio";
 let usuarioActual = "";
 let contrasenaActual = "";
 
@@ -135,6 +138,15 @@ async function solicitarRecuperacion(e) {
     alertMsg.innerText = "Enviando solicitud...";
 
     try {
+        if (!passwordFields.classList.contains("hidden")) {
+            if (!nuevaContrasena || !confirmarContrasena) {
+                throw new Error("Introduce y confirma la nueva contraseña.");
+            }
+            if (nuevaContrasena !== confirmarContrasena) {
+                throw new Error("Las contraseñas no coinciden.");
+            }
+        }
+
         const datos = { usuario, correo };
         if (!passwordFields.classList.contains("hidden")) {
             datos.nueva_contrasena = nuevaContrasena;
@@ -203,7 +215,7 @@ async function cargarPerfil() {
 
     const profileMsg = document.getElementById("profile-msg");
     try {
-        const respuesta = await fetch(`${API_URL}/get-profile?username=${encodeURIComponent(usuarioActual)}`);
+        const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`);
         const perfil = await respuesta.json();
         if (!respuesta.ok) throw new Error(perfil.detail || "No se pudo cargar el perfil.");
         mostrarPerfil(perfil);
@@ -241,27 +253,27 @@ async function guardarPerfil(e) {
     e.preventDefault();
     const profileMsg = document.getElementById("profile-msg");
     const datos = {
-        username: usuarioActual,
         edad: parseInt(document.getElementById("profile-edad").value),
         sexo: document.getElementById("profile-sexo").value,
         peso: parseFloat(document.getElementById("profile-peso").value),
         estatura: parseFloat(document.getElementById("profile-estatura").value),
         actividad: parseFloat(document.getElementById("profile-actividad").value),
         objetivo: document.getElementById("profile-objetivo").value,
-        dias: parseInt(document.getElementById("profile-dias").value),
+        dias_entrenamiento: parseInt(document.getElementById("profile-dias").value),
         email: document.getElementById("profile-email").value.trim()
     };
 
     profileMsg.style.color = "#94a3b8";
     profileMsg.innerText = "Guardando cambios...";
     try {
-        const respuesta = await fetch(`${API_URL}/update-profile`, {
-            method: "POST",
+        const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos)
         });
         const data = await respuesta.json();
         if (!respuesta.ok) throw new Error(data.detail || "No se pudo guardar el perfil.");
+        actualizarSesion(data);
         await actualizarDashboard(data);
         window.alert("Perfil actualizado con éxito");
         profileMsg.style.color = "#00e676";
@@ -272,10 +284,21 @@ async function guardarPerfil(e) {
     }
 }
 
-function crearTarjetaEjercicio(nombreEjercicio) {
-    return `<div class="exercise-visual" aria-label="${nombreEjercicio}">
-        <span class="fitness-icon" aria-hidden="true">&#9878;</span>
-        <strong>${nombreEjercicio}</strong>
+function escaparHtml(valor) {
+    return String(valor ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function crearTarjetaEjercicio(nombreEjercicio, imagenUrl) {
+    const nombreSeguro = escaparHtml(nombreEjercicio);
+    const imagenSegura = escaparHtml(imagenUrl || EXERCISE_PLACEHOLDER);
+    return `<div class="exercise-visual" aria-label="${nombreSeguro}">
+        <img src="${imagenSegura}" alt="Demostración de ${nombreSeguro}" loading="lazy" onerror="this.onerror=null;this.src='${EXERCISE_PLACEHOLDER}'">
+        <strong>${nombreSeguro}</strong>
     </div>`;
 }
 
@@ -287,10 +310,10 @@ function renderizarRutina(rutina) {
             ${dia.ejercicios.map((item) => {
                 return `
                 <div class="exercise-card">
-                    ${crearTarjetaEjercicio(item.ejercicio)}
-                    <h5>${item.ejercicio}</h5>
-                    <p class="series">${item.series}</p>
-                    <p class="enfoque"><strong>Enfoque:</strong> ${item.enfoque}</p>
+                    ${crearTarjetaEjercicio(item.ejercicio, item.imagen_url)}
+                    <h5>${escaparHtml(item.ejercicio)}</h5>
+                    <p class="series">${escaparHtml(item.series)}</p>
+                    <p class="enfoque"><strong>Enfoque:</strong> ${escaparHtml(item.enfoque)}</p>
                 </div>
             `;
             }).join("")}
@@ -385,6 +408,18 @@ function actualizarActividad() {
     }
 }
 
+function actualizarSesion(data) {
+    const sesionGuardada = localStorage.getItem(SESSION_KEY);
+    if (!sesionGuardada) return;
+
+    try {
+        const sesion = JSON.parse(sesionGuardada);
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ ...sesion, userData: data }));
+    } catch (error) {
+        localStorage.removeItem(SESSION_KEY);
+    }
+}
+
 function verificarSesion() {
     const sesionGuardada = localStorage.getItem(SESSION_KEY);
     if (!sesionGuardada) return;
@@ -435,6 +470,7 @@ function cerrarSesion() {
     usuarioActual = "";
     contrasenaActual = "";
     localStorage.removeItem(SESSION_KEY);
+    sessionStorage.clear();
     document.getElementById("dashboard").classList.add("hidden");
     document.getElementById("auth-box").classList.remove("hidden");
     document.getElementById("form-login").reset();

@@ -6,6 +6,9 @@ from typing import Optional
 import pandas as pd
 import os
 import re
+import hashlib
+import hmac
+import secrets
 
 app = FastAPI(title="BMG Fitness API")
 
@@ -22,7 +25,7 @@ USERS_FILE = os.path.join(BASE_DIR, "usuarios.csv")
 SEGUIMIENTO_FILE = os.path.join(BASE_DIR, "seguimiento.csv")
 USER_COLUMNS = [
     "Usuario", "Contraseña", "Correo", "Edad", "Sexo", "Peso", "Estatura",
-    "Actividad", "Objetivo", "DiasEntrenamiento"
+    "Actividad", "Objetivo", "DiasEntrenamiento", "PesoInicial"
 ]
 LEGACY_USER_COLUMNS = [
     "Usuario", "Contraseña", "Objetivo", "Edad", "Sexo", "Peso", "Estatura", "Actividad"
@@ -35,6 +38,7 @@ EXERCISE_IMAGE_URLS = {
     "Extensión de cuádriceps": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80",
     "Elevación de gemelos": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80",
 }
+EXERCISE_PLACEHOLDER_URL = "https://placehold.co/600x400/0f172a/38bdf8?text=Ejercicio"
 
 
 def normalizar_csv_usuarios(df: pd.DataFrame) -> pd.DataFrame:
@@ -79,7 +83,37 @@ def normalizar_csv_usuarios(df: pd.DataFrame) -> pd.DataFrame:
     df["Estatura"] = df["Estatura"].apply(
         lambda value: round(float(value) / 100, 2) if str(value).strip() not in ["", "nan"] and float(value) > 3 else value
     )
+    df["PesoInicial"] = df.apply(
+        lambda row: row["Peso"] if str(row["PesoInicial"]).strip().lower() in ["", "nan", "none", "null"] else row["PesoInicial"],
+        axis=1,
+    )
     return df
+
+
+PASSWORD_PREFIX = "pbkdf2_sha256"
+PASSWORD_ITERATIONS = 310000
+
+
+def hash_password(password: str) -> str:
+    salt = secrets.token_hex(16)
+    digest = hashlib.pbkdf2_hmac(
+        "sha256", password.encode("utf-8"), salt.encode("utf-8"), PASSWORD_ITERATIONS
+    ).hex()
+    return f"{PASSWORD_PREFIX}${PASSWORD_ITERATIONS}${salt}${digest}"
+
+
+def verificar_password(password: str, stored_password: str) -> bool:
+    if not stored_password.startswith(f"{PASSWORD_PREFIX}$"):
+        return hmac.compare_digest(password, stored_password)
+
+    try:
+        _, iterations, salt, expected_digest = stored_password.split("$", 3)
+        digest = hashlib.pbkdf2_hmac(
+            "sha256", password.encode("utf-8"), salt.encode("utf-8"), int(iterations)
+        ).hex()
+        return hmac.compare_digest(digest, expected_digest)
+    except (TypeError, ValueError):
+        return False
 
 
 def normalizar_csv_seguimiento(df: pd.DataFrame) -> pd.DataFrame:
@@ -204,12 +238,22 @@ def cargar_seguimiento():
 
 def construir_resumen_seguimiento(usuario: str):
     df = cargar_seguimiento()
+    usuarios = cargar_usuarios()
+    usuario_match = usuarios[usuarios["Usuario"].str.strip().str.lower() == usuario.strip().lower()]
+    peso_base = None
+    if not usuario_match.empty:
+        valor_base = usuario_match.iloc[0].get("PesoInicial", "")
+        if str(valor_base).strip() not in ["", "nan", "None"]:
+            peso_base = round(float(valor_base), 1)
+
     if df.empty:
         return {
             "usuario": usuario,
             "registros": [],
             "progreso": "Progreso: aún no hay registros previos.",
             "ultimo_peso": None,
+            "peso_base": peso_base,
+            "diferencia_total": 0,
         }
 
     df_usuario = df[df["Usuario"].str.strip().str.lower() == usuario.strip().lower()].copy()
@@ -219,19 +263,23 @@ def construir_resumen_seguimiento(usuario: str):
             "registros": [],
             "progreso": "Progreso: aún no hay registros previos.",
             "ultimo_peso": None,
+            "peso_base": peso_base,
+            "diferencia_total": 0,
         }
 
-    df_usuario = df_usuario.sort_values("Fecha", ascending=False, kind="mergesort").reset_index(drop=True)
+    df_usuario = df_usuario.sort_values("Fecha", ascending=True, kind="mergesort").reset_index(drop=True)
     registros = [
         {"fecha": str(row["Fecha"]), "peso": round(float(row["Peso"]), 1)}
         for _, row in df_usuario.iterrows()
     ]
 
-    if len(registros) > 1:
-        ultimo_peso = registros[0]["peso"]
-        anterior_peso = registros[1]["peso"]
-        diferencia = round(ultimo_peso - anterior_peso, 1)
-        progreso = f"Progreso: {diferencia:+.1f} kg comparado con el registro previo"
+    ultimo_peso = registros[-1]["peso"]
+    if peso_base is None:
+        peso_base = registros[0]["peso"]
+
+    diferencia = round(ultimo_peso - peso_base, 1)
+    if len(registros) > 1 or peso_base != ultimo_peso:
+        progreso = f"Progreso: {diferencia:+.1f} kg desde el peso base inicial"
     else:
         progreso = "Progreso: aún no hay comparación previa."
 
@@ -239,7 +287,9 @@ def construir_resumen_seguimiento(usuario: str):
         "usuario": usuario,
         "registros": registros,
         "progreso": progreso,
-        "ultimo_peso": registros[0]["peso"] if registros else None,
+        "ultimo_peso": ultimo_peso,
+        "peso_base": peso_base,
+        "diferencia_total": diferencia,
     }
 
 
@@ -272,7 +322,7 @@ def crear_rutina(objetivo: str, dias: int):
                 "ejercicio": nombre,
                 "series": series,
                 "enfoque": enfoque,
-                "imagen_url": EXERCISE_IMAGE_URLS.get(nombre),
+                "imagen_url": EXERCISE_IMAGE_URLS.get(nombre, EXERCISE_PLACEHOLDER_URL),
             }
             for nombre, series, enfoque in ejercicios[index % len(ejercicios)][1]
         ]}
@@ -336,7 +386,7 @@ def registrar(datos: UsuarioRegistro):
 
     nuevo_reg = pd.DataFrame([{
         "Usuario": datos.usuario.strip(),
-        "Contraseña": datos.contrasena.strip(),
+        "Contraseña": hash_password(datos.contrasena.strip()),
         "Correo": datos.email.strip().lower(),
         "Edad": datos.edad,
         "Sexo": datos.sexo,
@@ -344,7 +394,8 @@ def registrar(datos: UsuarioRegistro):
         "Estatura": datos.estatura,
         "Actividad": datos.actividad,
         "Objetivo": datos.objetivo,
-        "DiasEntrenamiento": int(datos.dias_entrenamiento or 4)
+        "DiasEntrenamiento": int(datos.dias_entrenamiento or 4),
+        "PesoInicial": datos.peso,
     }])
 
     df_final = pd.concat([df, nuevo_reg], ignore_index=True)
@@ -377,6 +428,7 @@ def obtener_perfil(usuario: str):
         "actividad": valor_o_default("Actividad", 1.55),
         "objetivo": valor_o_default("Objetivo", "Ganar masa muscular"),
         "dias_entrenamiento": valor_o_default("DiasEntrenamiento", 4),
+        "peso_inicial": valor_o_default("PesoInicial", valor_o_default("Peso", 70)),
     }
 
 
@@ -445,13 +497,20 @@ def login(datos: UsuarioLogin):
 
     u_clean = datos.usuario.strip().lower()
     p_clean = datos.contrasena.strip()
-
-    coincidencia = df[(df["Usuario"].str.strip().str.lower() == u_clean) & (df["Contraseña"].str.strip() == p_clean)]
+    candidatos = df[df["Usuario"].str.strip().str.lower() == u_clean]
+    coincidencia = candidatos[
+        candidatos["Contraseña"].apply(lambda stored: verificar_password(p_clean, str(stored).strip()))
+    ]
 
     if coincidencia.empty:
         raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
 
     user_row = coincidencia.iloc[0]
+    user_index = coincidencia.index[0]
+    stored_password = str(user_row["Contraseña"]).strip()
+    if not stored_password.startswith(f"{PASSWORD_PREFIX}$"):
+        df.loc[user_index, "Contraseña"] = hash_password(p_clean)
+        df.to_csv(USERS_FILE, index=False)
 
     edad = int(float(user_row["Edad"])) if str(user_row.get("Edad", "")).strip() not in ["", "nan"] else 30
     sexo = str(user_row.get("Sexo", "masculino"))
@@ -513,6 +572,11 @@ def login(datos: UsuarioLogin):
     return {
         "mensaje": "Acceso concedido",
         "usuario": user_row["Usuario"],
+        "edad": edad,
+        "sexo": sexo,
+        "peso": peso,
+        "estatura": estatura,
+        "actividad": actividad,
         "objetivo": objetivo,
         "dias_entrenamiento": dias_entrenamiento,
         "email": "" if pd.isna(user_row.get("Correo", "")) else str(user_row.get("Correo", "") or ""),
@@ -523,6 +587,7 @@ def login(datos: UsuarioLogin):
         "grasas": grasas,
         "explicacion_nutricional": explicacion_nutricional,
         "rutina": rutina,
+        "peso_inicial": user_row.get("PesoInicial", peso),
     }
 
 
@@ -548,7 +613,7 @@ def solicitar_reset_password(datos: SolicitudResetPassword):
             raise HTTPException(status_code=400, detail="Las contraseñas no coinciden.")
         validar_seguridad(usuario, datos.nueva_contrasena)
         idx = coincidencia.index[0]
-        df.loc[idx, "Contraseña"] = datos.nueva_contrasena
+        df.loc[idx, "Contraseña"] = hash_password(datos.nueva_contrasena.strip())
         df.to_csv(USERS_FILE, index=False)
         return {"mensaje": "Contraseña actualizada correctamente. Ya puedes iniciar sesión"}
 
