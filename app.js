@@ -289,10 +289,18 @@ async function guardarPerfil(e) {
     e.preventDefault();
     const profileMsg = document.getElementById("profile-msg");
 
-    const usuarioActivo = localStorage.getItem("usuarioActual") || sessionStorage.getItem("usuarioActual");
+    const usuarioActivo =
+        localStorage.getItem("usuarioActual") ||
+        localStorage.getItem("usuario") ||
+        localStorage.getItem("currentUser") ||
+        localStorage.getItem("user") ||
+        sessionStorage.getItem("usuarioActual") ||
+        sessionStorage.getItem("usuario") ||
+        (typeof usuarioActual !== "undefined" && usuarioActual ? usuarioActual : null) ||
+        (typeof usuarioLogueado !== "undefined" ? usuarioLogueado : null);
 
     if (!usuarioActivo) {
-        if (profileMsg) profileMsg.textContent = "Error: No hay una sesión activa de usuario.";
+        if (profileMsg) profileMsg.textContent = "Error: No se pudo identificar el usuario activo. Por favor vuelve a iniciar sesión.";
         return;
     }
 
