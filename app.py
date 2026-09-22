@@ -479,8 +479,13 @@ def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
         if valor is not None:
             df.loc[idx, campo] = valor
 
-    df = normalizar_csv_usuarios(df)
-    df.to_csv(USERS_FILE, index=False)
+    # Intentar guardar el CSV sin romper el servidor si el sistema de archivos es de solo lectura (Vercel)
+    try:
+        df = normalizar_csv_usuarios(df)
+        df.to_csv(USERS_FILE, index=False)
+    except Exception as e:
+        print(f"Advertencia: No se pudo escribir en {USERS_FILE}: {e}")
+
     perfil = obtener_perfil(usuario)
     resumen = calcular_resumen(
         perfil["edad"], perfil["sexo"], perfil["peso"], perfil["estatura"],
