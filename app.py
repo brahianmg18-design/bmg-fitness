@@ -6,6 +6,8 @@ from pydantic import BaseModel
 from typing import Optional
 import pandas as pd
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 import re
 import hashlib
 import hmac
@@ -31,15 +33,15 @@ app.add_middleware(
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE_URL = os.environ.get("DATABASE_URL")
 if os.getenv("VERCEL"):
     STORAGE_DIR = os.getenv("BMG_STORAGE_DIR", "/tmp/bmg-fitness")
 else:
     STORAGE_DIR = os.getenv("BMG_STORAGE_DIR", BASE_DIR)
 os.makedirs(STORAGE_DIR, exist_ok=True)
-USERS_FILE = os.path.join(STORAGE_DIR, "usuarios.csv")
 SEGUIMIENTO_FILE = os.path.join(STORAGE_DIR, "seguimiento.csv")
 
-for nombre_archivo in ("usuarios.csv", "seguimiento.csv"):
+for nombre_archivo in ("seguimiento.csv",):
     origen = os.path.join(BASE_DIR, nombre_archivo)
     destino = os.path.join(STORAGE_DIR, nombre_archivo)
     if STORAGE_DIR != BASE_DIR and os.path.exists(origen) and not os.path.exists(destino):
@@ -238,13 +240,55 @@ def validar_correo(correo: str):
         raise HTTPException(status_code=400, detail="Introduce un correo electrónico válido.")
 
 
+def obtener_conexion():
+    if not DATABASE_URL:
+        raise ValueError("La variable DATABASE_URL no está configurada en el entorno.")
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS usuarios (
+                usuario TEXT PRIMARY KEY,
+                contrasena TEXT NOT NULL,
+                email TEXT NOT NULL,
+                edad INTEGER NOT NULL DEFAULT 30,
+                sexo TEXT NOT NULL DEFAULT 'masculino',
+                peso DOUBLE PRECISION NOT NULL DEFAULT 70,
+                estatura DOUBLE PRECISION NOT NULL DEFAULT 1.70,
+                actividad DOUBLE PRECISION NOT NULL DEFAULT 1.55,
+                objetivo TEXT NOT NULL DEFAULT 'Ganar masa muscular',
+                dias_entrenamiento INTEGER NOT NULL DEFAULT 4,
+                peso_inicial DOUBLE PRECISION
+            )
+        """)
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        conn.close()
+        raise
+    finally:
+        cursor.close()
+    return conn
+
+
 def cargar_usuarios():
-    if os.path.exists(USERS_FILE):
-        df = pd.read_csv(USERS_FILE, dtype=str)
-        df = normalizar_csv_usuarios(df)
-        df.to_csv(USERS_FILE, index=False)
-        return df
-    return pd.DataFrame(columns=USER_COLUMNS)
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT usuario AS "Usuario", contrasena AS "Contraseña",
+                   email AS "Correo", edad AS "Edad", sexo AS "Sexo",
+                   peso AS "Peso", estatura AS "Estatura", actividad AS "Actividad",
+                   objetivo AS "Objetivo", dias_entrenamiento AS "DiasEntrenamiento",
+                   peso_inicial AS "PesoInicial"
+            FROM usuarios
+        """)
+        rows = cursor.fetchall()
+        conn.commit()
+        return pd.DataFrame(rows, columns=USER_COLUMNS)
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def cargar_seguimiento():
@@ -398,29 +442,38 @@ def registrar(datos: UsuarioRegistro):
     validar_seguridad(datos.usuario.strip(), datos.contrasena.strip())
     validar_correo(datos.email.strip())
 
-    df = cargar_usuarios()
-    u_clean = datos.usuario.strip().lower()
-
-    if not df.empty and u_clean in df["Usuario"].str.strip().str.lower().values:
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO usuarios (
+                usuario, contrasena, email, edad, sexo, peso, estatura,
+                actividad, objetivo, dias_entrenamiento, peso_inicial
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            datos.usuario.strip(),
+            hash_password(datos.contrasena.strip()),
+            datos.email.strip().lower(),
+            datos.edad,
+            datos.sexo,
+            datos.peso,
+            datos.estatura / 100 if datos.estatura > 3 else datos.estatura,
+            datos.actividad,
+            datos.objetivo,
+            int(datos.dias_entrenamiento or 4),
+            datos.peso,
+        ))
+        conn.commit()
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
         raise HTTPException(status_code=400, detail="El nombre de usuario ya se encuentra registrado.")
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al registrar usuario: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
-    nuevo_reg = pd.DataFrame([{
-        "Usuario": datos.usuario.strip(),
-        "Contraseña": hash_password(datos.contrasena.strip()),
-        "Correo": datos.email.strip().lower(),
-        "Edad": datos.edad,
-        "Sexo": datos.sexo,
-        "Peso": datos.peso,
-        "Estatura": datos.estatura,
-        "Actividad": datos.actividad,
-        "Objetivo": datos.objetivo,
-        "DiasEntrenamiento": int(datos.dias_entrenamiento or 4),
-        "PesoInicial": datos.peso,
-    }])
-
-    df_final = pd.concat([df, nuevo_reg], ignore_index=True)
-    df_final = normalizar_csv_usuarios(df_final)
-    df_final.to_csv(USERS_FILE, index=False)
     return {"mensaje": "Usuario registrado exitosamente."}
 
 
@@ -457,34 +510,40 @@ def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
     if datos.email is not None:
         validar_correo(datos.email.strip())
 
-    df = cargar_usuarios()
-    match = df[df["Usuario"].str.strip().str.lower() == usuario.strip().lower()]
-
-    if match.empty:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
-
-    idx = match.index[0]
     campos = {
-        "Edad": datos.edad,
-        "Sexo": datos.sexo,
-        "Peso": datos.peso,
-        "Estatura": datos.estatura,
-        "Actividad": datos.actividad,
-        "Objetivo": datos.objetivo,
-        "DiasEntrenamiento": datos.dias_entrenamiento,
-        "Correo": datos.email.strip().lower() if datos.email is not None else None,
+        "email": datos.email.strip().lower() if datos.email is not None else None,
+        "edad": datos.edad,
+        "sexo": datos.sexo,
+        "peso": datos.peso,
+        "estatura": datos.estatura / 100 if datos.estatura is not None and datos.estatura > 3 else datos.estatura,
+        "actividad": datos.actividad,
+        "objetivo": datos.objetivo,
+        "dias_entrenamiento": datos.dias_entrenamiento,
     }
+    campos = {campo: valor for campo, valor in campos.items() if valor is not None}
+    if not campos:
+        raise HTTPException(status_code=400, detail="No hay datos para actualizar.")
 
-    for campo, valor in campos.items():
-        if valor is not None:
-            df.loc[idx, campo] = valor
-
-    # Intentar guardar el CSV sin romper el servidor si el sistema de archivos es de solo lectura (Vercel)
+    conn = obtener_conexion()
+    cursor = conn.cursor()
     try:
-        df = normalizar_csv_usuarios(df)
-        df.to_csv(USERS_FILE, index=False)
+        asignaciones = ", ".join(f"{campo} = %s" for campo in campos)
+        cursor.execute(
+            f"UPDATE usuarios SET {asignaciones} WHERE LOWER(usuario) = LOWER(%s)",
+            (*campos.values(), usuario.strip()),
+        )
+        if cursor.rowcount == 0:
+            conn.rollback()
+            raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+        conn.commit()
     except Exception as e:
-        print(f"Advertencia: No se pudo escribir en {USERS_FILE}: {e}")
+        conn.rollback()
+        if isinstance(e, HTTPException):
+            raise
+        raise HTTPException(status_code=500, detail=f"Error al actualizar: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
     perfil = obtener_perfil(usuario)
     resumen = calcular_resumen(
@@ -531,11 +590,22 @@ def login(datos: UsuarioLogin):
         raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
 
     user_row = coincidencia.iloc[0]
-    user_index = coincidencia.index[0]
     stored_password = str(user_row["Contraseña"]).strip()
     if not stored_password.startswith(f"{PASSWORD_PREFIX}$"):
-        df.loc[user_index, "Contraseña"] = hash_password(p_clean)
-        df.to_csv(USERS_FILE, index=False)
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "UPDATE usuarios SET contrasena = %s WHERE usuario = %s",
+                (hash_password(p_clean), user_row["Usuario"]),
+            )
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            raise HTTPException(status_code=500, detail=f"Error al actualizar la contraseña: {str(e)}")
+        finally:
+            cursor.close()
+            conn.close()
 
     edad = int(float(user_row["Edad"])) if str(user_row.get("Edad", "")).strip() not in ["", "nan"] else 30
     sexo = str(user_row.get("Sexo", "masculino"))
@@ -650,9 +720,21 @@ def restablecer_password(datos: SolicitudResetPassword):
 
     df, coincidencia = buscar_usuario_reset(datos)
     validar_seguridad(datos.usuario.strip(), datos.nueva_contrasena.strip())
-    idx = coincidencia.index[0]
-    df.loc[idx, "Contraseña"] = hash_password(datos.nueva_contrasena.strip())
-    df.to_csv(USERS_FILE, index=False)
+    usuario_guardado = coincidencia.iloc[0]["Usuario"]
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "UPDATE usuarios SET contrasena = %s WHERE usuario = %s",
+            (hash_password(datos.nueva_contrasena.strip()), usuario_guardado),
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al restablecer la contraseña: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
     return {"mensaje": "Contraseña actualizada correctamente. Ya puedes iniciar sesión."}
 
 
