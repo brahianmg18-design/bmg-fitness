@@ -575,43 +575,48 @@ def actualizar_perfil_frontend(datos: PerfilFrontendUpdate):
 
 @app.post("/api/login")
 def login(datos: UsuarioLogin):
-    df = cargar_usuarios()
-    if df.empty:
-        raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
-
-    u_clean = datos.usuario.strip().lower()
     p_clean = datos.contrasena.strip()
-    candidatos = df[df["Usuario"].str.strip().str.lower() == u_clean]
-    coincidencia = candidatos[
-        candidatos["Contraseña"].apply(lambda stored: verificar_password(p_clean, str(stored).strip()))
-    ]
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            SELECT usuario AS "Usuario", contrasena AS "Contraseña",
+                   email AS "Correo", edad AS "Edad", sexo AS "Sexo",
+                   peso AS "Peso", estatura AS "Estatura", actividad AS "Actividad",
+                   objetivo AS "Objetivo", dias_entrenamiento AS "DiasEntrenamiento",
+                   peso_inicial AS "PesoInicial"
+            FROM usuarios
+            WHERE LOWER(usuario) = LOWER(%s)
+            """,
+            (datos.usuario.strip(),),
+        )
+        user_row = cursor.fetchone()
+        if user_row is None or not verificar_password(p_clean, str(user_row["Contraseña"]).strip()):
+            raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
 
-    if coincidencia.empty:
-        raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
-
-    user_row = coincidencia.iloc[0]
-    stored_password = str(user_row["Contraseña"]).strip()
-    if not stored_password.startswith(f"{PASSWORD_PREFIX}$"):
-        conn = obtener_conexion()
-        cursor = conn.cursor()
-        try:
+        stored_password = str(user_row["Contraseña"]).strip()
+        if not stored_password.startswith(f"{PASSWORD_PREFIX}$"):
             cursor.execute(
                 "UPDATE usuarios SET contrasena = %s WHERE usuario = %s",
                 (hash_password(p_clean), user_row["Usuario"]),
             )
-            conn.commit()
-        except Exception as e:
-            conn.rollback()
-            raise HTTPException(status_code=500, detail=f"Error al actualizar la contraseña: {str(e)}")
-        finally:
-            cursor.close()
-            conn.close()
+        conn.commit()
+    except HTTPException:
+        conn.rollback()
+        raise
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al iniciar sesión: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
-    edad = int(float(user_row["Edad"])) if str(user_row.get("Edad", "")).strip() not in ["", "nan"] else 30
+    edad = int(float(user_row.get("Edad", 30) or 30))
     sexo = str(user_row.get("Sexo", "masculino"))
-    peso = float(user_row.get("Peso", 70.0)) if str(user_row.get("Peso", "")).strip() not in ["", "nan"] else 70.0
-    estatura = float(user_row.get("Estatura", 170.0)) if str(user_row.get("Estatura", "")).strip() not in ["", "nan"] else 170.0
-    actividad = float(user_row.get("Actividad", 1.55)) if str(user_row.get("Actividad", "")).strip() not in ["", "nan"] else 1.55
+    peso = float(user_row.get("Peso", 70.0) or 70.0)
+    estatura = float(user_row.get("Estatura", 1.70) or 1.70)
+    actividad = float(user_row.get("Actividad", 1.55) or 1.55)
     objetivo = str(user_row.get("Objetivo", "Ganar masa muscular"))
     dias_entrenamiento = int(user_row.get("DiasEntrenamiento", 4) or 4)
 
