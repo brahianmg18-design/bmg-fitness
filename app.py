@@ -251,6 +251,7 @@ def obtener_conexion():
                 usuario TEXT PRIMARY KEY,
                 contrasena TEXT NOT NULL,
                 email TEXT NOT NULL,
+                rol TEXT NOT NULL DEFAULT 'usuario',
                 edad INTEGER NOT NULL DEFAULT 30,
                 sexo TEXT NOT NULL DEFAULT 'masculino',
                 peso DOUBLE PRECISION NOT NULL DEFAULT 70,
