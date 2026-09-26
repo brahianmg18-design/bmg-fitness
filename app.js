@@ -325,7 +325,7 @@ async function guardarPerfil(e) {
     try {
         if (profileMsg) profileMsg.textContent = "Guardando cambios...";
 
-        const response = await fetch(`/api/perfil/${encodeURIComponent(usuarioActivo)}`, {
+        const response = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActivo)}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"

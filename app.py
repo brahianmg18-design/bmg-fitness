@@ -249,7 +249,7 @@ def obtener_conexion():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS usuarios (
                 usuario TEXT PRIMARY KEY,
-                contrasena TEXT NOT NULL,
+                password TEXT NOT NULL,
                 email TEXT NOT NULL,
                 rol TEXT NOT NULL DEFAULT 'usuario',
                 edad INTEGER NOT NULL DEFAULT 30,
@@ -261,6 +261,28 @@ def obtener_conexion():
                 dias_entrenamiento INTEGER NOT NULL DEFAULT 4,
                 peso_inicial DOUBLE PRECISION
             )
+        """)
+        cursor.execute("""
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = current_schema()
+                      AND table_name = 'usuarios'
+                      AND column_name = 'contrasena'
+                ) AND NOT EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = current_schema()
+                      AND table_name = 'usuarios'
+                      AND column_name = 'password'
+                ) THEN
+                    ALTER TABLE usuarios RENAME COLUMN contrasena TO password;
+                END IF;
+            END $$
+        """)
+        cursor.execute("""
+            ALTER TABLE usuarios
+            ADD COLUMN IF NOT EXISTS peso_inicial DOUBLE PRECISION
         """)
         conn.commit()
     except Exception:
@@ -277,7 +299,7 @@ def cargar_usuarios():
     cursor = conn.cursor()
     try:
         cursor.execute("""
-            SELECT usuario AS "Usuario", contrasena AS "Contraseña",
+            SELECT usuario AS "Usuario", password AS "Contraseña",
                    email AS "Correo", edad AS "Edad", sexo AS "Sexo",
                    peso AS "Peso", estatura AS "Estatura", actividad AS "Actividad",
                    objetivo AS "Objetivo", dias_entrenamiento AS "DiasEntrenamiento",
@@ -448,7 +470,7 @@ def registrar(datos: UsuarioRegistro):
     try:
         cursor.execute("""
             INSERT INTO usuarios (
-                usuario, contrasena, email, edad, sexo, peso, estatura,
+                usuario, password, email, edad, sexo, peso, estatura,
                 actividad, objetivo, dias_entrenamiento, peso_inicial
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
@@ -582,7 +604,7 @@ def login(datos: UsuarioLogin):
     try:
         cursor.execute(
             """
-            SELECT usuario AS "Usuario", contrasena AS "Contraseña",
+            SELECT usuario AS "Usuario", password AS "Contraseña",
                    email AS "Correo", edad AS "Edad", sexo AS "Sexo",
                    peso AS "Peso", estatura AS "Estatura", actividad AS "Actividad",
                    objetivo AS "Objetivo", dias_entrenamiento AS "DiasEntrenamiento",
@@ -599,7 +621,7 @@ def login(datos: UsuarioLogin):
         stored_password = str(user_row["Contraseña"]).strip()
         if not stored_password.startswith(f"{PASSWORD_PREFIX}$"):
             cursor.execute(
-                "UPDATE usuarios SET contrasena = %s WHERE usuario = %s",
+                "UPDATE usuarios SET password = %s WHERE usuario = %s",
                 (hash_password(p_clean), user_row["Usuario"]),
             )
         conn.commit()
@@ -731,7 +753,7 @@ def restablecer_password(datos: SolicitudResetPassword):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "UPDATE usuarios SET contrasena = %s WHERE usuario = %s",
+            "UPDATE usuarios SET password = %s WHERE usuario = %s",
             (hash_password(datos.nueva_contrasena.strip()), usuario_guardado),
         )
         conn.commit()
