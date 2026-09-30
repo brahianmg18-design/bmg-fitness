@@ -11,7 +11,6 @@ const IMAGENES_EJERCICIOS = {
     "Elevación de gemelos": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=900&q=85"
 };
 let usuarioActual = "";
-let contrasenaActual = "";
 
 async function leerRespuesta(respuesta, mensajePorDefecto) {
     const texto = await respuesta.text();
@@ -35,7 +34,16 @@ async function leerRespuesta(respuesta, mensajePorDefecto) {
     return datos;
 }
 
+function limpiarFormulariosAutenticacion() {
+    document.querySelectorAll("#auth-box input").forEach((input) => {
+        if (!["button", "submit", "reset", "hidden"].includes(input.type)) {
+            input.value = "";
+        }
+    });
+}
+
 function mostrarTab(tab) {
+    limpiarFormulariosAutenticacion();
     const formLogin = document.getElementById("form-login");
     const formRegister = document.getElementById("form-register");
     const formReset = document.getElementById("form-reset");
@@ -65,6 +73,7 @@ function mostrarTab(tab) {
 }
 
 function mostrarRecuperacion() {
+    limpiarFormulariosAutenticacion();
     document.getElementById("form-login").classList.add("hidden");
     document.getElementById("form-register").classList.add("hidden");
     document.getElementById("form-reset").classList.remove("hidden");
@@ -134,7 +143,7 @@ async function ejecutarLogin(e) {
 
         if (respuesta.ok) {
             usuarioActual = data.usuario;
-            contrasenaActual = contrasena;
+            limpiarFormulariosAutenticacion();
             localStorage.setItem(SESSION_KEY, JSON.stringify({
                 username: usuarioActual,
                 loginTime: Date.now(),
@@ -216,13 +225,29 @@ async function solicitarRecuperacion(e) {
     }
 }
 
+function renderizarPlanAlimenticio(menu) {
+    const contenedor = document.getElementById("menu-alimenticio");
+    contenedor.innerHTML = menu.map((comida) => `
+        <section class="meal-plan-item">
+            <h4>${escaparHtml(comida.comida)}</h4>
+            <ul>${comida.alimentos.map((alimento) => `<li>${escaparHtml(alimento)}</li>`).join("")}</ul>
+        </section>
+    `).join("");
+}
+
 async function actualizarDashboard(data) {
     document.getElementById("res-imc").innerText = data.imc;
+    document.getElementById("res-tmb").innerText = `${data.tmb} kcal`;
+    document.getElementById("res-tdee").innerText = `${data.tdee} kcal`;
     document.getElementById("res-calorias").innerText = `${data.calorias} kcal`;
     document.getElementById("res-proteinas").innerText = `${data.proteinas} g`;
     document.getElementById("res-carbos").innerText = `${data.carbos} g`;
     document.getElementById("res-grasas").innerText = `${data.grasas} g`;
     document.getElementById("res-explicacion").innerText = data.explicacion_nutricional;
+    const distribucion = data.distribucion_macros || {};
+    document.getElementById("res-distribucion").innerText =
+        `Distribución orientativa: ${distribucion.carbohidratos ?? "-"}% carbohidratos, ${distribucion.proteinas ?? "-"}% proteína y ${distribucion.grasas ?? "-"}% grasas.`;
+    renderizarPlanAlimenticio(data.menu_alimenticio || []);
     document.getElementById("home-imc").innerText = data.imc;
     document.getElementById("home-calorias").innerText = `${data.calorias} kcal`;
     document.getElementById("home-objetivo").innerText = data.objetivo;
@@ -341,9 +366,13 @@ async function guardarPerfil(e) {
 
         if (profileMsg) profileMsg.textContent = "¡Perfil actualizado correctamente!";
 
-        if (typeof renderizarPerfil === "function") {
-            renderizarPerfil(result);
+        const sesionGuardada = localStorage.getItem(SESSION_KEY);
+        if (sesionGuardada) {
+            const sesion = JSON.parse(sesionGuardada);
+            sesion.userData = { ...(sesion.userData || {}), ...result };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(sesion));
         }
+        await actualizarDashboard(result);
     } catch (error) {
         console.error("Error en guardarPerfil:", error);
         if (profileMsg) profileMsg.textContent = error.message || "No ha sido posible conectarse con el servidor.";
@@ -379,6 +408,7 @@ function renderizarRutina(rutina) {
     routineContainer.innerHTML = rutina.map((dia) => `
         <section class="day-plan">
             <h4>Día ${dia.dia}: ${dia.nombre}</h4>
+            ${dia.metodo ? `<p class="enfoque">${escaparHtml(dia.metodo)}</p>` : ""}
             ${dia.ejercicios.map((item) => {
                 return `
                 <div class="exercise-card">
@@ -386,6 +416,8 @@ function renderizarRutina(rutina) {
                     <h5>${escaparHtml(item.ejercicio)}</h5>
                     <p class="series">${escaparHtml(item.series)}</p>
                     <p class="enfoque"><strong>Enfoque:</strong> ${escaparHtml(item.enfoque)}</p>
+                    <p class="enfoque"><strong>Descanso:</strong> ${escaparHtml(item.descanso)}</p>
+                    ${item.peso_inicio_kg != null ? `<p class="enfoque"><strong>Carga inicial orientativa:</strong> ${Number(item.peso_inicio_kg).toFixed(1)} kg</p>` : ""}
                 </div>
             `;
             }).join("")}
@@ -536,7 +568,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function cerrarSesion() {
     usuarioActual = "";
-    contrasenaActual = "";
     localStorage.removeItem(SESSION_KEY);
     sessionStorage.clear();
     document.getElementById("dashboard").classList.add("hidden");

@@ -380,41 +380,204 @@ def construir_resumen_seguimiento(usuario: str):
     }
 
 
-def crear_rutina(objetivo: str, dias: int):
-    if "masa" in objetivo.lower():
-        ejercicios = [
-            ("Tren inferior", [("Sentadilla con barra", "4 x 8-10", "Cuadriceps y glúteos"), ("Peso muerto rumano", "4 x 8-10", "Cadena posterior"), ("Prensa de pierna", "3 x 10-12", "Fuerza de piernas"), ("Elevación de gemelos", "4 x 12-15", "Pantorrillas"), ("Extensión de cuádriceps", "3 x 12-15", "Aislamiento de piernas")]),
-            ("Pecho y tríceps", [("Press de banca", "4 x 8-10", "Pectoral y tríceps"), ("Press inclinado", "3 x 10-12", "Pecho superior"), ("Aperturas con mancuernas", "3 x 12", "Control del pectoral"), ("Extensión de tríceps", "3 x 10-12", "Tríceps"), ("Fondos asistidos", "3 x 10-12", "Pecho y tríceps")]),
-            ("Espalda y bíceps", [("Remo con barra", "4 x 8-10", "Espalda media"), ("Jalón al pecho", "4 x 10-12", "Dorsales"), ("Remo unilateral", "3 x 10-12", "Control de la espalda"), ("Curl con mancuernas", "3 x 10-12", "Bíceps"), ("Pájaros con mancuernas", "3 x 12-15", "Deltoides posteriores")]),
-            ("Hombros y core", [("Press militar", "4 x 8-10", "Hombros"), ("Elevaciones laterales", "4 x 12-15", "Deltoides laterales"), ("Face pull", "3 x 12-15", "Salud del hombro"), ("Plancha abdominal", "4 x 40 seg", "Zona media"), ("Elevaciones de piernas", "3 x 12", "Core inferior")]),
+def crear_rutina(objetivo: str, dias: int, peso: float = 70):
+    objetivo_lower = str(objetivo).lower()
+    if "masa" in objetivo_lower:
+        factor_carga = 0.6
+        series = "4 series x 8-10 reps"
+        descanso = "90 s"
+        metodo = "Hipertrofia"
+        plantillas = [
+            ("Pecho y tríceps", [
+                ("Press de banca con barra", "Pecho y tríceps", True),
+                ("Press inclinado con mancuernas", "Pecho superior", True),
+                ("Fondos en paralelas", "Pecho y tríceps", False),
+                ("Extensión de tríceps en polea", "Tríceps", True),
+            ]),
+            ("Espalda y bíceps", [
+                ("Jalón al pecho", "Dorsales", True),
+                ("Remo con barra", "Espalda media", True),
+                ("Remo con mancuerna unilateral", "Espalda", True),
+                ("Curl de bíceps con barra Z", "Bíceps", True),
+            ]),
+            ("Pierna y hombro", [
+                ("Sentadilla libre", "Cuádriceps y glúteos", True),
+                ("Prensa 45°", "Piernas", True),
+                ("Peso muerto rumano", "Cadena posterior", True),
+                ("Press militar con barra", "Hombros", True),
+                ("Elevaciones laterales", "Deltoides laterales", True),
+            ]),
+            ("Torso, volumen", [
+                ("Press de banca con barra", "Pectoral", True),
+                ("Remo con barra", "Espalda", True),
+                ("Press inclinado con mancuernas", "Pecho superior", True),
+                ("Jalón al pecho", "Dorsales", True),
+            ]),
+            ("Pierna y brazos, volumen", [
+                ("Sentadilla libre", "Piernas", True),
+                ("Peso muerto rumano", "Cadena posterior", True),
+                ("Curl de bíceps con barra Z", "Bíceps", True),
+                ("Extensión de tríceps en polea", "Tríceps", True),
+            ]),
         ]
-    elif "grasa" in objetivo.lower() or "peso" in objetivo.lower():
-        ejercicios = [
-            ("Piernas y acondicionamiento", [("Sentadilla goblet", "4 x 12", "Piernas"), ("Zancadas", "3 x 12 por pierna", "Estabilidad"), ("Puente de glúteos", "3 x 15", "Glúteos"), ("Bicicleta", "4 x 30 seg", "Acondicionamiento"), ("Salto de cuerda", "4 x 45 seg", "Cardio")]),
-            ("Empuje", [("Flexiones", "4 x 10-15", "Pecho"), ("Press de hombros", "3 x 12", "Hombros"), ("Fondos asistidos", "3 x 10-12", "Tríceps"), ("Escaladores", "4 x 30 seg", "Core y cardio"), ("Burpees", "3 x 10", "Acondicionamiento")]),
-            ("Tracción", [("Jalón al pecho", "4 x 10-12", "Espalda"), ("Remo en polea", "3 x 12", "Espalda media"), ("Curl de bíceps", "3 x 12", "Bíceps"), ("Caminata inclinada", "15 min", "Gasto energético"), ("Face pull", "3 x 15", "Salud del hombro")]),
-            ("Circuito completo", [("Peso muerto con mancuerna", "3 x 12", "Cadena posterior"), ("Sentadilla con press", "3 x 12", "Trabajo global"), ("Kettlebell swing", "4 x 15", "Potencia"), ("Plancha lateral", "3 x 30 seg", "Core"), ("Jumping jacks", "4 x 40 seg", "Resistencia")]),
+    elif "grasa" in objetivo_lower or "adelgaz" in objetivo_lower or "perder peso" in objetivo_lower:
+        factor_carga = 0.4
+        series = "3-4 series x 12-15 reps"
+        descanso = "45-60 s"
+        metodo = "Circuito / superserie"
+        plantillas = [
+            ("Fullbody A", [
+                ("Sentadilla con copa (Goblet)", "Piernas y glúteos", True),
+                ("Press de pecho con mancuernas", "Pecho", True),
+                ("Remo en máquina", "Espalda", True),
+                ("Burpees", "Acondicionamiento", False),
+                ("Mountain climbers", "Core y cardio", False),
+            ]),
+            ("Fullbody B", [
+                ("Zancadas alternadas", "Piernas y estabilidad", True),
+                ("Press militar con mancuernas", "Hombros", True),
+                ("Kettlebell swings", "Potencia y cadena posterior", True),
+                ("Zancadas con salto", "Acondicionamiento", False),
+                ("Plancha abdominal", "Core", False, "3 series x 30-45 s"),
+            ]),
+            ("Cardio y core", [
+                ("Peso muerto rumano ligero", "Cadena posterior", True),
+                ("Flexiones de pecho", "Pecho y brazos", False),
+                ("Escaladores", "Core y cardio", False),
+                ("Crunch abdominal", "Core", False),
+                ("Salto a la cuerda", "Resistencia cardiovascular", False, "3-4 series x 45 s"),
+            ]),
         ]
     else:
-        ejercicios = [
-            ("Fuerza general", [("Sentadilla búlgara", "3 x 10-12", "Piernas"), ("Press inclinado", "3 x 10", "Pecho"), ("Remo unilateral", "3 x 12", "Espalda"), ("Plancha", "3 x 45 seg", "Core"), ("Paseo del granjero", "3 x 40 m", "Estabilidad")]),
-            ("Tren superior", [("Press de banca", "3 x 10", "Pecho"), ("Jalón al pecho", "3 x 12", "Espalda"), ("Press militar", "3 x 10", "Hombros"), ("Curl de bíceps", "3 x 12", "Brazos"), ("Extensión de tríceps", "3 x 12", "Tríceps")]),
-            ("Tren inferior", [("Prensa de pierna", "3 x 12", "Piernas"), ("Peso muerto rumano", "3 x 10", "Cadena posterior"), ("Zancadas", "3 x 10", "Estabilidad"), ("Gemelos", "3 x 15", "Pantorrillas"), ("Puente de glúteos", "3 x 15", "Glúteos")]),
-            ("Movilidad y core", [("Puente de glúteos", "3 x 15", "Glúteos"), ("Bird-dog", "3 x 10", "Estabilidad"), ("Paseo del granjero", "3 x 40 m", "Core"), ("Movilidad de cadera", "10 min", "Movilidad"), ("Plancha lateral", "3 x 30 seg", "Core")]),
+        factor_carga = 0.5
+        series = "3 series x 10-12 reps"
+        descanso = "60-75 s"
+        metodo = "Fuerza y resistencia balanceada"
+        plantillas = [
+            ("Torso", [
+                ("Press de banca", "Pecho y tríceps", True),
+                ("Remo horizontal", "Espalda", True),
+                ("Press de hombros sentado", "Hombros", True),
+                ("Flexiones", "Pecho y brazos", False),
+            ]),
+            ("Pierna y core", [
+                ("Sentadilla en máquina / Multipower", "Piernas y glúteos", True),
+                ("Extensión de cuádriceps", "Cuádriceps", True),
+                ("Curl femoral tumbado", "Isquiotibiales", True),
+                ("Plancha lateral", "Core", False, "3 series x 30-45 s"),
+            ]),
+            ("Torso, segunda sesión", [
+                ("Press de banca", "Pecho y tríceps", True),
+                ("Remo horizontal", "Espalda", True),
+                ("Flexiones", "Pecho y brazos", False),
+            ]),
+            ("Pierna y core, segunda sesión", [
+                ("Sentadilla en máquina / Multipower", "Piernas y glúteos", True),
+                ("Curl femoral tumbado", "Isquiotibiales", True),
+                ("Plancha lateral", "Core", False, "3 series x 30-45 s"),
+            ]),
         ]
 
-    return [
-        {"dia": index + 1, "nombre": ejercicios[index % len(ejercicios)][0], "ejercicios": [
-            {
-                "ejercicio": nombre,
-                "series": series,
+    carga_inicio = round(float(peso) * factor_carga, 1)
+    rutina = []
+    for index in range(max(1, min(int(dias or 4), 7))):
+        nombre_dia, ejercicios = plantillas[index % len(plantillas)]
+        ejercicios_dia = []
+        for item in ejercicios:
+            ejercicio, enfoque, usa_carga = item[:3]
+            prescripcion = item[3] if len(item) > 3 else series
+            ejercicios_dia.append({
+                "ejercicio": ejercicio,
+                "series": prescripcion,
                 "enfoque": enfoque,
-                "imagen_url": EXERCISE_IMAGE_URLS.get(nombre),
-            }
-            for nombre, series, enfoque in ejercicios[index % len(ejercicios)][1]
-        ]}
-        for index in range(max(1, min(dias, 7)))
-    ]
+                "descanso": descanso,
+                "peso_inicio_kg": carga_inicio if usa_carga else None,
+                "imagen_url": EXERCISE_IMAGE_URLS.get(ejercicio),
+            })
+        rutina.append({
+            "dia": index + 1,
+            "nombre": nombre_dia,
+            "metodo": metodo,
+            "ejercicios": ejercicios_dia,
+        })
+    return rutina
+
+
+def construir_plan_alimenticio(objetivo: str):
+    objetivo_lower = str(objetivo).lower()
+    if "masa" in objetivo_lower:
+        distribucion_macros = {"carbohidratos": 50, "proteinas": 30, "grasas": 20}
+        menu_alimenticio = [
+            {"comida": "Desayuno", "alimentos": [
+                "Huevos revueltos (3 unidades)",
+                "Avena en hojuelas con leche o bebida vegetal",
+                "Banano y un puñado de frutos secos",
+            ]},
+            {"comida": "Almuerzo", "alimentos": [
+                "Pechuga de pollo o carne magra (200 g)",
+                "Arroz integral o papa cocida (1.5 tazas)",
+                "Ensalada verde con aceite de oliva y aguacate",
+            ]},
+            {"comida": "Merienda (pre o post entreno)", "alimentos": [
+                "Batido de proteína o yogur griego con fruta y granola",
+                "Como alternativa: sándwich de pollo o atún",
+            ]},
+            {"comida": "Cena", "alimentos": [
+                "Filete de pescado, salmón o pechuga de pollo",
+                "Arepa o camote/batata",
+                "Vegetales salteados",
+            ]},
+        ]
+    elif "grasa" in objetivo_lower or "adelgaz" in objetivo_lower or "perder peso" in objetivo_lower:
+        distribucion_macros = {"proteinas": 40, "carbohidratos": 30, "grasas": 30}
+        menu_alimenticio = [
+            {"comida": "Desayuno", "alimentos": [
+                "Tortilla de claras de huevo con espinacas y tomates",
+                "Una rebanada de pan integral",
+                "Café o té sin azúcar",
+            ]},
+            {"comida": "Almuerzo", "alimentos": [
+                "Pechuga de pollo o pescado a la plancha (200 g)",
+                "Porción pequeña de quinoa o arroz integral (1/2 taza)",
+                "Abundantes vegetales al vapor o ensalada fresca",
+            ]},
+            {"comida": "Merienda", "alimentos": [
+                "Yogur griego descremado",
+                "Como alternativa: una manzana con un puñado pequeño de almendras",
+            ]},
+            {"comida": "Cena", "alimentos": [
+                "Ensalada grande con atún en agua o pollo desmechado",
+                "Huevo cocido, aceite de oliva y aguacate",
+                "Sin una porción de carbohidratos pesados",
+            ]},
+        ]
+    else:
+        distribucion_macros = {"carbohidratos": 40, "proteinas": 30, "grasas": 30}
+        menu_alimenticio = [
+            {"comida": "Desayuno", "alimentos": [
+                "Huevos al gusto (2 unidades)",
+                "Arepa integral con queso bajo en grasa",
+                "Fruta fresca",
+            ]},
+            {"comida": "Almuerzo", "alimentos": [
+                "Proteína magra (150 g)",
+                "Porción moderada de arroz, papa o legumbres",
+                "Ensalada mixta",
+            ]},
+            {"comida": "Merienda", "alimentos": [
+                "Fruta de temporada con un puñado de frutos secos",
+                "Como alternativa: galletas integrales con queso fresco",
+            ]},
+            {"comida": "Cena", "alimentos": [
+                "Crema de verduras con pollo desmechado",
+                "Como alternativa: wraps integrales de pavo y vegetales",
+            ]},
+        ]
+
+    return {
+        "distribucion_macros": distribucion_macros,
+        "menu_alimenticio": menu_alimenticio,
+    }
 
 
 def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entrenamiento):
@@ -449,14 +612,18 @@ def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entre
         explicacion_nutricional = "Mantendrás tu gasto energético de mantenimiento (normocalórica) optimizando el rendimiento y la definición muscular."
 
     carbos = round((calorias - (proteinas * 4 + grasas * 9)) / 4)
+    plan_alimenticio = construir_plan_alimenticio(objetivo)
     return {
         "imc": float(imc),
+        "tmb": int(round(tmb)),
+        "tdee": int(round(gasto_total)),
         "calorias": int(calorias),
         "proteinas": int(proteinas),
         "carbos": int(carbos),
         "grasas": int(grasas),
         "explicacion_nutricional": explicacion_nutricional,
-        "rutina": crear_rutina(objetivo, dias_entrenamiento),
+        **plan_alimenticio,
+        "rutina": crear_rutina(objetivo, dias_entrenamiento, peso),
     }
 
 
@@ -649,55 +816,7 @@ def login(datos: UsuarioLogin):
     actividad = float(user_row.get("Actividad", 1.55) or 1.55)
     objetivo = str(user_row.get("Objetivo", "Ganar masa muscular"))
     dias_entrenamiento = int(user_row.get("DiasEntrenamiento", 4) or 4)
-
-    estatura_m = estatura
-    imc = round(peso / (estatura_m ** 2), 1)
-
-    if sexo == "masculino":
-        tmb = (10 * peso) + (6.25 * estatura_m * 100) - (5 * edad) + 5
-    else:
-        tmb = (10 * peso) + (6.25 * estatura_m * 100) - (5 * edad) - 161
-
-    gasto_total = tmb * actividad
-
-    if objetivo == "Ganar masa muscular" or "masa" in objetivo.lower():
-        calorias = round(gasto_total + 400)
-        proteinas = round(peso * 2.0)
-        grasas = round(peso * 1.0)
-        carbos = round((calorias - (proteinas * 4 + grasas * 9)) / 4)
-        explicacion_nutricional = "Para hipertrofia muscular necesitas un superávit calórico controlado (+400 kcal) con alta ingesta proteica para la síntesis muscular."
-        rutina = [
-            {"ejercicio": "Sentadilla Libre / Prensa de Pierna", "series": "4 series x 8-10 reps", "enfoque": "Tensión mecánica sobre cuadriceps y glúteos."},
-            {"ejercicio": "Press de Banca Plano con Barra", "series": "4 series x 8-10 reps", "enfoque": "Desarrollo del pectoral mayor y tríceps."},
-            {"ejercicio": "Remo con Barra o Polea Baja", "series": "4 series x 10-12 reps", "enfoque": "Hipertrofia de dorsal ancho y corrección postural."},
-            {"ejercicio": "Press Militar con Mancuernas", "series": "3 series x 10-12 reps", "enfoque": "Construcción de hombros (deltoides anterior y lateral)."}
-        ]
-    elif objetivo == "Perder grasa" or "grasa" in objetivo.lower():
-        calorias = round(gasto_total - 400)
-        proteinas = round(peso * 2.2)
-        grasas = round(peso * 0.8)
-        carbos = round((calorias - (proteinas * 4 + grasas * 9)) / 4)
-        explicacion_nutricional = "Para reducir porcentaje de grasa aplicamos un déficit calórico (-400 kcal) protegiendo tu masa magra mediante proteína elevada."
-        rutina = [
-            {"ejercicio": "Peso Muerto Rumano", "series": "4 series x 10-12 reps", "enfoque": "Estímulo de cadena posterior y alto gasto energético."},
-            {"ejercicio": "Flexiones de Pecho / Push-ups", "series": "4 series al fallo técnico", "enfoque": "Mantenimiento de fuerza en empujes."},
-            {"ejercicio": "Dominadas Asistidas o Jalón al Pecho", "series": "4 series x 10-12 reps", "enfoque": "Trabajo de tracción para espalda alta."},
-            {"ejercicio": "Zancadas / Búlgaras con Mancuernas", "series": "3 series x 12 reps por pierna", "enfoque": "Densidad de entrenamiento y quema calórica."}
-        ]
-    else:
-        calorias = round(gasto_total)
-        proteinas = round(peso * 1.8)
-        grasas = round(peso * 1.0)
-        carbos = round((calorias - (proteinas * 4 + grasas * 9)) / 4)
-        explicacion_nutricional = "Mantendrás tu gasto energético de mantenimiento (normocalórica) optimizando el rendimiento y la definición muscular."
-        rutina = [
-            {"ejercicio": "Sentadilla Búlgara", "series": "3 series x 10-12 reps", "enfoque": "Especialización y estabilidad de tren inferior."},
-            {"ejercicio": "Press Inclinado con Mancuernas", "series": "4 series x 10 reps", "enfoque": "Enfoque en porción superior del pectoral."},
-            {"ejercicio": "Remo Unilateral con Mancuerna", "series": "4 series x 12 reps", "enfoque": "Control neuromuscular y trabajo de espalda."},
-            {"ejercicio": "Plancha Abdominal + Paseo del Granjero", "series": "4 series x 45 seg", "enfoque": "Fortalecimiento de la zona media (Core)."}
-        ]
-
-    rutina = crear_rutina(objetivo, dias_entrenamiento)
+    resumen = calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entrenamiento)
 
     return {
         "mensaje": "Acceso concedido",
@@ -710,14 +829,8 @@ def login(datos: UsuarioLogin):
         "objetivo": objetivo,
         "dias_entrenamiento": dias_entrenamiento,
         "email": "" if pd.isna(user_row.get("Correo", "")) else str(user_row.get("Correo", "") or ""),
-        "imc": imc,
-        "calorias": calorias,
-        "proteinas": proteinas,
-        "carbos": carbos,
-        "grasas": grasas,
-        "explicacion_nutricional": explicacion_nutricional,
-        "rutina": rutina,
         "peso_inicial": user_row.get("PesoInicial", peso),
+        **resumen,
     }
 
 

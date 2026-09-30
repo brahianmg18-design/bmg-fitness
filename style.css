@@ -223,6 +223,41 @@ button[type="submit"]:hover {
     font-size: 14px;
 }
 
+.macro-distribution {
+    color: #cbd5e1;
+    font-size: 13px;
+    margin: -10px 0 14px;
+}
+
+.meal-plan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 12px;
+}
+
+.meal-plan-item {
+    background: #172033;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.meal-plan-item h4 {
+    color: #38bdf8;
+    margin-bottom: 8px;
+}
+
+.meal-plan-item ul {
+    color: #cbd5e1;
+    font-size: 13px;
+    margin: 0;
+    padding-left: 18px;
+}
+
+.meal-plan-item li + li {
+    margin-top: 6px;
+}
+
 .profile-panel {
     background: #172033;
     border: 1px solid #334155;
