@@ -450,11 +450,11 @@ def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entre
 
     carbos = round((calorias - (proteinas * 4 + grasas * 9)) / 4)
     return {
-        "imc": imc,
-        "calorias": calorias,
-        "proteinas": proteinas,
-        "carbos": carbos,
-        "grasas": grasas,
+        "imc": float(imc),
+        "calorias": int(calorias),
+        "proteinas": int(proteinas),
+        "carbos": int(carbos),
+        "grasas": int(grasas),
         "explicacion_nutricional": explicacion_nutricional,
         "rutina": crear_rutina(objetivo, dias_entrenamiento),
     }
@@ -514,17 +514,24 @@ def obtener_perfil(usuario: str):
         value = user_row.get(column, default)
         return default if pd.isna(value) or str(value).strip() == "" else value
 
+    edad = int(valor_o_default("Edad", 30))
+    peso = float(valor_o_default("Peso", 70))
+    peso_inicial = float(valor_o_default("PesoInicial", peso))
+    estatura = float(valor_o_default("Estatura", 170))
+    actividad = float(valor_o_default("Actividad", 1.55))
+    dias_entrenamiento = int(valor_o_default("DiasEntrenamiento", 4))
+
     return {
-        "usuario": user_row["Usuario"],
-        "email": valor_o_default("Correo", ""),
-        "edad": valor_o_default("Edad", 30),
-        "sexo": valor_o_default("Sexo", "masculino"),
-        "peso": valor_o_default("Peso", 70),
-        "estatura": valor_o_default("Estatura", 170),
-        "actividad": valor_o_default("Actividad", 1.55),
-        "objetivo": valor_o_default("Objetivo", "Ganar masa muscular"),
-        "dias_entrenamiento": valor_o_default("DiasEntrenamiento", 4),
-        "peso_inicial": valor_o_default("PesoInicial", valor_o_default("Peso", 70)),
+        "usuario": str(user_row["Usuario"]),
+        "email": str(valor_o_default("Correo", "")),
+        "edad": edad,
+        "sexo": str(valor_o_default("Sexo", "masculino")),
+        "peso": peso,
+        "estatura": estatura,
+        "actividad": actividad,
+        "objetivo": str(valor_o_default("Objetivo", "Ganar masa muscular")),
+        "dias_entrenamiento": dias_entrenamiento,
+        "peso_inicial": peso_inicial,
     }
 
 
