@@ -150,14 +150,15 @@
                         <p class="subtitle">Actualiza tus datos para recalcular tu plan.</p>
                     </div>
                         <div class="profile-summary" aria-label="Datos actuales del perfil">
-                            <div><span>Edad</span><strong id="current-edad">-</strong></div>
-                            <div><span>Sexo</span><strong id="current-sexo">-</strong></div>
-                            <div><span>Peso</span><strong id="current-peso">-</strong></div>
-                            <div><span>Estatura</span><strong id="current-estatura">-</strong></div>
-                            <div><span>Nivel de actividad</span><strong id="current-actividad">-</strong></div>
-                            <div><span>Objetivo</span><strong id="current-objetivo">-</strong></div>
-                            <div><span>Días de entrenamiento</span><strong id="current-dias">-</strong></div>
-                            <div><span>Correo electrónico</span><strong id="current-email">-</strong></div>
+                            <div id="current-imc-card" class="profile-metric profile-bmi imc-unknown"><span>Índice de masa corporal</span><strong id="current-imc">-</strong><small id="current-imc-status">Sin datos</small></div>
+                            <div class="profile-metric"><span>Edad</span><strong id="current-edad">-</strong></div>
+                            <div class="profile-metric"><span>Sexo</span><strong id="current-sexo">-</strong></div>
+                            <div class="profile-metric"><span>Peso</span><strong id="current-peso">-</strong></div>
+                            <div class="profile-metric"><span>Estatura</span><strong id="current-estatura">-</strong></div>
+                            <div class="profile-metric"><span>Nivel de actividad</span><strong id="current-actividad">-</strong></div>
+                            <div class="profile-metric"><span>Objetivo</span><strong id="current-objetivo">-</strong></div>
+                            <div class="profile-metric"><span>Días de entrenamiento</span><strong id="current-dias">-</strong></div>
+                            <div class="profile-metric"><span>Correo electrónico</span><strong id="current-email">-</strong></div>
                         </div>
                     <form id="form-profile" onsubmit="guardarPerfil(event)">
                     <div class="grid-2">
@@ -253,6 +254,12 @@
                             <input type="date" id="seguimiento-fecha" required>
                             <label for="seguimiento-peso">Peso actual (kg)</label>
                             <input type="number" id="seguimiento-peso" min="1" step="0.1" placeholder="Ejemplo: 68.5" required>
+                            <label for="seguimiento-cintura">Cintura (cm, opcional)</label>
+                            <input type="number" id="seguimiento-cintura" min="1" step="0.1" placeholder="Ejemplo: 82">
+                            <label for="seguimiento-cadera">Cadera (cm, opcional)</label>
+                            <input type="number" id="seguimiento-cadera" min="1" step="0.1" placeholder="Ejemplo: 98">
+                            <label for="seguimiento-brazo">Brazo (cm, opcional)</label>
+                            <input type="number" id="seguimiento-brazo" min="1" step="0.1" placeholder="Ejemplo: 32">
                             <button type="submit">Guardar registro</button>
                         </form>
 
@@ -270,11 +277,13 @@
                                     <tr>
                                         <th>Fecha</th>
                                         <th>Peso</th>
+                                        <th>Objetivo</th>
+                                        <th>Medidas</th>
                                     </tr>
                                 </thead>
                                 <tbody id="seguimiento-registros">
                                     <tr>
-                                        <td colspan="2">Sin registros disponibles.</td>
+                                        <td colspan="4">Sin registros disponibles.</td>
                                     </tr>
                                 </tbody>
                             </table>

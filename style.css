@@ -227,17 +227,27 @@ button[type="submit"]:hover {
     margin-bottom: 18px;
 }
 
-.routine-goal-banner strong {
-    display: block;
-    color: #f8fafc;
-    font-size: 16px;
-    margin-bottom: 6px;
+.dashboard-card .info-banner.routine-goal-banner {
+    background: #111820;
+    border: 1px solid #d4af37;
+    border-left: 4px solid #f4cf70;
+    box-shadow: 0 8px 24px rgba(7, 12, 20, 0.28), 0 0 0 1px rgba(212, 175, 55, 0.14);
+    color: #ffffff;
 }
 
-.routine-goal-banner p {
-    color: #cbd5e1;
+.dashboard-card .routine-goal-banner strong {
+    display: block;
+    color: #ffffff;
+    font-size: 16px;
+    margin-bottom: 6px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.dashboard-card .routine-goal-banner p {
+    color: #ffffff;
     line-height: 1.5;
     margin: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .macro-distribution {
@@ -378,29 +388,60 @@ button[type="submit"]:hover {
 
 .profile-summary {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 12px;
     margin: 20px 0;
 }
 
-.profile-summary div {
-    background: #eef4f8;
+.profile-summary .profile-metric {
+    background: #ffffff;
     border: 1px solid #dbe4ee;
-    border-radius: 8px;
+    border-left: 4px solid #94a3b8;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+    min-height: 88px;
     padding: 14px;
 }
 
-.profile-summary span {
+.profile-summary .profile-metric span {
     color: #64748b;
     display: block;
     font-size: 12px;
     margin-bottom: 6px;
 }
 
-.profile-summary strong {
-    color: #075985;
+.profile-summary .profile-metric strong {
+    color: #0f172a;
     display: block;
     font-size: 15px;
+}
+
+.profile-summary .profile-metric small {
+    color: #475569;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.profile-summary .imc-underweight {
+    background: #f0f9ff;
+    border-left-color: #0284c7;
+}
+
+.profile-summary .imc-normal {
+    background: #f0fdf4;
+    border-left-color: #16a34a;
+}
+
+.profile-summary .imc-overweight {
+    background: #fffbeb;
+    border-left-color: #d97706;
+}
+
+.profile-summary .imc-obesity {
+    background: #fef2f2;
+    border-left-color: #dc2626;
 }
 
 #profile-msg {
@@ -462,6 +503,13 @@ button[type="submit"]:hover {
     color: #f8fafc;
     font-size: 14px;
     margin-bottom: 6px;
+}
+
+.exercise-instructions {
+    color: #e2e8f0;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0 0 10px;
 }
 
 .exercise-visual {

@@ -3,11 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import Dict, Optional
+from datetime import date
 import pandas as pd
 import os
 import psycopg2
-from psycopg2.extras import RealDictCursor
+from psycopg2.extras import Json, RealDictCursor
+import math
 import re
 import hashlib
 import hmac
@@ -40,6 +42,7 @@ else:
     STORAGE_DIR = os.getenv("BMG_STORAGE_DIR", BASE_DIR)
 os.makedirs(STORAGE_DIR, exist_ok=True)
 SEGUIMIENTO_FILE = os.path.join(STORAGE_DIR, "seguimiento.csv")
+HISTORICO_CSV_MIGRADO = False
 
 for nombre_archivo in ("seguimiento.csv",):
     origen = os.path.join(BASE_DIR, nombre_archivo)
@@ -60,6 +63,44 @@ EXERCISE_IMAGE_URLS = {
     "Prensa de pierna": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80",
     "Extensión de cuádriceps": "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80",
     "Elevación de gemelos": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80",
+}
+EXERCISE_INSTRUCTIONS = {
+    "Press de banca con barra": "Apoya los pies y mantén las escápulas firmes contra el banco. Baja la barra con control hacia el pecho y empújala sin despegar la espalda.",
+    "Press inclinado con mancuernas": "Mantén los hombros apoyados y las muñecas alineadas con los codos. Baja las mancuernas a los lados del pecho y súbelas sin chocar entre sí.",
+    "Fondos en paralelas": "Desciende flexionando los codos y manteniendo el tronco estable. Empuja las barras hasta extender los brazos sin bloquearlos con fuerza.",
+    "Extensión de tríceps en polea": "Fija los codos junto al torso y extiende los antebrazos hacia abajo. Regresa lentamente sin mover los hombros.",
+    "Jalón al pecho": "Sujeta la barra algo más abierta que los hombros y lleva el pecho hacia ella. Tira con los codos hacia abajo sin balancear el torso.",
+    "Remo con barra": "Inclina la cadera con la espalda neutra y las rodillas ligeramente flexionadas. Lleva la barra hacia el abdomen y baja con control.",
+    "Remo con mancuerna unilateral": "Apoya una mano y mantén la espalda estable. Lleva la mancuerna hacia la cadera con el codo cerca del cuerpo y desciende lentamente.",
+    "Curl de bíceps con barra Z": "Mantén los codos pegados al torso y las muñecas neutras. Flexiona los brazos sin impulso y baja la barra de forma controlada.",
+    "Sentadilla libre": "Mantén el pecho erguido y la espalda neutra. Desciende flexionando caderas y rodillas, y empuja el suelo con todo el pie para subir.",
+    "Prensa 45°": "Apoya toda la espalda en el respaldo y coloca los pies al ancho de caderas. Baja la plataforma sin despegar la pelvis y empuja sin bloquear las rodillas.",
+    "Peso muerto rumano": "Lleva la cadera hacia atrás con una ligera flexión de rodillas y espalda neutra. Desliza la carga cerca de las piernas y vuelve extendiendo la cadera.",
+    "Press militar con barra": "Activa el abdomen y mantén las costillas controladas. Empuja la barra sobre la cabeza y bájala frente al rostro sin arquear la zona lumbar.",
+    "Elevaciones laterales": "Con los codos ligeramente flexionados, eleva las mancuernas hasta la altura de los hombros. Evita impulsarte y desciende lentamente.",
+    "Sentadilla con copa (Goblet)": "Sostén una mancuerna frente al pecho y mantén el torso erguido. Flexiona caderas y rodillas, y sube empujando el suelo con los pies.",
+    "Press de pecho con mancuernas": "Mantén los pies firmes y las escápulas apoyadas. Baja las mancuernas junto al pecho y empuja hacia arriba con control.",
+    "Remo en máquina": "Ajusta el asiento para alcanzar las asas sin encorvarte. Lleva los codos hacia atrás y regresa lentamente sin despegar el pecho del apoyo.",
+    "Burpees": "Desde de pie, apoya las manos y lleva los pies atrás hasta una plancha estable. Regresa los pies y termina extendiéndote con un salto controlado.",
+    "Mountain climbers": "Colócate en plancha con hombros sobre las muñecas y abdomen firme. Alterna llevando las rodillas al pecho sin elevar ni hundir la cadera.",
+    "Zancadas alternadas": "Da un paso al frente y baja hasta que ambas rodillas estén flexionadas con control. Empuja con el pie delantero para volver y alterna las piernas.",
+    "Press militar con mancuernas": "Sujeta las mancuernas a la altura de los hombros y mantén el abdomen activo. Empuja sobre la cabeza y baja sin arquear la espalda.",
+    "Kettlebell swings": "Inicia el movimiento llevando la cadera atrás, con la espalda neutra. Impulsa la pesa extendiendo la cadera; los brazos solo acompañan el balanceo.",
+    "Zancadas con salto": "Baja a una zancada estable y salta para cambiar la posición de las piernas. Aterriza suavemente con las rodillas alineadas; usa zancadas sin salto si lo necesitas.",
+    "Plancha abdominal": "Apoya antebrazos y puntas de los pies, formando una línea recta con el cuerpo. Mantén el abdomen y los glúteos activos sin hundir la espalda.",
+    "Peso muerto rumano ligero": "Mantén una carga cómoda, espalda neutra y rodillas ligeramente flexionadas. Lleva la cadera atrás y vuelve apretando los glúteos, sin redondear la espalda.",
+    "Flexiones de pecho": "Coloca las manos algo más abiertas que los hombros y alinea el cuerpo. Baja el pecho con los codos controlados y empuja el suelo para subir.",
+    "Escaladores": "Adopta una plancha alta y estabiliza el tronco. Lleva una rodilla hacia el pecho y alterna con ritmo controlado, evitando que la cadera rebote.",
+    "Crunch abdominal": "Túmbate con las rodillas flexionadas y eleva ligeramente los hombros contrayendo el abdomen. Mantén el cuello relajado y baja sin dejarte caer.",
+    "Salto a la cuerda": "Mantén los codos cerca del torso y gira la cuerda principalmente con las muñecas. Salta bajo sobre ambos pies y aterriza suavemente.",
+    "Press de banca": "Apoya los pies y estabiliza los hombros contra el banco. Baja la barra al pecho con control y empuja hacia arriba manteniendo las muñecas alineadas.",
+    "Remo horizontal": "Siéntate erguido y sujeta el abdomen para no balancearte. Lleva las asas hacia el torso juntando suavemente las escápulas y vuelve despacio.",
+    "Press de hombros sentado": "Apoya la espalda y mantén las mancuernas a la altura de los hombros. Empuja hacia arriba sin arquear la zona lumbar y baja con control.",
+    "Flexiones": "Alinea cabeza, cadera y talones con las manos bajo los hombros. Baja el pecho con control y empuja el suelo manteniendo el cuerpo firme.",
+    "Sentadilla en máquina / Multipower": "Coloca los pies estables y la espalda apoyada, manteniendo las rodillas alineadas con ellos. Desciende hasta un rango cómodo y empuja para volver sin bloquear las rodillas.",
+    "Extensión de cuádriceps": "Ajusta el rodillo sobre la parte baja de las piernas y sujeta el asiento. Extiende las rodillas sin impulso y regresa lentamente.",
+    "Curl femoral tumbado": "Alinea las rodillas con el eje de la máquina y mantén la cadera apoyada. Flexiona las rodillas acercando los talones y vuelve lentamente.",
+    "Plancha lateral": "Apoya el antebrazo bajo el hombro y eleva la cadera formando una línea recta. Mantén el abdomen activo y evita girar el tronco.",
 }
 
 
@@ -216,8 +257,9 @@ class PerfilFrontendUpdate(BaseModel):
 
 
 class SeguimientoRegistro(BaseModel):
-    fecha: str
+    fecha: date
     peso: float
+    medidas: Optional[Dict[str, float]] = None
 
 
 def validar_seguridad(usuario: str, contrasena: str):
@@ -240,7 +282,43 @@ def validar_correo(correo: str):
         raise HTTPException(status_code=400, detail="Introduce un correo electrónico válido.")
 
 
+def migrar_historico_csv(cursor):
+    global HISTORICO_CSV_MIGRADO
+    if HISTORICO_CSV_MIGRADO or not os.path.exists(SEGUIMIENTO_FILE):
+        return False
+
+    try:
+        df = pd.read_csv(SEGUIMIENTO_FILE, dtype=str)
+    except pd.errors.EmptyDataError:
+        return True
+
+    df = normalizar_csv_seguimiento(df)
+    cursor.execute("SELECT usuario FROM usuarios")
+    usuarios = {str(row["usuario"]).strip().lower(): str(row["usuario"]) for row in cursor.fetchall()}
+
+    for _, row in df.iterrows():
+        usuario = usuarios.get(str(row["Usuario"]).strip().lower())
+        try:
+            fecha_registro = date.fromisoformat(str(row["Fecha"]).strip())
+            peso = float(row["Peso"])
+        except (TypeError, ValueError):
+            continue
+        if not usuario or not math.isfinite(peso) or peso <= 0:
+            continue
+
+        cursor.execute(
+            """
+            INSERT INTO historico_progreso (usuario, fecha, peso, medidas, objetivo_momento)
+            VALUES (%s, %s, %s, %s, NULL)
+            ON CONFLICT (usuario, fecha) DO NOTHING
+            """,
+            (usuario, fecha_registro, peso, Json({})),
+        )
+    return True
+
+
 def obtener_conexion():
+    global HISTORICO_CSV_MIGRADO
     if not DATABASE_URL:
         raise ValueError("La variable DATABASE_URL no está configurada en el entorno.")
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
@@ -284,7 +362,33 @@ def obtener_conexion():
             ALTER TABLE usuarios
             ADD COLUMN IF NOT EXISTS peso_inicial DOUBLE PRECISION
         """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS historico_progreso (
+                id BIGSERIAL PRIMARY KEY,
+                usuario TEXT NOT NULL REFERENCES usuarios(usuario) ON DELETE CASCADE,
+                fecha DATE NOT NULL,
+                peso DOUBLE PRECISION NOT NULL CHECK (peso > 0),
+                medidas JSONB NOT NULL DEFAULT '{}'::jsonb,
+                objetivo_momento TEXT,
+                creado_en TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (usuario, fecha)
+            )
+        """)
+        cursor.execute("""
+            ALTER TABLE historico_progreso
+            ADD COLUMN IF NOT EXISTS medidas JSONB NOT NULL DEFAULT '{}'::jsonb,
+            ADD COLUMN IF NOT EXISTS objetivo_momento TEXT
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS historico_progreso_fecha_idx
+            ON historico_progreso (usuario, fecha DESC)
+        """)
+        migrar_csv_pendiente = (
+            not HISTORICO_CSV_MIGRADO and migrar_historico_csv(cursor)
+        )
         conn.commit()
+        if migrar_csv_pendiente:
+            HISTORICO_CSV_MIGRADO = True
     except Exception:
         conn.rollback()
         conn.close()
@@ -324,45 +428,56 @@ def cargar_seguimiento():
 
 
 def construir_resumen_seguimiento(usuario: str):
-    df = cargar_seguimiento()
-    usuarios = cargar_usuarios()
-    usuario_match = usuarios[usuarios["Usuario"].str.strip().str.lower() == usuario.strip().lower()]
-    peso_base = None
-    if not usuario_match.empty:
-        valor_base = usuario_match.iloc[0].get("PesoInicial", "")
-        if str(valor_base).strip() not in ["", "nan", "None"]:
-            peso_base = round(float(valor_base), 1)
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            SELECT peso_inicial
+            FROM usuarios
+            WHERE LOWER(usuario) = LOWER(%s)
+            """,
+            (usuario.strip(),),
+        )
+        usuario_row = cursor.fetchone()
+        peso_base = round(float(usuario_row["peso_inicial"]), 1) if usuario_row and usuario_row.get("peso_inicial") is not None else None
 
-    if df.empty:
-        return {
-            "usuario": usuario,
-            "registros": [],
-            "progreso": "Progreso: aún no hay registros previos.",
-            "ultimo_peso": None,
-            "peso_base": peso_base,
-            "diferencia_total": 0,
-        }
+        cursor.execute(
+            """
+            SELECT fecha, peso, medidas, objetivo_momento
+            FROM historico_progreso
+            WHERE LOWER(usuario) = LOWER(%s)
+            ORDER BY fecha DESC, id DESC
+            """,
+            (usuario.strip(),),
+        )
+        rows = cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
 
-    df_usuario = df[df["Usuario"].str.strip().str.lower() == usuario.strip().lower()].copy()
-    if df_usuario.empty:
-        return {
-            "usuario": usuario,
-            "registros": [],
-            "progreso": "Progreso: aún no hay registros previos.",
-            "ultimo_peso": None,
-            "peso_base": peso_base,
-            "diferencia_total": 0,
-        }
-
-    df_usuario = df_usuario.sort_values("Fecha", ascending=True, kind="mergesort").reset_index(drop=True)
     registros = [
-        {"fecha": str(row["Fecha"]), "peso": round(float(row["Peso"]), 1)}
-        for _, row in df_usuario.iterrows()
+        {
+            "fecha": row["fecha"].isoformat(),
+            "peso": round(float(row["peso"]), 1),
+            "medidas": row.get("medidas") or {},
+            "objetivo_momento": row.get("objetivo_momento"),
+        }
+        for row in rows
     ]
+    if not registros:
+        return {
+            "usuario": usuario,
+            "registros": [],
+            "progreso": "Progreso: aún no hay registros previos.",
+            "ultimo_peso": None,
+            "peso_base": peso_base,
+            "diferencia_total": 0,
+        }
 
-    ultimo_peso = registros[-1]["peso"]
+    ultimo_peso = registros[0]["peso"]
     if peso_base is None:
-        peso_base = registros[0]["peso"]
+        peso_base = registros[-1]["peso"]
 
     diferencia = round(ultimo_peso - peso_base, 1)
     if len(registros) > 1 or peso_base != ultimo_peso:
@@ -491,6 +606,7 @@ def crear_rutina(objetivo: str, dias: int, peso: float = 70):
                 "series": prescripcion,
                 "enfoque": enfoque,
                 "descanso": descanso,
+                "instrucciones": EXERCISE_INSTRUCTIONS.get(ejercicio, "Mantén una postura estable, controla el recorrido y realiza cada repetición sin impulso ni dolor."),
                 "peso_inicio_kg": carga_inicio if usa_carga else None,
                 "imagen_url": EXERCISE_IMAGE_URLS.get(ejercicio),
             })
@@ -981,32 +1097,65 @@ def obtener_seguimiento(usuario: str):
 def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro):
     if not usuario.strip():
         raise HTTPException(status_code=400, detail="Usuario no válido.")
-
-    try:
-        peso = float(datos.peso)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="El peso debe ser un número válido.")
-
-    if peso <= 0:
+    peso = float(datos.peso)
+    if not math.isfinite(peso) or peso <= 0:
         raise HTTPException(status_code=400, detail="El peso debe ser mayor a 0.")
+    medidas = {
+        str(nombre): float(valor)
+        for nombre, valor in (datos.medidas or {}).items()
+        if valor is not None and math.isfinite(float(valor)) and float(valor) > 0
+    }
 
-    if not datos.fecha:
-        raise HTTPException(status_code=400, detail="La fecha es obligatoria.")
+    conn = obtener_conexion()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            SELECT usuario, email, edad, sexo, estatura, actividad, objetivo,
+                   dias_entrenamiento, peso_inicial
+            FROM usuarios
+            WHERE LOWER(usuario) = LOWER(%s)
+            FOR UPDATE
+            """,
+            (usuario.strip(),),
+        )
+        perfil = cursor.fetchone()
+        if perfil is None:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado.")
 
-    df = cargar_seguimiento()
-    nuevo_registro = pd.DataFrame([{"Usuario": usuario.strip(), "Fecha": datos.fecha.strip(), "Peso": peso}])
+        cursor.execute(
+            """
+            INSERT INTO historico_progreso (usuario, fecha, peso, medidas, objetivo_momento)
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (usuario, fecha) DO UPDATE SET
+                peso = EXCLUDED.peso,
+                medidas = EXCLUDED.medidas,
+                objetivo_momento = EXCLUDED.objetivo_momento
+            """,
+            (perfil["usuario"], datos.fecha, peso, Json(medidas), perfil["objetivo"]),
+        )
+        cursor.execute(
+            "UPDATE usuarios SET peso = %s WHERE usuario = %s",
+            (peso, perfil["usuario"]),
+        )
+        conn.commit()
+    except HTTPException:
+        conn.rollback()
+        raise
+    except Exception as error:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"No se pudo guardar el histórico: {error}")
+    finally:
+        cursor.close()
+        conn.close()
 
-    match = df[(df["Usuario"].str.strip().str.lower() == usuario.strip().lower()) & (df["Fecha"].str.strip() == datos.fecha.strip())]
-    if not match.empty:
-        df.loc[match.index, "Peso"] = peso
-    else:
-        df = pd.concat([df, nuevo_registro], ignore_index=True)
-
-    df = normalizar_csv_seguimiento(df)
-    df = df.sort_values("Fecha", ascending=False, kind="mergesort").reset_index(drop=True)
-    df.to_csv(SEGUIMIENTO_FILE, index=False)
-
-    return {"mensaje": "Registro guardado correctamente.", **construir_resumen_seguimiento(usuario)}
+    perfil["peso"] = peso
+    resumen = calcular_resumen(
+        perfil["edad"], perfil["sexo"], peso, perfil["estatura"],
+        perfil["actividad"], perfil["objetivo"], perfil["dias_entrenamiento"],
+    )
+    historico = construir_resumen_seguimiento(perfil["usuario"])
+    return {"mensaje": "Registro guardado correctamente.", **perfil, **resumen, **historico}
 
 
 app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="frontend")

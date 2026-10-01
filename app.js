@@ -2,7 +2,7 @@ const API_URL = window.location.protocol === "file:"
     ? "http://127.0.0.1:8000/api"
     : "/api";
 const SESSION_KEY = "sessionUser";
-const SESSION_TIMEOUT = 180000;
+const INACTIVITY_TIMEOUT = 4 * 60 * 1000;
 const IMAGENES_EJERCICIOS = {
     "Sentadilla con barra": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=900&q=85",
     "Peso muerto rumano": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=900&q=85",
@@ -11,6 +11,7 @@ const IMAGENES_EJERCICIOS = {
     "Elevación de gemelos": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=900&q=85"
 };
 let usuarioActual = "";
+let inactivityTimer = null;
 
 async function leerRespuesta(respuesta, mensajePorDefecto) {
     const texto = await respuesta.text();
@@ -166,7 +167,6 @@ async function ejecutarLogin(e) {
             limpiarFormulariosAutenticacion();
             localStorage.setItem(SESSION_KEY, JSON.stringify({
                 username: usuarioActual,
-                loginTime: Date.now(),
                 userData: data
             }));
             document.getElementById("auth-box").classList.add("hidden");
@@ -364,6 +364,43 @@ async function cargarPerfil() {
     }
 }
 
+function actualizarIndicadorIMC(perfil) {
+    const tarjeta = document.getElementById("current-imc-card");
+    const valor = document.getElementById("current-imc");
+    const estado = document.getElementById("current-imc-status");
+    const peso = Number(perfil.peso);
+    let estatura = Number(perfil.estatura);
+    if (estatura > 3) estatura /= 100;
+
+    const imcInformado = Number(perfil.imc);
+    const imc = Number.isFinite(imcInformado) && imcInformado > 0
+        ? imcInformado
+        : peso > 0 && estatura > 0 ? peso / (estatura ** 2) : NaN;
+
+    tarjeta.classList.remove("imc-underweight", "imc-normal", "imc-overweight", "imc-obesity", "imc-unknown");
+    if (!Number.isFinite(imc)) {
+        tarjeta.classList.add("imc-unknown");
+        valor.innerText = "-";
+        estado.innerText = "Sin datos";
+        return;
+    }
+
+    valor.innerText = imc.toFixed(1);
+    if (imc < 18.5) {
+        tarjeta.classList.add("imc-underweight");
+        estado.innerText = "Bajo peso";
+    } else if (imc < 25) {
+        tarjeta.classList.add("imc-normal");
+        estado.innerText = "Normal";
+    } else if (imc < 30) {
+        tarjeta.classList.add("imc-overweight");
+        estado.innerText = "Sobrepeso";
+    } else {
+        tarjeta.classList.add("imc-obesity");
+        estado.innerText = "Obesidad";
+    }
+}
+
 function mostrarPerfil(perfil) {
     document.getElementById("profile-email").value = perfil.email || "";
     document.getElementById("profile-edad").value = perfil.edad ?? "";
@@ -381,6 +418,7 @@ function mostrarPerfil(perfil) {
     document.getElementById("current-objetivo").innerText = perfil.objetivo || "-";
     document.getElementById("current-dias").innerText = `${perfil.dias_entrenamiento ?? "-"} días`;
     document.getElementById("current-email").innerText = perfil.email || "-";
+    actualizarIndicadorIMC(perfil);
 }
 
 function nombreActividad(valor) {
@@ -498,6 +536,7 @@ function renderizarRutina(rutina) {
                 <div class="exercise-card">
                     ${crearTarjetaEjercicio(item.ejercicio, item.imagen_url)}
                     <h5>${escaparHtml(item.ejercicio)}</h5>
+                    <p class="exercise-instructions">${escaparHtml(item.instrucciones || "Mantén una postura estable y controla cada repetición durante todo el recorrido.")}</p>
                     <p class="series">${escaparHtml(item.series)}</p>
                     <p class="enfoque"><strong>Enfoque:</strong> ${escaparHtml(item.enfoque)}</p>
                     <p class="enfoque"><strong>Descanso:</strong> ${escaparHtml(item.descanso)}</p>
@@ -521,24 +560,36 @@ async function cargarSeguimiento() {
         const data = await leerRespuesta(respuesta, "No se pudo cargar el seguimiento.");
 
         if (!data.registros || !data.registros.length) {
-            tbody.innerHTML = `<tr><td colspan="2">Sin registros disponibles.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4">Sin registros disponibles.</td></tr>`;
             progreso.innerText = "Sin registros aún.";
             return;
         }
 
-        tbody.innerHTML = data.registros.map((registro) => `
+        const registros = [...data.registros].sort((a, b) => String(b.fecha).localeCompare(String(a.fecha)));
+        tbody.innerHTML = registros.map((registro) => `
             <tr>
                 <td>${formatearFecha(registro.fecha)}</td>
                 <td>${Number(registro.peso).toFixed(1)} kg</td>
+                <td>${escaparHtml(registro.objetivo_momento || "-")}</td>
+                <td>${formatearMedidas(registro.medidas)}</td>
             </tr>
         `).join("");
 
         progreso.innerText = data.progreso || "Sin registros aún.";
         if (msg) msg.innerText = "";
     } catch (error) {
-        tbody.innerHTML = `<tr><td colspan="2">Sin registros disponibles.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4">Sin registros disponibles.</td></tr>`;
         progreso.innerText = error.message;
     }
+}
+
+function formatearMedidas(medidas) {
+    const etiquetas = { cintura: "Cintura", cadera: "Cadera", brazo: "Brazo" };
+    const valores = Object.entries(medidas || {}).map(([nombre, valor]) => {
+        const nombreVisible = etiquetas[nombre] || nombre;
+        return `${escaparHtml(nombreVisible)}: ${Number(valor).toFixed(1)} cm`;
+    });
+    return valores.length ? valores.join(", ") : "-";
 }
 
 function formatearFecha(fecha) {
@@ -553,6 +604,11 @@ async function guardarSeguimiento(e) {
     const msg = document.getElementById("seguimiento-msg");
     const fecha = document.getElementById("seguimiento-fecha").value;
     const peso = parseFloat(document.getElementById("seguimiento-peso").value);
+    const medidas = Object.fromEntries(
+        ["cintura", "cadera", "brazo"]
+            .map((nombre) => [nombre, parseFloat(document.getElementById(`seguimiento-${nombre}`).value)])
+            .filter(([, valor]) => Number.isFinite(valor) && valor > 0)
+    );
 
     if (!usuarioActual) {
         msg.style.color = "#ff5252";
@@ -564,13 +620,14 @@ async function guardarSeguimiento(e) {
         const respuesta = await fetch(`${API_URL}/seguimiento/${encodeURIComponent(usuarioActual)}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fecha, peso })
+            body: JSON.stringify({ fecha, peso, medidas })
         });
         const data = await leerRespuesta(respuesta, "No se pudo guardar el registro.");
 
         document.getElementById("form-seguimiento").reset();
         document.getElementById("seguimiento-progreso").innerText = data.progreso || "Sin registros aún.";
-        await cargarSeguimiento();
+        actualizarSesion(data);
+        await actualizarDashboard(data);
         msg.style.color = "#00e676";
         msg.innerText = data.mensaje;
         mostrarSeccion('seguimiento');
@@ -581,15 +638,16 @@ async function guardarSeguimiento(e) {
 }
 
 function actualizarActividad() {
-    const sesionGuardada = localStorage.getItem(SESSION_KEY);
-    if (!sesionGuardada) return;
-
-    try {
-        const sesion = JSON.parse(sesionGuardada);
-        localStorage.setItem(SESSION_KEY, JSON.stringify(sesion));
-    } catch (error) {
-        localStorage.removeItem(SESSION_KEY);
+    if (inactivityTimer) {
+        window.clearTimeout(inactivityTimer);
+        inactivityTimer = null;
     }
+
+    if (!localStorage.getItem(SESSION_KEY)) return;
+
+    inactivityTimer = window.setTimeout(() => {
+        if (localStorage.getItem(SESSION_KEY)) cerrarSesion(true);
+    }, INACTIVITY_TIMEOUT);
 }
 
 function actualizarSesion(data) {
@@ -599,21 +657,6 @@ function actualizarSesion(data) {
     try {
         const sesion = JSON.parse(sesionGuardada);
         localStorage.setItem(SESSION_KEY, JSON.stringify({ ...sesion, userData: data }));
-    } catch (error) {
-        localStorage.removeItem(SESSION_KEY);
-    }
-}
-
-function verificarSesion() {
-    const sesionGuardada = localStorage.getItem(SESSION_KEY);
-    if (!sesionGuardada) return;
-
-    try {
-        const sesion = JSON.parse(sesionGuardada);
-        if (!sesion.loginTime || Date.now() - sesion.loginTime >= SESSION_TIMEOUT) {
-            cerrarSesion();
-            window.alert("Sesión expirada por inactividad");
-        }
     } catch (error) {
         localStorage.removeItem(SESSION_KEY);
     }
@@ -636,22 +679,27 @@ async function restaurarSesion() {
         document.getElementById("welcome-title").innerText = `Bienvenido, ${usuarioActual}`;
         await actualizarDashboard(sesion.userData);
         mostrarSeccion("inicio");
+        actualizarActividad();
     } catch (error) {
         localStorage.removeItem(SESSION_KEY);
     }
 }
 
-document.addEventListener("mousemove", actualizarActividad);
+document.addEventListener("mousemove", actualizarActividad, { passive: true });
 document.addEventListener("keydown", actualizarActividad);
 document.addEventListener("click", actualizarActividad);
+document.addEventListener("scroll", actualizarActividad, { capture: true, passive: true });
+document.addEventListener("touchstart", actualizarActividad, { passive: true });
 document.addEventListener("DOMContentLoaded", async () => {
     inicializarSelectoresEstatura();
-    verificarSesion();
     await restaurarSesion();
-    setInterval(verificarSesion, 30000);
 });
 
-function cerrarSesion() {
+function cerrarSesion(expiradaPorInactividad = false) {
+    if (inactivityTimer) {
+        window.clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+    }
     usuarioActual = "";
     localStorage.removeItem(SESSION_KEY);
     sessionStorage.clear();
@@ -660,4 +708,5 @@ function cerrarSesion() {
     document.getElementById("form-login").reset();
     document.getElementById("form-seguimiento").reset();
     mostrarTab("login");
+    if (expiradaPorInactividad) window.alert("Sesión expirada por inactividad");
 }
