@@ -42,6 +42,26 @@ function limpiarFormulariosAutenticacion() {
     });
 }
 
+function inicializarSelectoresEstatura() {
+    const selectores = [
+        document.getElementById("reg-estatura"),
+        document.getElementById("profile-estatura")
+    ];
+
+    selectores.forEach((selector) => {
+        if (!selector) return;
+
+        const placeholder = selector.querySelector('option[value=""]');
+        const opciones = [];
+        for (let centimetros = 120; centimetros <= 220; centimetros += 1) {
+            const metros = (centimetros / 100).toFixed(2);
+            opciones.push(new Option(`${metros} m`, metros));
+        }
+
+        selector.replaceChildren(...(placeholder ? [placeholder] : []), ...opciones);
+    });
+}
+
 function mostrarTab(tab) {
     limpiarFormulariosAutenticacion();
     const formLogin = document.getElementById("form-login");
@@ -227,12 +247,69 @@ async function solicitarRecuperacion(e) {
 
 function renderizarPlanAlimenticio(menu) {
     const contenedor = document.getElementById("menu-alimenticio");
-    contenedor.innerHTML = menu.map((comida) => `
-        <section class="meal-plan-item">
-            <h4>${escaparHtml(comida.comida)}</h4>
-            <ul>${comida.alimentos.map((alimento) => `<li>${escaparHtml(alimento)}</li>`).join("")}</ul>
-        </section>
-    `).join("");
+    const dias = Array.isArray(menu) ? menu : [];
+
+    contenedor.innerHTML = dias.map((dia) => {
+        const macrosDia = dia.macros || {};
+        const comidas = Array.isArray(dia.comidas) ? dia.comidas : [];
+        const comidasHtml = comidas.map((comida) => {
+            const macrosComida = comida.macros || {};
+            const alimentos = (comida.alimentos || []).map((alimento) => {
+                if (typeof alimento === "string") {
+                    return `<li>${escaparHtml(alimento)}</li>`;
+                }
+
+                return `<li><span>${escaparHtml(alimento.nombre)}</span><strong>${escaparHtml(alimento.cantidad)} ${escaparHtml(alimento.unidad)}</strong></li>`;
+            }).join("");
+
+            return `
+                <article class="meal-plan-meal">
+                    <img src="${escaparHtml(comida.imagen)}" alt="${escaparHtml(comida.plato || comida.comida)}" loading="lazy" decoding="async">
+                    <div class="meal-plan-meal-heading">
+                        <h5>${escaparHtml(comida.comida)}</h5>
+                        <span>${escaparHtml(comida.calorias)} kcal aprox.</span>
+                    </div>
+                    <p class="meal-plan-dish">${escaparHtml(comida.plato)}</p>
+                    <p class="meal-plan-meal-macros">P ${escaparHtml(macrosComida.proteinas)} g · C ${escaparHtml(macrosComida.carbohidratos)} g · G ${escaparHtml(macrosComida.grasas)} g</p>
+                    <ul class="meal-plan-foods">${alimentos}</ul>
+                </article>
+            `;
+        }).join("");
+
+        return `
+            <section class="meal-plan-day">
+                <header class="meal-plan-day-heading">
+                    <h4>${escaparHtml(dia.dia)}</h4>
+                    <strong>${escaparHtml(dia.calorias)} kcal objetivo diario</strong>
+                </header>
+                <p class="meal-plan-day-macros">Proteínas ${escaparHtml(macrosDia.proteinas)} g · Carbohidratos ${escaparHtml(macrosDia.carbohidratos)} g · Grasas ${escaparHtml(macrosDia.grasas)} g</p>
+                <div class="meal-plan-day-meals">${comidasHtml}</div>
+            </section>
+        `;
+    }).join("");
+}
+
+function actualizarEncabezadoRutina(objetivo) {
+    const objetivoNormalizado = String(objetivo || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+    let titulo = objetivo || "Sin definir";
+    let mensaje = "";
+
+    if (objetivoNormalizado.includes("masa")) {
+        titulo = "Aumentar masa muscular";
+        mensaje = "¡Cada repetición y cada comida cuentan para construir tu mejor versión! Mantén la disciplina y dale a tu cuerpo el combustible necesario.";
+    } else if (objetivoNormalizado.includes("grasa") || objetivoNormalizado.includes("definicion")) {
+        titulo = "Perder grasa / Definición";
+        mensaje = "¡La constancia vence a la motivación! Mantén la intensidad alta, la nutrición alineada y verás los resultados.";
+    } else if (objetivoNormalizado.includes("mantenimiento")) {
+        titulo = "Mantenimiento";
+        mensaje = "¡El equilibrio es la clave del éxito duradero! Disfruta tu entrenamiento y mantén tu estilo de vida saludable.";
+    }
+
+    document.getElementById("routine-goal-title").innerText = `Objetivo: ${titulo}`;
+    document.getElementById("routine-goal-message").innerText = mensaje;
 }
 
 async function actualizarDashboard(data) {
@@ -251,6 +328,7 @@ async function actualizarDashboard(data) {
     document.getElementById("home-imc").innerText = data.imc;
     document.getElementById("home-calorias").innerText = `${data.calorias} kcal`;
     document.getElementById("home-objetivo").innerText = data.objetivo;
+    actualizarEncabezadoRutina(data.objetivo);
     mostrarPerfil(data);
     renderizarRutina(data.rutina);
     await cargarSeguimiento();
@@ -306,7 +384,13 @@ function mostrarPerfil(perfil) {
 }
 
 function nombreActividad(valor) {
-    const actividades = { "1.2": "Sedentario", "1.375": "Ligero", "1.55": "Moderado", "1.725": "Intenso" };
+    const actividades = {
+        "1.2": "Sedentario",
+        "1.375": "Ligeramente activo",
+        "1.55": "Moderadamente activo",
+        "1.725": "Muy activo",
+        "1.9": "Hiperactivo / Atleta"
+    };
     return actividades[String(valor)] || `${valor} factor`;
 }
 
@@ -561,6 +645,7 @@ document.addEventListener("mousemove", actualizarActividad);
 document.addEventListener("keydown", actualizarActividad);
 document.addEventListener("click", actualizarActividad);
 document.addEventListener("DOMContentLoaded", async () => {
+    inicializarSelectoresEstatura();
     verificarSesion();
     await restaurarSesion();
     setInterval(verificarSesion, 30000);

@@ -503,81 +503,160 @@ def crear_rutina(objetivo: str, dias: int, peso: float = 70):
     return rutina
 
 
-def construir_plan_alimenticio(objetivo: str):
+def distribucion_macros_por_objetivo(objetivo: str):
     objetivo_lower = str(objetivo).lower()
     if "masa" in objetivo_lower:
-        distribucion_macros = {"carbohidratos": 50, "proteinas": 30, "grasas": 20}
-        menu_alimenticio = [
-            {"comida": "Desayuno", "alimentos": [
-                "Huevos revueltos (3 unidades)",
-                "Avena en hojuelas con leche o bebida vegetal",
-                "Banano y un puñado de frutos secos",
-            ]},
-            {"comida": "Almuerzo", "alimentos": [
-                "Pechuga de pollo o carne magra (200 g)",
-                "Arroz integral o papa cocida (1.5 tazas)",
-                "Ensalada verde con aceite de oliva y aguacate",
-            ]},
-            {"comida": "Merienda (pre o post entreno)", "alimentos": [
-                "Batido de proteína o yogur griego con fruta y granola",
-                "Como alternativa: sándwich de pollo o atún",
-            ]},
-            {"comida": "Cena", "alimentos": [
-                "Filete de pescado, salmón o pechuga de pollo",
-                "Arepa o camote/batata",
-                "Vegetales salteados",
-            ]},
-        ]
-    elif "grasa" in objetivo_lower or "adelgaz" in objetivo_lower or "perder peso" in objetivo_lower:
-        distribucion_macros = {"proteinas": 40, "carbohidratos": 30, "grasas": 30}
-        menu_alimenticio = [
-            {"comida": "Desayuno", "alimentos": [
-                "Tortilla de claras de huevo con espinacas y tomates",
-                "Una rebanada de pan integral",
-                "Café o té sin azúcar",
-            ]},
-            {"comida": "Almuerzo", "alimentos": [
-                "Pechuga de pollo o pescado a la plancha (200 g)",
-                "Porción pequeña de quinoa o arroz integral (1/2 taza)",
-                "Abundantes vegetales al vapor o ensalada fresca",
-            ]},
-            {"comida": "Merienda", "alimentos": [
-                "Yogur griego descremado",
-                "Como alternativa: una manzana con un puñado pequeño de almendras",
-            ]},
-            {"comida": "Cena", "alimentos": [
-                "Ensalada grande con atún en agua o pollo desmechado",
-                "Huevo cocido, aceite de oliva y aguacate",
-                "Sin una porción de carbohidratos pesados",
-            ]},
-        ]
-    else:
-        distribucion_macros = {"carbohidratos": 40, "proteinas": 30, "grasas": 30}
-        menu_alimenticio = [
-            {"comida": "Desayuno", "alimentos": [
-                "Huevos al gusto (2 unidades)",
-                "Arepa integral con queso bajo en grasa",
-                "Fruta fresca",
-            ]},
-            {"comida": "Almuerzo", "alimentos": [
-                "Proteína magra (150 g)",
-                "Porción moderada de arroz, papa o legumbres",
-                "Ensalada mixta",
-            ]},
-            {"comida": "Merienda", "alimentos": [
-                "Fruta de temporada con un puñado de frutos secos",
-                "Como alternativa: galletas integrales con queso fresco",
-            ]},
-            {"comida": "Cena", "alimentos": [
-                "Crema de verduras con pollo desmechado",
-                "Como alternativa: wraps integrales de pavo y vegetales",
-            ]},
-        ]
+        return {"proteinas": 30, "carbohidratos": 50, "grasas": 20}
+    if "grasa" in objetivo_lower or "adelgaz" in objetivo_lower or "perder peso" in objetivo_lower:
+        return {"proteinas": 40, "carbohidratos": 30, "grasas": 30}
+    return {"proteinas": 30, "carbohidratos": 40, "grasas": 30}
 
-    return {
-        "distribucion_macros": distribucion_macros,
-        "menu_alimenticio": menu_alimenticio,
+
+def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dict):
+    objetivo_lower = str(objetivo).lower()
+    distribucion_macros = distribucion_macros_por_objetivo(objetivo)
+    if "masa" in objetivo_lower:
+        ajuste_por_grupo = {"proteinas": 1.1, "carbohidratos": 1.2, "grasas": 1.0, "vegetales": 1.0, "frutas": 1.0}
+    elif "grasa" in objetivo_lower or "adelgaz" in objetivo_lower or "perder peso" in objetivo_lower:
+        ajuste_por_grupo = {"proteinas": 1.15, "carbohidratos": 0.75, "grasas": 0.85, "vegetales": 1.25, "frutas": 1.0}
+    else:
+        ajuste_por_grupo = {"proteinas": 1.0, "carbohidratos": 1.0, "grasas": 1.0, "vegetales": 1.0, "frutas": 1.0}
+
+    imagenes_comida = {
+        "Desayuno": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=900&q=80",
+        "Almuerzo": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=80",
+        "Merienda": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80",
+        "Cena": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80",
     }
+    recetas = {
+        "Desayuno": [
+            {"plato": "Avena con yogur y frutos rojos", "alimentos": [
+                ("Avena integral", 60, "g", "carbohidratos"), ("Yogur griego natural", 170, "g", "proteinas"),
+                ("Frutos rojos", 100, "g", "frutas"), ("Semillas de chía", 10, "g", "grasas"),
+            ]},
+            {"plato": "Huevos con pan integral y aguacate", "alimentos": [
+                ("Huevos", 2, "unidades", "proteinas"), ("Pan integral", 60, "g", "carbohidratos"),
+                ("Tomate", 100, "g", "vegetales"), ("Aguacate", 30, "g", "grasas"),
+            ]},
+            {"plato": "Bowl de queso cottage y granola", "alimentos": [
+                ("Queso cottage", 150, "g", "proteinas"), ("Granola integral", 40, "g", "carbohidratos"),
+                ("Fresas", 120, "g", "frutas"), ("Semillas de calabaza", 10, "g", "grasas"),
+            ]},
+            {"plato": "Tortitas de avena y plátano", "alimentos": [
+                ("Avena integral", 50, "g", "carbohidratos"), ("Huevo", 1, "unidad", "proteinas"),
+                ("Claras de huevo", 100, "g", "proteinas"), ("Plátano", 80, "g", "frutas"),
+            ]},
+        ],
+        "Almuerzo": [
+            {"plato": "Pollo, arroz integral y brócoli", "alimentos": [
+                ("Pechuga de pollo", 160, "g", "proteinas"), ("Arroz integral cocido", 150, "g", "carbohidratos"),
+                ("Brócoli", 180, "g", "vegetales"), ("Aceite de oliva", 5, "ml", "grasas"),
+            ]},
+            {"plato": "Merluza con quinoa y ensalada", "alimentos": [
+                ("Filete de merluza", 180, "g", "proteinas"), ("Quinoa cocida", 140, "g", "carbohidratos"),
+                ("Ensalada de hojas y tomate", 180, "g", "vegetales"), ("Aguacate", 30, "g", "grasas"),
+            ]},
+            {"plato": "Pavo con camote y vegetales", "alimentos": [
+                ("Pechuga de pavo", 160, "g", "proteinas"), ("Camote asado", 180, "g", "carbohidratos"),
+                ("Calabacín y pimiento", 180, "g", "vegetales"), ("Aceite de oliva", 5, "ml", "grasas"),
+            ]},
+            {"plato": "Tofu con arroz y verduras salteadas", "alimentos": [
+                ("Tofu firme", 170, "g", "proteinas"), ("Arroz integral cocido", 140, "g", "carbohidratos"),
+                ("Verduras salteadas", 180, "g", "vegetales"), ("Aceite de sésamo", 5, "ml", "grasas"),
+            ]},
+            {"plato": "Ensalada de lentejas y atún", "alimentos": [
+                ("Atún al natural escurrido", 100, "g", "proteinas"), ("Lentejas cocidas", 130, "g", "carbohidratos"),
+                ("Pepino, tomate y hojas verdes", 200, "g", "vegetales"), ("Aceite de oliva", 5, "ml", "grasas"),
+            ]},
+        ],
+        "Merienda": [
+            {"plato": "Yogur con manzana y almendras", "alimentos": [
+                ("Yogur griego natural", 150, "g", "proteinas"), ("Manzana", 120, "g", "frutas"),
+                ("Almendras", 10, "g", "grasas"),
+            ]},
+            {"plato": "Queso cottage con piña y avena", "alimentos": [
+                ("Queso cottage", 120, "g", "proteinas"), ("Piña", 100, "g", "frutas"),
+                ("Avena integral", 20, "g", "carbohidratos"),
+            ]},
+            {"plato": "Hummus con zanahoria y pan pita", "alimentos": [
+                ("Hummus", 35, "g", "proteinas"), ("Zanahoria", 100, "g", "vegetales"),
+                ("Pan pita integral", 35, "g", "carbohidratos"),
+            ]},
+            {"plato": "Yogur alto en proteína con plátano", "alimentos": [
+                ("Yogur alto en proteína", 160, "g", "proteinas"), ("Plátano", 90, "g", "frutas"),
+                ("Avena integral", 15, "g", "carbohidratos"),
+            ]},
+        ],
+        "Cena": [
+            {"plato": "Pollo con papa y verduras", "alimentos": [
+                ("Pechuga de pollo", 150, "g", "proteinas"), ("Papa cocida", 150, "g", "carbohidratos"),
+                ("Verduras al vapor", 180, "g", "vegetales"), ("Aceite de oliva", 5, "ml", "grasas"),
+            ]},
+            {"plato": "Pescado blanco con cuscús y calabacín", "alimentos": [
+                ("Pescado blanco", 160, "g", "proteinas"), ("Cuscús integral cocido", 130, "g", "carbohidratos"),
+                ("Calabacín y espárragos", 180, "g", "vegetales"), ("Aceite de oliva", 5, "ml", "grasas"),
+            ]},
+            {"plato": "Tortilla de claras con ensalada", "alimentos": [
+                ("Huevo", 1, "unidad", "proteinas"), ("Claras de huevo", 150, "g", "proteinas"),
+                ("Ensalada de espinaca y tomate", 180, "g", "vegetales"), ("Pan integral", 40, "g", "carbohidratos"),
+            ]},
+            {"plato": "Wrap integral de pavo y vegetales", "alimentos": [
+                ("Pechuga de pavo", 130, "g", "proteinas"), ("Tortilla integral", 60, "g", "carbohidratos"),
+                ("Lechuga y tomate", 120, "g", "vegetales"), ("Yogur natural", 30, "g", "grasas"),
+            ]},
+            {"plato": "Ternera magra con camote y espinacas", "alimentos": [
+                ("Ternera magra", 140, "g", "proteinas"), ("Camote asado", 130, "g", "carbohidratos"),
+                ("Espinacas salteadas", 150, "g", "vegetales"), ("Aceite de oliva", 5, "ml", "grasas"),
+            ]},
+            {"plato": "Bowl de garbanzos con pollo", "alimentos": [
+                ("Pechuga de pollo", 120, "g", "proteinas"), ("Garbanzos cocidos", 100, "g", "carbohidratos"),
+                ("Pepino, tomate y perejil", 180, "g", "vegetales"), ("Aceite de oliva", 5, "ml", "grasas"),
+            ]},
+            {"plato": "Tofu con arroz y verduras", "alimentos": [
+                ("Tofu firme", 150, "g", "proteinas"), ("Arroz integral cocido", 100, "g", "carbohidratos"),
+                ("Brócoli y zanahoria", 180, "g", "vegetales"), ("Semillas de sésamo", 5, "g", "grasas"),
+            ]},
+        ],
+    }
+    dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+    orden_comidas = ["Desayuno", "Almuerzo", "Merienda", "Cena"]
+    porcentajes_comida = {"Desayuno": 25, "Almuerzo": 35, "Merienda": 15, "Cena": 25}
+    escala_calorias = max(0, float(calorias)) / 2000
+    menu_semanal = []
+
+    for indice_dia, dia in enumerate(dias):
+        comidas_dia = []
+        for indice_comida, nombre_comida in enumerate(orden_comidas):
+            recetas_comida = recetas[nombre_comida]
+            receta = recetas_comida[(indice_dia + indice_comida) % len(recetas_comida)]
+            porciones = []
+            for nombre, cantidad, unidad, grupo in receta["alimentos"]:
+                cantidad_ajustada = cantidad * escala_calorias * ajuste_por_grupo[grupo]
+                if unidad.startswith("unidad"):
+                    cantidad_ajustada = max(1, round(cantidad_ajustada))
+                else:
+                    cantidad_ajustada = max(5, round(cantidad_ajustada / 5) * 5)
+                porciones.append({"nombre": nombre, "cantidad": cantidad_ajustada, "unidad": unidad})
+
+            porcentaje = porcentajes_comida[nombre_comida] / 100
+            macros_comida = {macro: round(cantidad * porcentaje) for macro, cantidad in macros_diarios.items()}
+            comidas_dia.append({
+                "comida": nombre_comida,
+                "plato": receta["plato"],
+                "imagen": imagenes_comida[nombre_comida],
+                "calorias": round(calorias * porcentaje),
+                "macros": macros_comida,
+                "alimentos": porciones,
+            })
+
+        menu_semanal.append({
+            "dia": dia,
+            "calorias": calorias,
+            "macros": macros_diarios,
+            "comidas": comidas_dia,
+        })
+
+    return {"distribucion_macros": distribucion_macros, "menu_alimenticio": menu_semanal}
 
 
 def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entrenamiento):
@@ -597,22 +676,20 @@ def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entre
     objetivo_lower = objetivo.lower()
     if "masa" in objetivo_lower:
         calorias = round(gasto_total + 400)
-        proteinas = round(peso * 2.0)
-        grasas = round(peso * 1.0)
         explicacion_nutricional = "Para hipertrofia muscular necesitas un superávit calórico controlado (+400 kcal) con alta ingesta proteica para la síntesis muscular."
     elif "grasa" in objetivo_lower or "peso" in objetivo_lower:
         calorias = round(gasto_total - 400)
-        proteinas = round(peso * 2.2)
-        grasas = round(peso * 0.8)
         explicacion_nutricional = "Para reducir porcentaje de grasa aplicamos un déficit calórico (-400 kcal) protegiendo tu masa magra mediante proteína elevada."
     else:
         calorias = round(gasto_total)
-        proteinas = round(peso * 1.8)
-        grasas = round(peso * 1.0)
         explicacion_nutricional = "Mantendrás tu gasto energético de mantenimiento (normocalórica) optimizando el rendimiento y la definición muscular."
 
-    carbos = round((calorias - (proteinas * 4 + grasas * 9)) / 4)
-    plan_alimenticio = construir_plan_alimenticio(objetivo)
+    distribucion_macros = distribucion_macros_por_objetivo(objetivo)
+    proteinas = round(calorias * distribucion_macros["proteinas"] / 100 / 4)
+    carbos = round(calorias * distribucion_macros["carbohidratos"] / 100 / 4)
+    grasas = round(calorias * distribucion_macros["grasas"] / 100 / 9)
+    macros_diarios = {"proteinas": proteinas, "carbohidratos": carbos, "grasas": grasas}
+    plan_alimenticio = construir_plan_alimenticio(objetivo, calorias, macros_diarios)
     return {
         "imc": float(imc),
         "tmb": int(round(tmb)),

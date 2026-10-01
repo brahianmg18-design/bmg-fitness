@@ -76,13 +76,7 @@
                     <div>
                         <label for="reg-estatura">Estatura (m)</label>
                         <select id="reg-estatura" required>
-                               <option value="" disabled selected>Ejemplo: 1.68</option>
-                               <option value="1.50">1.50 m</option><option value="1.55">1.55 m</option>
-                               <option value="1.60">1.60 m</option><option value="1.65">1.65 m</option>
-                               <option value="1.68">1.68 m</option><option value="1.70">1.70 m</option>
-                               <option value="1.75">1.75 m</option><option value="1.80">1.80 m</option>
-                               <option value="1.85">1.85 m</option><option value="1.90">1.90 m</option>
-                               <option value="1.95">1.95 m</option><option value="2.00">2.00 m</option>
+                            <option value="" disabled selected>Selecciona tu estatura</option>
                         </select>
                     </div>
                 </div>
@@ -90,10 +84,11 @@
                 <label for="reg-actividad" class="sr-only">Nivel de actividad física</label>
                 <select id="reg-actividad" required>
                     <option value="" disabled selected>Nivel de Actividad Física</option>
-                    <option value="1.2">Sedentario (Poco o ningún ejercicio)</option>
-                    <option value="1.375">Ligero (1 a 3 días/semana)</option>
-                    <option value="1.55">Moderado (3 a 5 días/semana)</option>
-                    <option value="1.725">Intenso (6 a 7 días/semana)</option>
+                    <option value="1.2">Sedentario: Poco o ningún ejercicio (0 a 1 días/semana)</option>
+                    <option value="1.375">Ligeramente activo: Ejercicio ligero (1 a 3 días/semana)</option>
+                    <option value="1.55">Moderadamente activo: Ejercicio moderado (3 a 5 días/semana)</option>
+                    <option value="1.725">Muy activo: Ejercicio fuerte / intenso (6 a 7 días/semana)</option>
+                    <option value="1.9">Hiperactivo / Atleta: Entrenamiento muy intenso o doble sesión diaria</option>
                 </select>
 
                 <label for="reg-objetivo" class="sr-only">Objetivo principal</label>
@@ -188,22 +183,17 @@
                         <div>
                             <label for="profile-estatura">Estatura (m)</label>
                             <select id="profile-estatura" required>
-                               <option value="1.50">1.50 m</option><option value="1.55">1.55 m</option>
-                               <option value="1.60">1.60 m</option><option value="1.65">1.65 m</option>
-                               <option value="1.68">1.68 m</option><option value="1.70">1.70 m</option>
-                               <option value="1.75">1.75 m</option><option value="1.80">1.80 m</option>
-                               <option value="1.85">1.85 m</option><option value="1.90">1.90 m</option>
-                               <option value="1.95">1.95 m</option><option value="2.00">2.00 m</option>
                             </select>
                             <small>Ejemplo habitual: 1.68 m</small>
                         </div>
                     </div>
                     <label for="profile-actividad">Actividad física</label>
                     <select id="profile-actividad" required>
-                        <option value="1.2">Sedentario</option>
-                        <option value="1.375">Ligero</option>
-                        <option value="1.55">Moderado</option>
-                        <option value="1.725">Intenso</option>
+                        <option value="1.2">Sedentario: Poco o ningún ejercicio (0 a 1 días/semana)</option>
+                        <option value="1.375">Ligeramente activo: Ejercicio ligero (1 a 3 días/semana)</option>
+                        <option value="1.55">Moderadamente activo: Ejercicio moderado (3 a 5 días/semana)</option>
+                        <option value="1.725">Muy activo: Ejercicio fuerte / intenso (6 a 7 días/semana)</option>
+                        <option value="1.9">Hiperactivo / Atleta: Entrenamiento muy intenso o doble sesión diaria</option>
                     </select>
                     <label for="profile-objetivo">Objetivo</label>
                     <select id="profile-objetivo" required>
@@ -238,6 +228,10 @@
                 </section>
 
                 <section id="section-rutina" class="dashboard-section hidden">
+                    <div class="info-banner routine-goal-banner" aria-live="polite">
+                        <strong id="routine-goal-title">Objetivo: -</strong>
+                        <p id="routine-goal-message"></p>
+                    </div>
                     <div class="section-heading">
                         <p class="eyebrow">PLAN DE ENTRENAMIENTO</p>
                         <h3>Rutina adaptada a tu objetivo</h3>
