@@ -1,0 +1,83 @@
+{
+  "nutrition_prototype_matrix": {
+    "version": "1.0",
+    "description": "Matriz maestra de perfiles antropométricos de referencia para generación dinámica de planes nutricionales.",
+    "purpose": "Seleccionar el prototipo más cercano al usuario y ajustar posteriormente calorías y macronutrientes según sus datos reales.",
+    "selection_strategy": {
+      "method": "nearest_prototype",
+      "primary_variables": ["sex", "height_cm", "weight_kg"],
+      "secondary_variables": ["age_years", "training_level", "training_frequency_days", "nutrition_goal"],
+      "important_note": "Los prototipos son puntos de referencia y no representan categorías corporales rígidas. El plan final debe personalizarse con los datos reales del usuario."
+    },
+    "energy_model": {
+      "reference_age_years": 30,
+      "activity_model": {
+        "description": "El TDEE base se calcula a partir del metabolismo basal y del factor de actividad correspondiente.",
+        "activity_factors": {"2_days": 1.375, "3_days": 1.45, "4_days": 1.55, "5_days": 1.6, "6_days": 1.725, "7_days": 1.725}
+      },
+      "training_level_adjustment": {"beginner": 1.0, "intermediate": 1.05, "advanced": 1.1},
+      "goal_adjustment": {"fat_loss": -350, "maintenance": 0, "muscle_gain": 350}
+    },
+    "macro_model": {
+      "protein": {
+        "unit": "g_per_kg_bodyweight",
+        "default_range": {
+          "fat_loss": {"min": 1.6, "max": 2.2},
+          "maintenance": {"min": 1.6, "max": 2.0},
+          "muscle_gain": {"min": 1.6, "max": 2.2}
+        }
+      },
+      "fat": {"unit": "g_per_kg_bodyweight", "default_range": {"min": 0.7, "max": 1.0}},
+      "carbohydrates": {"method": "remaining_calories", "description": "Las calorías restantes después de proteína y grasas se asignan a carbohidratos."}
+    },
+    "meal_structure": {
+      "meals_per_day": 4,
+      "meals": [
+        {"id": "breakfast", "name": "Desayuno"},
+        {"id": "lunch", "name": "Almuerzo"},
+        {"id": "pre_workout", "name": "Merienda / Pre-entreno"},
+        {"id": "dinner", "name": "Cena"}
+      ]
+    },
+    "prototypes": [
+      {"id": "M01", "sex": "male", "reference": {"height_cm": 165, "weight_kg": 60, "age_years": 30}, "profile": "small_light"},
+      {"id": "M02", "sex": "male", "reference": {"height_cm": 170, "weight_kg": 65, "age_years": 30}, "profile": "light"},
+      {"id": "M03", "sex": "male", "reference": {"height_cm": 175, "weight_kg": 70, "age_years": 30}, "profile": "average"},
+      {"id": "M04", "sex": "male", "reference": {"height_cm": 180, "weight_kg": 80, "age_years": 30}, "profile": "medium_high"},
+      {"id": "M05", "sex": "male", "reference": {"height_cm": 185, "weight_kg": 90, "age_years": 30}, "profile": "large"},
+      {"id": "M06", "sex": "male", "reference": {"height_cm": 190, "weight_kg": 100, "age_years": 30}, "profile": "very_large"},
+      {"id": "F01", "sex": "female", "reference": {"height_cm": 155, "weight_kg": 50, "age_years": 30}, "profile": "small_light"},
+      {"id": "F02", "sex": "female", "reference": {"height_cm": 160, "weight_kg": 55, "age_years": 30}, "profile": "light"},
+      {"id": "F03", "sex": "female", "reference": {"height_cm": 165, "weight_kg": 60, "age_years": 30}, "profile": "average"},
+      {"id": "F04", "sex": "female", "reference": {"height_cm": 170, "weight_kg": 65, "age_years": 30}, "profile": "medium_high"},
+      {"id": "F05", "sex": "female", "reference": {"height_cm": 175, "weight_kg": 70, "age_years": 30}, "profile": "large"},
+      {"id": "F06", "sex": "female", "reference": {"height_cm": 180, "weight_kg": 80, "age_years": 30}, "profile": "very_large"}
+    ],
+    "personalization_rules": {
+      "weight_adjustment": true,
+      "height_adjustment": true,
+      "age_adjustment": true,
+      "sex_adjustment": true,
+      "training_level_adjustment": true,
+      "training_frequency_adjustment": true,
+      "goal_adjustment": true,
+      "body_fat_optional": true,
+      "final_plan_must_be_calculated_from_real_user_data": true
+    },
+    "nutrition_goals": {
+      "fat_loss": {"id": "fat_loss", "name": "Pérdida de grasa", "calorie_adjustment_kcal": -350},
+      "maintenance": {"id": "maintenance", "name": "Mantenimiento", "calorie_adjustment_kcal": 0},
+      "muscle_gain": {"id": "muscle_gain", "name": "Ganancia muscular", "calorie_adjustment_kcal": 350}
+    },
+    "monthly_plan": {
+      "duration_days": 28,
+      "weeks": 4,
+      "meals_per_day": 4,
+      "unique_days_required": 28,
+      "repeat_exact_week": false,
+      "progressive_portion_adjustment": true,
+      "meal_variety_required": true,
+      "training_time_adaptation": {"morning_training": true, "afternoon_training": true, "evening_training": true}
+    }
+  }
+}

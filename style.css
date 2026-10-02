@@ -261,6 +261,28 @@ button[type="submit"]:hover {
     grid-template-columns: minmax(0, 1fr);
 }
 
+.nutrition-menu-controls {
+    display: grid;
+    gap: 8px;
+    max-width: 560px;
+    margin: 18px 0;
+}
+
+.nutrition-menu-controls label {
+    color: #cbd5e1;
+    font-weight: 700;
+}
+
+.nutrition-reference {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.nutrition-warnings {
+    color: #fbbf24;
+    font-size: 13px;
+}
+
 .meal-plan-day {
     border-bottom: 1px solid #334155;
     padding: 18px 0;
@@ -384,6 +406,96 @@ button[type="submit"]:hover {
 
 .section-heading .subtitle {
     margin-bottom: 0;
+}
+
+.plan-selector {
+    max-width: 520px;
+    margin: 14px 0 20px;
+}
+
+.plan-selector label {
+    color: #cbd5e1;
+    font-weight: 700;
+}
+
+.plan-selector-msg {
+    min-height: 18px;
+    margin-top: 6px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.routine-template-controls {
+    display: grid;
+    gap: 12px;
+    margin: 16px 0;
+    max-width: 680px;
+}
+
+.routine-template-selectors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.routine-template-selectors label,
+.routine-template-import label {
+    display: block;
+    margin-bottom: 6px;
+    color: #cbd5e1;
+}
+
+.routine-template-import {
+    display: grid;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #334155;
+}
+
+.routine-template-import summary {
+    color: #38bdf8;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.routine-template-import textarea {
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    padding: 12px;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    background: #0f172a;
+    color: #f8fafc;
+    font: 12px/1.5 Consolas, monospace;
+}
+
+.routine-phase-summary {
+    display: grid;
+    gap: 8px;
+    margin: 16px 0;
+    padding: 16px;
+    border-left: 4px solid #38bdf8;
+    background: #172033;
+    color: #cbd5e1;
+}
+
+.routine-phase-summary strong {
+    color: #f8fafc;
+}
+
+.routine-safety-alert {
+    color: #fca5a5;
+}
+
+.template-day-plan {
+    min-width: 0;
+}
+
+@media (max-width: 520px) {
+    .routine-template-selectors {
+        grid-template-columns: 1fr;
+    }
 }
 
 .profile-summary {

@@ -8,7 +8,7 @@ from datetime import date
 import pandas as pd
 import os
 import psycopg2
-from psycopg2.extras import Json, RealDictCursor
+from psycopg2.extras import Json, RealDictCursor, execute_values
 import math
 import re
 import hashlib
@@ -51,7 +51,8 @@ for nombre_archivo in ("seguimiento.csv",):
         shutil.copyfile(origen, destino)
 USER_COLUMNS = [
     "Usuario", "Contraseña", "Correo", "Edad", "Sexo", "Peso", "Estatura",
-    "Actividad", "Objetivo", "DiasEntrenamiento", "PesoInicial"
+    "Actividad", "Objetivo", "NivelExperiencia", "ObjetivoNutricional",
+    "ObjetivoEntrenamiento", "DiasEntrenamiento", "PesoInicial"
 ]
 LEGACY_USER_COLUMNS = [
     "Usuario", "Contraseña", "Objetivo", "Edad", "Sexo", "Peso", "Estatura", "Actividad"
@@ -102,6 +103,29 @@ EXERCISE_INSTRUCTIONS = {
     "Curl femoral tumbado": "Alinea las rodillas con el eje de la máquina y mantén la cadera apoyada. Flexiona las rodillas acercando los talones y vuelve lentamente.",
     "Plancha lateral": "Apoya el antebrazo bajo el hombro y eleva la cadera formando una línea recta. Mantén el abdomen activo y evita girar el tronco.",
 }
+RECIPE_CATALOG = [
+    ("BRK-001", "Avena con yogur y frutos rojos", "Desayuno"),
+    ("BRK-002", "Huevos con pan integral y aguacate", "Desayuno"),
+    ("BRK-003", "Bowl de queso cottage y granola", "Desayuno"),
+    ("BRK-004", "Tortitas de avena y plátano", "Desayuno"),
+    ("LUN-001", "Pollo, arroz integral y brócoli", "Almuerzo"),
+    ("LUN-002", "Merluza con quinoa y ensalada", "Almuerzo"),
+    ("LUN-003", "Pavo con camote y vegetales", "Almuerzo"),
+    ("LUN-004", "Tofu con arroz y verduras salteadas", "Almuerzo"),
+    ("LUN-005", "Ensalada de lentejas y atún", "Almuerzo"),
+    ("SNK-001", "Yogur con manzana y almendras", "Merienda"),
+    ("SNK-002", "Queso cottage con piña y avena", "Merienda"),
+    ("SNK-003", "Hummus con zanahoria y pan pita", "Merienda"),
+    ("SNK-004", "Yogur alto en proteína con plátano", "Merienda"),
+    ("DIN-001", "Pollo con papa y verduras", "Cena"),
+    ("DIN-002", "Pescado blanco con cuscús y calabacín", "Cena"),
+    ("DIN-003", "Tortilla de claras con ensalada", "Cena"),
+    ("DIN-004", "Wrap integral de pavo y vegetales", "Cena"),
+    ("DIN-005", "Ternera magra con camote y espinacas", "Cena"),
+    ("DIN-006", "Bowl de garbanzos con pollo", "Cena"),
+    ("DIN-007", "Tofu con arroz y verduras", "Cena"),
+]
+RECIPE_IDS_BY_NAME = {nombre: receta_id for receta_id, nombre, _ in RECIPE_CATALOG}
 
 
 def normalizar_csv_usuarios(df: pd.DataFrame) -> pd.DataFrame:
@@ -123,6 +147,9 @@ def normalizar_csv_usuarios(df: pd.DataFrame) -> pd.DataFrame:
         "estatura": "Estatura",
         "actividad": "Actividad",
         "objetivo": "Objetivo",
+        "nivel_experiencia": "NivelExperiencia",
+        "objetivo_nutricional": "ObjetivoNutricional",
+        "objetivo_entrenamiento": "ObjetivoEntrenamiento",
         "diasentrenamiento": "DiasEntrenamiento",
         "dias_entrenamiento": "DiasEntrenamiento",
     }
@@ -217,7 +244,9 @@ class UsuarioRegistro(BaseModel):
     peso: float = 70.0
     estatura: float = 170.0
     actividad: float = 1.55
-    objetivo: str = "Ganar masa muscular"
+    nivel_experiencia: str
+    objetivo_nutricional: str = "Mantenimiento"
+    objetivo_entrenamiento: str = "Hipertrofia (Masa)"
     dias_entrenamiento: int = 4
 
 
@@ -227,7 +256,9 @@ class UsuarioPerfilUpdate(BaseModel):
     peso: Optional[float] = None
     estatura: Optional[float] = None
     actividad: Optional[float] = None
-    objetivo: Optional[str] = None
+    nivel_experiencia: Optional[str] = None
+    objetivo_nutricional: Optional[str] = None
+    objetivo_entrenamiento: Optional[str] = None
     dias_entrenamiento: Optional[int] = None
     email: Optional[str] = None
 
@@ -251,7 +282,7 @@ class PerfilFrontendUpdate(BaseModel):
     peso: float
     estatura: float
     actividad: float
-    objetivo: str
+    nivel_experiencia: str
     dias: int
     email: str
 
@@ -280,6 +311,29 @@ def validar_seguridad(usuario: str, contrasena: str):
 def validar_correo(correo: str):
     if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", correo):
         raise HTTPException(status_code=400, detail="Introduce un correo electrónico válido.")
+
+def validar_opciones_perfil(nivel_experiencia=None, objetivo_nutricional=None, objetivo_entrenamiento=None):
+    opciones = {
+        "nivel_experiencia": {"Principiante", "Intermedio", "Avanzado"},
+        "objetivo_nutricional": {
+            "Perder Grasa (Déficit)",
+            "Ganar Peso/Músculo (Superávit)",
+            "Mantenimiento",
+        },
+        "objetivo_entrenamiento": {
+            "Hipertrofia (Masa)",
+            "Fuerza/Definición",
+            "Acondicionamiento General",
+        },
+    }
+    valores = {
+        "nivel_experiencia": nivel_experiencia,
+        "objetivo_nutricional": objetivo_nutricional,
+        "objetivo_entrenamiento": objetivo_entrenamiento,
+    }
+    for campo, valor in valores.items():
+        if valor is not None and valor not in opciones[campo]:
+            raise HTTPException(status_code=400, detail=f"El valor de {campo} no es válido.")
 
 
 def migrar_historico_csv(cursor):
@@ -336,6 +390,9 @@ def obtener_conexion():
                 estatura DOUBLE PRECISION NOT NULL DEFAULT 1.70,
                 actividad DOUBLE PRECISION NOT NULL DEFAULT 1.55,
                 objetivo TEXT NOT NULL DEFAULT 'Ganar masa muscular',
+                nivel_experiencia TEXT NOT NULL DEFAULT 'Principiante',
+                objetivo_nutricional TEXT NOT NULL DEFAULT 'Mantenimiento',
+                objetivo_entrenamiento TEXT NOT NULL DEFAULT 'Hipertrofia (Masa)',
                 dias_entrenamiento INTEGER NOT NULL DEFAULT 4,
                 peso_inicial DOUBLE PRECISION
             )
@@ -363,6 +420,38 @@ def obtener_conexion():
             ADD COLUMN IF NOT EXISTS peso_inicial DOUBLE PRECISION
         """)
         cursor.execute("""
+            ALTER TABLE usuarios
+            ADD COLUMN IF NOT EXISTS nivel_experiencia TEXT NOT NULL DEFAULT 'Principiante',
+            ADD COLUMN IF NOT EXISTS objetivo_nutricional TEXT,
+            ADD COLUMN IF NOT EXISTS objetivo_entrenamiento TEXT
+        """)
+        cursor.execute("""
+            UPDATE usuarios
+            SET objetivo_nutricional = CASE
+                    WHEN LOWER(objetivo) LIKE '%grasa%' THEN 'Perder Grasa (Déficit)'
+                    WHEN LOWER(objetivo) LIKE '%masa%' THEN 'Ganar Peso/Músculo (Superávit)'
+                    ELSE 'Mantenimiento'
+                END
+            WHERE objetivo_nutricional IS NULL
+        """)
+        cursor.execute("""
+            UPDATE usuarios
+            SET objetivo_entrenamiento = CASE
+                    WHEN LOWER(objetivo) LIKE '%masa%' THEN 'Hipertrofia (Masa)'
+                    WHEN LOWER(objetivo) LIKE '%grasa%' OR LOWER(objetivo) LIKE '%defin%' THEN 'Fuerza/Definición'
+                    ELSE 'Acondicionamiento General'
+                END
+            WHERE objetivo_entrenamiento IS NULL
+        """)
+        cursor.execute("""
+            ALTER TABLE usuarios
+            ALTER COLUMN objetivo_nutricional SET DEFAULT 'Mantenimiento',
+            ALTER COLUMN objetivo_nutricional SET NOT NULL,
+            ALTER COLUMN objetivo_entrenamiento SET DEFAULT 'Hipertrofia (Masa)',
+            ALTER COLUMN objetivo_entrenamiento SET NOT NULL,
+            ALTER COLUMN nivel_experiencia SET NOT NULL
+        """)
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS historico_progreso (
                 id BIGSERIAL PRIMARY KEY,
                 usuario TEXT NOT NULL REFERENCES usuarios(usuario) ON DELETE CASCADE,
@@ -383,6 +472,30 @@ def obtener_conexion():
             CREATE INDEX IF NOT EXISTS historico_progreso_fecha_idx
             ON historico_progreso (usuario, fecha DESC)
         """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS recetas (
+                receta_id TEXT PRIMARY KEY,
+                nombre TEXT NOT NULL,
+                tipo_comida TEXT NOT NULL
+            )
+        """)
+        cursor.execute("SELECT receta_id, nombre, tipo_comida FROM recetas")
+        recetas_registradas = {
+            row["receta_id"]: (row["nombre"], row["tipo_comida"])
+            for row in cursor.fetchall()
+        }
+        recetas_pendientes = [
+            receta for receta in RECIPE_CATALOG
+            if recetas_registradas.get(receta[0]) != receta[1:]
+        ]
+        if recetas_pendientes:
+            execute_values(cursor, """
+                INSERT INTO recetas (receta_id, nombre, tipo_comida)
+                VALUES %s
+                ON CONFLICT (receta_id) DO UPDATE SET
+                    nombre = EXCLUDED.nombre,
+                    tipo_comida = EXCLUDED.tipo_comida
+            """, recetas_pendientes)
         migrar_csv_pendiente = (
             not HISTORICO_CSV_MIGRADO and migrar_historico_csv(cursor)
         )
@@ -406,7 +519,10 @@ def cargar_usuarios():
             SELECT usuario AS "Usuario", password AS "Contraseña",
                    email AS "Correo", edad AS "Edad", sexo AS "Sexo",
                    peso AS "Peso", estatura AS "Estatura", actividad AS "Actividad",
-                   objetivo AS "Objetivo", dias_entrenamiento AS "DiasEntrenamiento",
+                   objetivo AS "Objetivo", nivel_experiencia AS "NivelExperiencia",
+                   objetivo_nutricional AS "ObjetivoNutricional",
+                   objetivo_entrenamiento AS "ObjetivoEntrenamiento",
+                   dias_entrenamiento AS "DiasEntrenamiento",
                    peso_inicial AS "PesoInicial"
             FROM usuarios
         """)
@@ -495,9 +611,13 @@ def construir_resumen_seguimiento(usuario: str):
     }
 
 
-def crear_rutina(objetivo: str, dias: int, peso: float = 70):
-    objetivo_lower = str(objetivo).lower()
-    if "masa" in objetivo_lower:
+def crear_rutina(
+    objetivo_entrenamiento: str, dias: int, peso: float = 70,
+    nivel_experiencia: str = "Principiante",
+):
+    objetivo_lower = str(objetivo_entrenamiento).lower()
+    experiencia_lower = str(nivel_experiencia).lower()
+    if "hipertrofia" in objetivo_lower or "masa" in objetivo_lower:
         factor_carga = 0.6
         series = "4 series x 8-10 reps"
         descanso = "90 s"
@@ -535,7 +655,7 @@ def crear_rutina(objetivo: str, dias: int, peso: float = 70):
                 ("Extensión de tríceps en polea", "Tríceps", True),
             ]),
         ]
-    elif "grasa" in objetivo_lower or "adelgaz" in objetivo_lower or "perder peso" in objetivo_lower:
+    elif "acondicionamiento" in objetivo_lower:
         factor_carga = 0.4
         series = "3-4 series x 12-15 reps"
         descanso = "45-60 s"
@@ -593,6 +713,26 @@ def crear_rutina(objetivo: str, dias: int, peso: float = 70):
             ]),
         ]
 
+    if experiencia_lower == "principiante":
+        factor_experiencia = 0.85
+        if "hipertrofia" in objetivo_lower or "masa" in objetivo_lower:
+            series, descanso = "3 series x 10-12 reps", "90 s"
+        elif "acondicionamiento" in objetivo_lower:
+            series, descanso = "2-3 circuitos x 10-15 reps", "60 s"
+        else:
+            series, descanso = "3 series x 8-10 reps", "120 s"
+    elif experiencia_lower == "avanzado":
+        factor_experiencia = 1.1
+        if "hipertrofia" in objetivo_lower or "masa" in objetivo_lower:
+            series, descanso = "4-5 series x 6-10 reps", "120 s"
+        elif "acondicionamiento" in objetivo_lower:
+            series, descanso = "4 circuitos x 12-15 reps", "45-60 s"
+        else:
+            series, descanso = "5 series x 3-6 reps", "150 s"
+    else:
+        factor_experiencia = 1.0
+
+    factor_carga *= factor_experiencia
     carga_inicio = round(float(peso) * factor_carga, 1)
     rutina = []
     for index in range(max(1, min(int(dias or 4), 7))):
@@ -621,9 +761,9 @@ def crear_rutina(objetivo: str, dias: int, peso: float = 70):
 
 def distribucion_macros_por_objetivo(objetivo: str):
     objetivo_lower = str(objetivo).lower()
-    if "masa" in objetivo_lower:
+    if any(term in objetivo_lower for term in ("masa", "músculo", "musculo", "superávit", "superavit")):
         return {"proteinas": 30, "carbohidratos": 50, "grasas": 20}
-    if "grasa" in objetivo_lower or "adelgaz" in objetivo_lower or "perder peso" in objetivo_lower:
+    if any(term in objetivo_lower for term in ("grasa", "adelgaz", "perder peso", "déficit", "deficit")):
         return {"proteinas": 40, "carbohidratos": 30, "grasas": 30}
     return {"proteinas": 30, "carbohidratos": 40, "grasas": 30}
 
@@ -631,9 +771,9 @@ def distribucion_macros_por_objetivo(objetivo: str):
 def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dict):
     objetivo_lower = str(objetivo).lower()
     distribucion_macros = distribucion_macros_por_objetivo(objetivo)
-    if "masa" in objetivo_lower:
+    if any(term in objetivo_lower for term in ("masa", "músculo", "musculo", "superávit", "superavit")):
         ajuste_por_grupo = {"proteinas": 1.1, "carbohidratos": 1.2, "grasas": 1.0, "vegetales": 1.0, "frutas": 1.0}
-    elif "grasa" in objetivo_lower or "adelgaz" in objetivo_lower or "perder peso" in objetivo_lower:
+    elif any(term in objetivo_lower for term in ("grasa", "adelgaz", "perder peso", "déficit", "deficit")):
         ajuste_por_grupo = {"proteinas": 1.15, "carbohidratos": 0.75, "grasas": 0.85, "vegetales": 1.25, "frutas": 1.0}
     else:
         ajuste_por_grupo = {"proteinas": 1.0, "carbohidratos": 1.0, "grasas": 1.0, "vegetales": 1.0, "frutas": 1.0}
@@ -734,13 +874,13 @@ def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dic
             ]},
         ],
     }
-    dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
     orden_comidas = ["Desayuno", "Almuerzo", "Merienda", "Cena"]
     porcentajes_comida = {"Desayuno": 25, "Almuerzo": 35, "Merienda": 15, "Cena": 25}
     escala_calorias = max(0, float(calorias)) / 2000
     menu_semanal = []
 
-    for indice_dia, dia in enumerate(dias):
+    for indice_dia in range(28):
+        dia = f"Día {indice_dia + 1}"
         comidas_dia = []
         for indice_comida, nombre_comida in enumerate(orden_comidas):
             recetas_comida = recetas[nombre_comida]
@@ -756,7 +896,11 @@ def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dic
 
             porcentaje = porcentajes_comida[nombre_comida] / 100
             macros_comida = {macro: round(cantidad * porcentaje) for macro, cantidad in macros_diarios.items()}
+            receta_id = RECIPE_IDS_BY_NAME.get(receta["plato"])
+            if not receta_id:
+                raise ValueError(f"La receta '{receta['plato']}' no tiene un ID registrado en el catálogo.")
             comidas_dia.append({
+                "receta_id": receta_id,
                 "comida": nombre_comida,
                 "plato": receta["plato"],
                 "imagen": imagenes_comida[nombre_comida],
@@ -767,6 +911,7 @@ def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dic
 
         menu_semanal.append({
             "dia": dia,
+            "dia_numero": indice_dia + 1,
             "calorias": calorias,
             "macros": macros_diarios,
             "comidas": comidas_dia,
@@ -775,7 +920,11 @@ def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dic
     return {"distribucion_macros": distribucion_macros, "menu_alimenticio": menu_semanal}
 
 
-def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entrenamiento):
+def calcular_resumen(
+    edad, sexo, peso, estatura, actividad, objetivo_nutricional,
+    dias_entrenamiento, nivel_experiencia="Principiante",
+    objetivo_entrenamiento="Hipertrofia (Masa)",
+):
     estatura_m = float(estatura)
     peso = float(peso)
     edad = int(edad)
@@ -788,24 +937,26 @@ def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entre
     else:
         tmb = (10 * peso) + (6.25 * estatura_m * 100) - (5 * edad) - 161
 
-    gasto_total = tmb * actividad
-    objetivo_lower = objetivo.lower()
-    if "masa" in objetivo_lower:
+    factores_experiencia = {"principiante": 1.0, "intermedio": 1.05, "avanzado": 1.10}
+    factor_experiencia = factores_experiencia.get(str(nivel_experiencia).lower(), 1.0)
+    gasto_total = tmb * actividad * factor_experiencia
+    objetivo_lower = str(objetivo_nutricional).lower()
+    if "superávit" in objetivo_lower or "superavit" in objetivo_lower:
         calorias = round(gasto_total + 400)
         explicacion_nutricional = "Para hipertrofia muscular necesitas un superávit calórico controlado (+400 kcal) con alta ingesta proteica para la síntesis muscular."
-    elif "grasa" in objetivo_lower or "peso" in objetivo_lower:
+    elif "déficit" in objetivo_lower or "deficit" in objetivo_lower:
         calorias = round(gasto_total - 400)
         explicacion_nutricional = "Para reducir porcentaje de grasa aplicamos un déficit calórico (-400 kcal) protegiendo tu masa magra mediante proteína elevada."
     else:
         calorias = round(gasto_total)
         explicacion_nutricional = "Mantendrás tu gasto energético de mantenimiento (normocalórica) optimizando el rendimiento y la definición muscular."
 
-    distribucion_macros = distribucion_macros_por_objetivo(objetivo)
+    distribucion_macros = distribucion_macros_por_objetivo(objetivo_nutricional)
     proteinas = round(calorias * distribucion_macros["proteinas"] / 100 / 4)
     carbos = round(calorias * distribucion_macros["carbohidratos"] / 100 / 4)
     grasas = round(calorias * distribucion_macros["grasas"] / 100 / 9)
     macros_diarios = {"proteinas": proteinas, "carbohidratos": carbos, "grasas": grasas}
-    plan_alimenticio = construir_plan_alimenticio(objetivo, calorias, macros_diarios)
+    plan_alimenticio = construir_plan_alimenticio(objetivo_nutricional, calorias, macros_diarios)
     return {
         "imc": float(imc),
         "tmb": int(round(tmb)),
@@ -816,7 +967,9 @@ def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entre
         "grasas": int(grasas),
         "explicacion_nutricional": explicacion_nutricional,
         **plan_alimenticio,
-        "rutina": crear_rutina(objetivo, dias_entrenamiento, peso),
+        "rutina": crear_rutina(
+            objetivo_entrenamiento, dias_entrenamiento, peso, nivel_experiencia
+        ),
     }
 
 
@@ -824,6 +977,7 @@ def calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entre
 def registrar(datos: UsuarioRegistro):
     validar_seguridad(datos.usuario.strip(), datos.contrasena.strip())
     validar_correo(datos.email.strip())
+    validar_opciones_perfil(datos.nivel_experiencia, datos.objetivo_nutricional, datos.objetivo_entrenamiento)
 
     conn = obtener_conexion()
     cursor = conn.cursor()
@@ -831,8 +985,9 @@ def registrar(datos: UsuarioRegistro):
         cursor.execute("""
             INSERT INTO usuarios (
                 usuario, password, email, edad, sexo, peso, estatura,
-                actividad, objetivo, dias_entrenamiento, peso_inicial
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                actividad, objetivo, nivel_experiencia, objetivo_nutricional,
+                objetivo_entrenamiento, dias_entrenamiento, peso_inicial
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             datos.usuario.strip(),
             hash_password(datos.contrasena.strip()),
@@ -842,7 +997,10 @@ def registrar(datos: UsuarioRegistro):
             datos.peso,
             datos.estatura / 100 if datos.estatura > 3 else datos.estatura,
             datos.actividad,
-            datos.objetivo,
+            datos.objetivo_nutricional,
+            datos.nivel_experiencia,
+            datos.objetivo_nutricional,
+            datos.objetivo_entrenamiento,
             int(datos.dias_entrenamiento or 4),
             datos.peso,
         ))
@@ -889,7 +1047,10 @@ def obtener_perfil(usuario: str):
         "peso": peso,
         "estatura": estatura,
         "actividad": actividad,
-        "objetivo": str(valor_o_default("Objetivo", "Ganar masa muscular")),
+        "objetivo": str(valor_o_default("ObjetivoNutricional", "Mantenimiento")),
+        "nivel_experiencia": str(valor_o_default("NivelExperiencia", "Principiante")),
+        "objetivo_nutricional": str(valor_o_default("ObjetivoNutricional", "Mantenimiento")),
+        "objetivo_entrenamiento": str(valor_o_default("ObjetivoEntrenamiento", "Hipertrofia (Masa)")),
         "dias_entrenamiento": dias_entrenamiento,
         "peso_inicial": peso_inicial,
     }
@@ -899,6 +1060,7 @@ def obtener_perfil(usuario: str):
 def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
     if datos.email is not None:
         validar_correo(datos.email.strip())
+    validar_opciones_perfil(datos.nivel_experiencia, datos.objetivo_nutricional, datos.objetivo_entrenamiento)
 
     campos = {
         "email": datos.email.strip().lower() if datos.email is not None else None,
@@ -907,7 +1069,9 @@ def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
         "peso": datos.peso,
         "estatura": datos.estatura / 100 if datos.estatura is not None and datos.estatura > 3 else datos.estatura,
         "actividad": datos.actividad,
-        "objetivo": datos.objetivo,
+        "nivel_experiencia": datos.nivel_experiencia,
+        "objetivo_nutricional": datos.objetivo_nutricional,
+        "objetivo_entrenamiento": datos.objetivo_entrenamiento,
         "dias_entrenamiento": datos.dias_entrenamiento,
     }
     campos = {campo: valor for campo, valor in campos.items() if valor is not None}
@@ -938,7 +1102,8 @@ def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
     perfil = obtener_perfil(usuario)
     resumen = calcular_resumen(
         perfil["edad"], perfil["sexo"], perfil["peso"], perfil["estatura"],
-        perfil["actividad"], perfil["objetivo"], perfil["dias_entrenamiento"]
+        perfil["actividad"], perfil["objetivo_nutricional"], perfil["dias_entrenamiento"],
+        perfil["nivel_experiencia"], perfil["objetivo_entrenamiento"]
     )
     return {"mensaje": "Perfil actualizado correctamente.", **perfil, **resumen}
 
@@ -956,7 +1121,7 @@ def actualizar_perfil_frontend(datos: PerfilFrontendUpdate):
         peso=datos.peso,
         estatura=datos.estatura,
         actividad=datos.actividad,
-        objetivo=datos.objetivo,
+        nivel_experiencia=datos.nivel_experiencia,
         dias_entrenamiento=datos.dias,
         email=datos.email,
     )
@@ -974,7 +1139,10 @@ def login(datos: UsuarioLogin):
             SELECT usuario AS "Usuario", password AS "Contraseña",
                    email AS "Correo", edad AS "Edad", sexo AS "Sexo",
                    peso AS "Peso", estatura AS "Estatura", actividad AS "Actividad",
-                   objetivo AS "Objetivo", dias_entrenamiento AS "DiasEntrenamiento",
+                   objetivo AS "Objetivo", nivel_experiencia AS "NivelExperiencia",
+                   objetivo_nutricional AS "ObjetivoNutricional",
+                   objetivo_entrenamiento AS "ObjetivoEntrenamiento",
+                   dias_entrenamiento AS "DiasEntrenamiento",
                    peso_inicial AS "PesoInicial"
             FROM usuarios
             WHERE LOWER(usuario) = LOWER(%s)
@@ -1007,9 +1175,14 @@ def login(datos: UsuarioLogin):
     peso = float(user_row.get("Peso", 70.0) or 70.0)
     estatura = float(user_row.get("Estatura", 1.70) or 1.70)
     actividad = float(user_row.get("Actividad", 1.55) or 1.55)
-    objetivo = str(user_row.get("Objetivo", "Ganar masa muscular"))
+    nivel_experiencia = str(user_row.get("NivelExperiencia", "Principiante"))
+    objetivo_nutricional = str(user_row.get("ObjetivoNutricional", "Mantenimiento"))
+    objetivo_entrenamiento = str(user_row.get("ObjetivoEntrenamiento", "Hipertrofia (Masa)"))
     dias_entrenamiento = int(user_row.get("DiasEntrenamiento", 4) or 4)
-    resumen = calcular_resumen(edad, sexo, peso, estatura, actividad, objetivo, dias_entrenamiento)
+    resumen = calcular_resumen(
+        edad, sexo, peso, estatura, actividad, objetivo_nutricional,
+        dias_entrenamiento, nivel_experiencia, objetivo_entrenamiento,
+    )
 
     return {
         "mensaje": "Acceso concedido",
@@ -1019,7 +1192,10 @@ def login(datos: UsuarioLogin):
         "peso": peso,
         "estatura": estatura,
         "actividad": actividad,
-        "objetivo": objetivo,
+        "objetivo": objetivo_nutricional,
+        "nivel_experiencia": nivel_experiencia,
+        "objetivo_nutricional": objetivo_nutricional,
+        "objetivo_entrenamiento": objetivo_entrenamiento,
         "dias_entrenamiento": dias_entrenamiento,
         "email": "" if pd.isna(user_row.get("Correo", "")) else str(user_row.get("Correo", "") or ""),
         "peso_inicial": user_row.get("PesoInicial", peso),
@@ -1111,8 +1287,9 @@ def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro):
     try:
         cursor.execute(
             """
-            SELECT usuario, email, edad, sexo, estatura, actividad, objetivo,
-                   dias_entrenamiento, peso_inicial
+                 SELECT usuario, email, edad, sexo, estatura, actividad,
+                     nivel_experiencia, objetivo_nutricional, objetivo_entrenamiento,
+                     dias_entrenamiento, peso_inicial
             FROM usuarios
             WHERE LOWER(usuario) = LOWER(%s)
             FOR UPDATE
@@ -1132,7 +1309,7 @@ def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro):
                 medidas = EXCLUDED.medidas,
                 objetivo_momento = EXCLUDED.objetivo_momento
             """,
-            (perfil["usuario"], datos.fecha, peso, Json(medidas), perfil["objetivo"]),
+            (perfil["usuario"], datos.fecha, peso, Json(medidas), perfil["objetivo_nutricional"]),
         )
         cursor.execute(
             "UPDATE usuarios SET peso = %s WHERE usuario = %s",
@@ -1152,7 +1329,8 @@ def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro):
     perfil["peso"] = peso
     resumen = calcular_resumen(
         perfil["edad"], perfil["sexo"], peso, perfil["estatura"],
-        perfil["actividad"], perfil["objetivo"], perfil["dias_entrenamiento"],
+        perfil["actividad"], perfil["objetivo_nutricional"], perfil["dias_entrenamiento"],
+        perfil["nivel_experiencia"], perfil["objetivo_entrenamiento"],
     )
     historico = construir_resumen_seguimiento(perfil["usuario"])
     return {"mensaje": "Registro guardado correctamente.", **perfil, **resumen, **historico}

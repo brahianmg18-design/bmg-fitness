@@ -40,6 +40,9 @@ def migrar():
                 estatura DOUBLE PRECISION NOT NULL DEFAULT 1.70,
                 actividad DOUBLE PRECISION NOT NULL DEFAULT 1.55,
                 objetivo TEXT NOT NULL DEFAULT 'Ganar masa muscular',
+                nivel_experiencia TEXT NOT NULL DEFAULT 'Principiante',
+                objetivo_nutricional TEXT NOT NULL DEFAULT 'Mantenimiento',
+                objetivo_entrenamiento TEXT NOT NULL DEFAULT 'Hipertrofia (Masa)',
                 dias_entrenamiento INTEGER NOT NULL DEFAULT 4
             )
         """)
@@ -61,6 +64,37 @@ def migrar():
             ALTER TABLE usuarios
             ADD COLUMN IF NOT EXISTS rol TEXT NOT NULL DEFAULT 'usuario'
         """)
+        cursor.execute("""
+            ALTER TABLE usuarios
+            ADD COLUMN IF NOT EXISTS nivel_experiencia TEXT NOT NULL DEFAULT 'Principiante',
+            ADD COLUMN IF NOT EXISTS objetivo_nutricional TEXT,
+            ADD COLUMN IF NOT EXISTS objetivo_entrenamiento TEXT
+        """)
+        cursor.execute("""
+            UPDATE usuarios
+            SET objetivo_nutricional = CASE
+                    WHEN LOWER(objetivo) LIKE '%grasa%' THEN 'Perder Grasa (Déficit)'
+                    WHEN LOWER(objetivo) LIKE '%masa%' THEN 'Ganar Peso/Músculo (Superávit)'
+                    ELSE 'Mantenimiento'
+                END
+            WHERE objetivo_nutricional IS NULL
+        """)
+        cursor.execute("""
+            UPDATE usuarios
+            SET objetivo_entrenamiento = CASE
+                    WHEN LOWER(objetivo) LIKE '%masa%' THEN 'Hipertrofia (Masa)'
+                    WHEN LOWER(objetivo) LIKE '%grasa%' OR LOWER(objetivo) LIKE '%defin%' THEN 'Fuerza/Definición'
+                    ELSE 'Acondicionamiento General'
+                END
+            WHERE objetivo_entrenamiento IS NULL
+        """)
+        cursor.execute("""
+            ALTER TABLE usuarios
+            ALTER COLUMN objetivo_nutricional SET DEFAULT 'Mantenimiento',
+            ALTER COLUMN objetivo_nutricional SET NOT NULL,
+            ALTER COLUMN objetivo_entrenamiento SET DEFAULT 'Hipertrofia (Masa)',
+            ALTER COLUMN objetivo_entrenamiento SET NOT NULL
+        """)
 
         with open(CSV_FILE, mode="r", encoding="utf-8-sig", newline="") as file:
             reader = csv.DictReader(file)
@@ -78,12 +112,28 @@ def migrar():
                 estatura = valor_numerico(row, ("estatura", "Estatura"), 1.70)
                 if estatura > 3:
                     estatura /= 100
+                objetivo = valor_fila(row, "objetivo", "Objetivo", default="Mantenimiento y Definición")
+                objetivo_nutricional = valor_fila(row, "objetivo_nutricional", "ObjetivoNutricional")
+                if not objetivo_nutricional:
+                    objetivo_nutricional = (
+                        "Perder Grasa (Déficit)" if "grasa" in objetivo.lower()
+                        else "Ganar Peso/Músculo (Superávit)" if "masa" in objetivo.lower()
+                        else "Mantenimiento"
+                    )
+                objetivo_entrenamiento = valor_fila(row, "objetivo_entrenamiento", "ObjetivoEntrenamiento")
+                if not objetivo_entrenamiento:
+                    objetivo_entrenamiento = (
+                        "Hipertrofia (Masa)" if "masa" in objetivo.lower()
+                        else "Fuerza/Definición" if "grasa" in objetivo.lower() or "defin" in objetivo.lower()
+                        else "Acondicionamiento General"
+                    )
 
                 cursor.execute("""
                     INSERT INTO usuarios (
                         usuario, email, password, rol, edad, sexo, peso, estatura,
-                        actividad, objetivo, dias_entrenamiento
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        actividad, objetivo, nivel_experiencia, objetivo_nutricional,
+                        objetivo_entrenamiento, dias_entrenamiento
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (usuario) DO NOTHING
                 """, (
                     usuario,
@@ -95,7 +145,10 @@ def migrar():
                     peso,
                     estatura,
                     valor_numerico(row, ("actividad", "Actividad"), 1.55),
-                    valor_fila(row, "objetivo", "Objetivo", default="Ganar masa muscular"),
+                    objetivo,
+                    valor_fila(row, "nivel_experiencia", "NivelExperiencia", default="Principiante"),
+                    objetivo_nutricional,
+                    objetivo_entrenamiento,
                     valor_numerico(row, ("dias_entrenamiento", "DiasEntrenamiento"), 4, int),
                 ))
                 registros += cursor.rowcount

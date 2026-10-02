@@ -1,0 +1,176 @@
+{
+  "plantilla_id": "P01_F3_HIPERTROFIA_FULLBODY_ABC",
+  "version": "1.0",
+  "idioma": "es",
+  "categoria": "hipertrofia",
+  "nivel": "principiante",
+  "frecuencia_semanal": 3,
+  "estructura": "fullbody_ABC",
+  "objetivo": "ganar_masa_muscular",
+  "perfil_referencia": {
+    "sexo": "neutro",
+    "peso_kg": 70,
+    "altura_cm": 170,
+    "uso": "referencia_para_diseno",
+    "cargas": "autorreguladas_por_RIR"
+  },
+  "criterios_generales": {
+    "experiencia_recomendada": "0-6 meses",
+    "dias_sugeridos": ["lunes", "miercoles", "viernes"],
+    "duracion_aproximada_minutos": {"min": 45, "max": 65},
+    "calentamiento": {
+      "duracion_minutos": "5-10",
+      "descripcion": "Calentamiento general y 1-3 series de aproximacion progresiva antes de los ejercicios principales."
+    },
+    "regla_de_carga": "Seleccionar una carga que permita completar el rango de repeticiones manteniendo el RIR objetivo y una tecnica estable.",
+    "regla_de_progresion": "Cuando se alcance el extremo superior del rango de repeticiones en todas las series manteniendo el RIR objetivo, aumentar ligeramente la carga en la siguiente exposicion.",
+    "criterio_tecnico": "La tecnica tiene prioridad sobre aumentar carga o repeticiones.",
+    "advertencia": "Detener una serie si aparece dolor agudo, perdida importante de tecnica, mareo u otro sintoma anormal."
+  },
+  "progresion_mensual": {
+    "semana_1": {"fase": "adaptacion_y_calibracion", "RIR_objetivo": 3, "volumen": "base", "objetivo": "Aprender la tecnica, establecer cargas iniciales y familiarizarse con los patrones de movimiento."},
+    "semana_2": {"fase": "sobrecarga_progresiva", "RIR_objetivo": 2, "volumen": "incrementado", "objetivo": "Aumentar ligeramente repeticiones o carga y, cuando corresponda, incorporar una serie adicional."},
+    "semana_3": {"fase": "pico_de_intensidad", "RIR_objetivo": "1-0", "volumen": "alto", "objetivo": "Alcanzar la mayor exigencia del ciclo manteniendo control tecnico.", "criterio": "RIR 1 en ejercicios compuestos y RIR 0-1 principalmente en ejercicios de aislamiento seguros."},
+    "semana_4": {"fase": "deload", "RIR_objetivo": 3, "volumen": "60_por_ciento", "objetivo": "Reducir la fatiga acumulada y facilitar la recuperacion.", "criterio": "Mantener los patrones de movimiento y reducir aproximadamente el volumen total al 60% respecto a la semana 3."}
+  },
+  "semanas": [
+    {
+      "semana": 1,
+      "fase": "adaptacion_y_calibracion",
+      "RIR": 3,
+      "dias": [
+        {"dia": 1, "rutina": "A", "enfoque": "Fullbody A - patrones fundamentales", "ejercicios": [
+          {"orden": 1, "nombre": "Sentadilla Goblet", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 3, "repeticiones": "10-12", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Descender de forma controlada manteniendo el tronco estable, apoyar todo el pie y permitir que las rodillas sigan la linea de los pies.", "imagen": "sentadilla-goblet.gif"},
+          {"orden": 2, "nombre": "Press de Banca con Mancuernas", "grupo_muscular": ["pectoral", "triceps", "deltoides_anterior"], "series": 3, "repeticiones": "10-12", "tempo": "2-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Escapulas estables sobre el banco, muñecas neutras y descenso controlado sin perder la posicion de los hombros.", "imagen": "press-banca-mancuernas.gif"},
+          {"orden": 3, "nombre": "Jalon al Pecho en Polea", "grupo_muscular": ["dorsales", "biceps"], "series": 3, "repeticiones": "10-12", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Iniciar el movimiento con los codos hacia abajo, mantener el pecho estable y evitar balancear el torso.", "imagen": "jalon-pecho-polea.gif"},
+          {"orden": 4, "nombre": "Peso Muerto Rumano con Mancuernas", "grupo_muscular": ["isquiotibiales", "gluteos", "erectores_espinales"], "series": 2, "repeticiones": "10-12", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Llevar la cadera hacia atras manteniendo una ligera flexion de rodilla y la espalda neutra.", "imagen": "peso-muerto-rumano-mancuernas.gif"},
+          {"orden": 5, "nombre": "Elevacion Lateral con Mancuernas", "grupo_muscular": ["deltoides_lateral"], "series": 2, "repeticiones": "12-15", "tempo": "2-1-2-0", "descanso_seg": 60, "RIR": 3, "tecnica": "Elevar los brazos de forma controlada sin impulso y detener aproximadamente a la altura de los hombros.", "imagen": "elevacion-lateral-mancuernas.gif"}
+        ]},
+        {"dia": 2, "rutina": "B", "enfoque": "Fullbody B - variacion de patrones", "ejercicios": [
+          {"orden": 1, "nombre": "Prensa de Piernas", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 3, "repeticiones": "10-12", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Descender hasta un rango comodo sin despegar la pelvis del respaldo y empujar con todo el pie.", "imagen": "prensa-piernas.gif"},
+          {"orden": 2, "nombre": "Press Inclinado con Mancuernas", "grupo_muscular": ["pectoral_superior", "triceps", "deltoides_anterior"], "series": 3, "repeticiones": "10-12", "tempo": "2-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Mantener las escapulas apoyadas y descender las mancuernas con control hacia la zona superior del pecho.", "imagen": "press-inclinado-mancuernas.gif"},
+          {"orden": 3, "nombre": "Remo Sentado en Polea", "grupo_muscular": ["dorsales", "romboides", "trapecio_medio", "biceps"], "series": 3, "repeticiones": "10-12", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Mantener el torso estable y llevar los codos hacia atras sin convertir el movimiento en un balanceo.", "imagen": "remo-sentado-polea.gif"},
+          {"orden": 4, "nombre": "Hip Thrust con Mancuerna", "grupo_muscular": ["gluteos", "isquiotibiales"], "series": 2, "repeticiones": "10-12", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Extender la cadera hasta quedar alineado sin hiperextender la zona lumbar.", "imagen": "hip-thrust-mancuerna.gif"},
+          {"orden": 5, "nombre": "Curl de Biceps con Mancuernas", "grupo_muscular": ["biceps"], "series": 2, "repeticiones": "12-15", "tempo": "2-0-2-0", "descanso_seg": 60, "RIR": 3, "tecnica": "Mantener los codos relativamente quietos y evitar utilizar el balanceo del torso.", "imagen": "curl-biceps-mancuernas.gif"}
+        ]},
+        {"dia": 3, "rutina": "C", "enfoque": "Fullbody C - patrones fundamentales", "ejercicios": [
+          {"orden": 1, "nombre": "Sentadilla en Multipower", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 3, "repeticiones": "10-12", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Mantener el pie completamente apoyado y descender de forma controlada respetando un rango de movimiento comodo.", "imagen": "sentadilla-multipower.gif"},
+          {"orden": 2, "nombre": "Press de Pecho en Maquina", "grupo_muscular": ["pectoral", "triceps", "deltoides_anterior"], "series": 3, "repeticiones": "10-12", "tempo": "2-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Ajustar el asiento para que las asas queden aproximadamente a la altura media del pecho y controlar el retorno.", "imagen": "press-pecho-maquina.gif"},
+          {"orden": 3, "nombre": "Remo con Mancuerna a Una Mano", "grupo_muscular": ["dorsales", "romboides", "biceps"], "series": 3, "repeticiones": "10-12_por_lado", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Mantener la columna neutra y llevar el codo hacia la cadera evitando rotar el tronco.", "imagen": "remo-mancuerna-una-mano.gif"},
+          {"orden": 4, "nombre": "Curl Femoral en Maquina", "grupo_muscular": ["isquiotibiales"], "series": 2, "repeticiones": "12-15", "tempo": "2-1-2-0", "descanso_seg": 60, "RIR": 3, "tecnica": "Mantener la cadera estable contra el apoyo y flexionar la rodilla sin realizar movimientos bruscos.", "imagen": "curl-femoral-maquina.gif"},
+          {"orden": 5, "nombre": "Extension de Triceps en Polea", "grupo_muscular": ["triceps"], "series": 2, "repeticiones": "12-15", "tempo": "2-0-2-0", "descanso_seg": 60, "RIR": 3, "tecnica": "Mantener los codos cerca del torso y extender completamente sin mover los hombros hacia delante.", "imagen": "extension-triceps-polea.gif"}
+        ]}
+      ]
+    },
+    {
+      "semana": 2,
+      "fase": "sobrecarga_progresiva",
+      "RIR": 2,
+      "dias": [
+        {"dia": 1, "rutina": "A", "ejercicios": [
+          {"nombre": "Sentadilla Goblet", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 3, "repeticiones": "11-13", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Mantener control del descenso y aumentar ligeramente la carga solo si se conserva la tecnica.", "imagen": "sentadilla-goblet.gif"},
+          {"nombre": "Press de Banca con Mancuernas", "grupo_muscular": ["pectoral", "triceps", "deltoides_anterior"], "series": 3, "repeticiones": "11-13", "tempo": "2-0-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Mantener escapulas estables y progresar primero mediante repeticiones antes de subir carga.", "imagen": "press-banca-mancuernas.gif"},
+          {"nombre": "Jalon al Pecho en Polea", "grupo_muscular": ["dorsales", "biceps"], "series": 3, "repeticiones": "11-13", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Mantener el torso estable y completar la fase de traccion sin impulso.", "imagen": "jalon-pecho-polea.gif"},
+          {"nombre": "Peso Muerto Rumano con Mancuernas", "grupo_muscular": ["isquiotibiales", "gluteos", "erectores_espinales"], "series": 3, "repeticiones": "10-12", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Buscar tension en la cadena posterior mediante bisagra de cadera sin perder la columna neutra.", "imagen": "peso-muerto-rumano-mancuernas.gif"},
+          {"nombre": "Elevacion Lateral con Mancuernas", "grupo_muscular": ["deltoides_lateral"], "series": 2, "repeticiones": "13-15", "tempo": "2-1-2-0", "descanso_seg": 60, "RIR": 2, "tecnica": "Evitar impulso y mantener una trayectoria controlada.", "imagen": "elevacion-lateral-mancuernas.gif"}
+        ]},
+        {"dia": 2, "rutina": "B", "ejercicios": [
+          {"nombre": "Prensa de Piernas", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 3, "repeticiones": "11-13", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Descender hasta un rango comodo sin despegar la pelvis del respaldo y empujar con todo el pie.", "imagen": "prensa-piernas.gif"},
+          {"nombre": "Press Inclinado con Mancuernas", "grupo_muscular": ["pectoral_superior", "triceps", "deltoides_anterior"], "series": 3, "repeticiones": "11-13", "tempo": "2-0-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Controlar el descenso y evitar que los hombros se desplacen hacia delante.", "imagen": "press-inclinado-mancuernas.gif"},
+          {"nombre": "Remo Sentado en Polea", "grupo_muscular": ["dorsales", "romboides", "trapecio_medio", "biceps"], "series": 3, "repeticiones": "11-13", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Mantener el pecho abierto y controlar completamente el regreso.", "imagen": "remo-sentado-polea.gif"},
+          {"nombre": "Hip Thrust con Mancuerna", "grupo_muscular": ["gluteos", "isquiotibiales"], "series": 3, "repeticiones": "10-12", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Realizar una pausa breve arriba y evitar compensar mediante hiperextension lumbar.", "imagen": "hip-thrust-mancuerna.gif"},
+          {"nombre": "Curl de Biceps con Mancuernas", "grupo_muscular": ["biceps"], "series": 2, "repeticiones": "13-15", "tempo": "2-0-2-0", "descanso_seg": 60, "RIR": 2, "tecnica": "Mantener los codos estables y controlar especialmente la fase de descenso.", "imagen": "curl-biceps-mancuernas.gif"}
+        ]},
+        {"dia": 3, "rutina": "C", "ejercicios": [
+          {"nombre": "Sentadilla en Multipower", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 3, "repeticiones": "11-13", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Mantener trayectoria controlada y distribuir la presion sobre todo el pie.", "imagen": "sentadilla-multipower.gif"},
+          {"nombre": "Press de Pecho en Maquina", "grupo_muscular": ["pectoral", "triceps", "deltoides_anterior"], "series": 3, "repeticiones": "11-13", "tempo": "2-0-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Mantener espalda y escapulas apoyadas durante toda la serie.", "imagen": "press-pecho-maquina.gif"},
+          {"nombre": "Remo con Mancuerna a Una Mano", "grupo_muscular": ["dorsales", "romboides", "biceps"], "series": 3, "repeticiones": "11-13_por_lado", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 2, "tecnica": "Evitar rotar el torso y conducir el movimiento con el codo.", "imagen": "remo-mancuerna-una-mano.gif"},
+          {"nombre": "Curl Femoral en Maquina", "grupo_muscular": ["isquiotibiales"], "series": 2, "repeticiones": "13-15", "tempo": "2-1-2-0", "descanso_seg": 60, "RIR": 2, "tecnica": "Mantener la cadera estable y utilizar un rango controlado.", "imagen": "curl-femoral-maquina.gif"},
+          {"nombre": "Extension de Triceps en Polea", "grupo_muscular": ["triceps"], "series": 2, "repeticiones": "13-15", "tempo": "2-0-2-0", "descanso_seg": 60, "RIR": 2, "tecnica": "Mantener los codos cerca del cuerpo y evitar utilizar el hombro.", "imagen": "extension-triceps-polea.gif"}
+        ]}
+      ]
+    },
+    {
+      "semana": 3,
+      "fase": "pico_de_intensidad",
+      "RIR": "1-0",
+      "dias": [
+        {"dia": 1, "rutina": "A", "ejercicios": [
+          {"nombre": "Sentadilla Goblet", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 3, "repeticiones": "8-12", "tempo": "3-0-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Trabajar cerca del fallo tecnico sin sacrificar profundidad ni control.", "imagen": "sentadilla-goblet.gif"},
+          {"nombre": "Press de Banca con Mancuernas", "grupo_muscular": ["pectoral", "triceps", "deltoides_anterior"], "series": 3, "repeticiones": "8-12", "tempo": "2-0-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Finalizar la serie cuando la siguiente repeticion comprometa claramente la tecnica.", "imagen": "press-banca-mancuernas.gif"},
+          {"nombre": "Jalon al Pecho en Polea", "grupo_muscular": ["dorsales", "biceps"], "series": 3, "repeticiones": "8-12", "tempo": "2-1-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Acercarse al fallo manteniendo el torso estable y sin balanceo.", "imagen": "jalon-pecho-polea.gif"},
+          {"nombre": "Peso Muerto Rumano con Mancuernas", "grupo_muscular": ["isquiotibiales", "gluteos"], "series": 2, "repeticiones": "8-12", "tempo": "3-0-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "No llevar la serie al fallo absoluto; detenerla cuando la tecnica de bisagra comience a deteriorarse.", "imagen": "peso-muerto-rumano-mancuernas.gif"},
+          {"nombre": "Elevacion Lateral con Mancuernas", "grupo_muscular": ["deltoides_lateral"], "series": 2, "repeticiones": "12-15", "tempo": "2-1-2-0", "descanso_seg": 60, "RIR": 0, "tecnica": "Puede aproximarse al fallo tecnico manteniendo el movimiento estricto y sin balanceo.", "imagen": "elevacion-lateral-mancuernas.gif"}
+        ]},
+        {"dia": 2, "rutina": "B", "ejercicios": [
+          {"nombre": "Prensa de Piernas", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 3, "repeticiones": "8-12", "tempo": "3-0-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Acercarse al fallo manteniendo la pelvis estable y evitando bloquear agresivamente las rodillas.", "imagen": "prensa-piernas.gif"},
+          {"nombre": "Press Inclinado con Mancuernas", "grupo_muscular": ["pectoral_superior", "triceps", "deltoides_anterior"], "series": 3, "repeticiones": "8-12", "tempo": "2-0-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Mantener el control del recorrido y evitar llegar al fallo absoluto si compromete la posicion del hombro.", "imagen": "press-inclinado-mancuernas.gif"},
+          {"nombre": "Remo Sentado en Polea", "grupo_muscular": ["dorsales", "romboides", "trapecio_medio", "biceps"], "series": 3, "repeticiones": "8-12", "tempo": "2-1-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Finalizar cuando sea necesario utilizar impulso para completar otra repeticion limpia.", "imagen": "remo-sentado-polea.gif"},
+          {"nombre": "Hip Thrust con Mancuerna", "grupo_muscular": ["gluteos", "isquiotibiales"], "series": 2, "repeticiones": "8-12", "tempo": "2-1-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Mantener una pausa arriba y evitar hiperextension lumbar.", "imagen": "hip-thrust-mancuerna.gif"},
+          {"nombre": "Curl de Biceps con Mancuernas", "grupo_muscular": ["biceps"], "series": 2, "repeticiones": "10-15", "tempo": "2-0-2-0", "descanso_seg": 60, "RIR": 0, "tecnica": "Llegar cerca del fallo tecnico manteniendo los codos estables y sin balanceo.", "imagen": "curl-biceps-mancuernas.gif"}
+        ]},
+        {"dia": 3, "rutina": "C", "ejercicios": [
+          {"nombre": "Sentadilla en Multipower", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 3, "repeticiones": "8-12", "tempo": "3-0-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Mantener el control del descenso y terminar la serie antes de perder la trayectoria.", "imagen": "sentadilla-multipower.gif"},
+          {"nombre": "Press de Pecho en Maquina", "grupo_muscular": ["pectoral", "triceps", "deltoides_anterior"], "series": 3, "repeticiones": "8-12", "tempo": "2-0-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Aproximarse al fallo conservando espalda y escapulas apoyadas.", "imagen": "press-pecho-maquina.gif"},
+          {"nombre": "Remo con Mancuerna a Una Mano", "grupo_muscular": ["dorsales", "romboides", "biceps"], "series": 3, "repeticiones": "8-12_por_lado", "tempo": "2-1-1-0", "descanso_seg": 120, "RIR": 1, "tecnica": "Mantener el tronco estable y detener la serie si aparece rotacion compensatoria.", "imagen": "remo-mancuerna-una-mano.gif"},
+          {"nombre": "Curl Femoral en Maquina", "grupo_muscular": ["isquiotibiales"], "series": 2, "repeticiones": "10-15", "tempo": "2-1-2-0", "descanso_seg": 60, "RIR": 0, "tecnica": "Aproximarse al fallo tecnico manteniendo la cadera estable.", "imagen": "curl-femoral-maquina.gif"},
+          {"nombre": "Extension de Triceps en Polea", "grupo_muscular": ["triceps"], "series": 2, "repeticiones": "10-15", "tempo": "2-0-2-0", "descanso_seg": 60, "RIR": 0, "tecnica": "Llegar cerca del fallo manteniendo los codos fijos junto al cuerpo.", "imagen": "extension-triceps-polea.gif"}
+        ]}
+      ]
+    },
+    {
+      "semana": 4,
+      "fase": "deload",
+      "RIR": 3,
+      "volumen_porcentaje": 60,
+      "dias": [
+        {"dia": 1, "rutina": "A", "ejercicios": [
+          {"nombre": "Sentadilla Goblet", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 2, "repeticiones": "8-10", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Utilizar una carga comoda y priorizar el control del movimiento.", "imagen": "sentadilla-goblet.gif"},
+          {"nombre": "Press de Banca con Mancuernas", "grupo_muscular": ["pectoral", "triceps", "deltoides_anterior"], "series": 2, "repeticiones": "8-10", "tempo": "2-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Mantener una trayectoria controlada y sin esfuerzo maximo.", "imagen": "press-banca-mancuernas.gif"},
+          {"nombre": "Jalon al Pecho en Polea", "grupo_muscular": ["dorsales", "biceps"], "series": 2, "repeticiones": "8-10", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Realizar cada repeticion con control y sin utilizar impulso.", "imagen": "jalon-pecho-polea.gif"},
+          {"nombre": "Peso Muerto Rumano con Mancuernas", "grupo_muscular": ["isquiotibiales", "gluteos"], "series": 1, "repeticiones": "10-12", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Practicar la bisagra de cadera con una carga claramente submaxima.", "imagen": "peso-muerto-rumano-mancuernas.gif"},
+          {"nombre": "Elevacion Lateral con Mancuernas", "grupo_muscular": ["deltoides_lateral"], "series": 1, "repeticiones": "12-15", "tempo": "2-1-2-0", "descanso_seg": 60, "RIR": 3, "tecnica": "Movimiento ligero y estricto sin buscar fatiga elevada.", "imagen": "elevacion-lateral-mancuernas.gif"}
+        ]},
+        {"dia": 2, "rutina": "B", "ejercicios": [
+          {"nombre": "Prensa de Piernas", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 2, "repeticiones": "8-10", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Mantener un recorrido comodo y controlado.", "imagen": "prensa-piernas.gif"},
+          {"nombre": "Press Inclinado con Mancuernas", "grupo_muscular": ["pectoral_superior", "triceps", "deltoides_anterior"], "series": 2, "repeticiones": "8-10", "tempo": "2-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Usar una carga ligera y mantener las escapulas estables.", "imagen": "press-inclinado-mancuernas.gif"},
+          {"nombre": "Remo Sentado en Polea", "grupo_muscular": ["dorsales", "romboides", "trapecio_medio", "biceps"], "series": 2, "repeticiones": "8-10", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Priorizar la sensacion de control sobre la carga utilizada.", "imagen": "remo-sentado-polea.gif"},
+          {"nombre": "Hip Thrust con Mancuerna", "grupo_muscular": ["gluteos", "isquiotibiales"], "series": 1, "repeticiones": "10-12", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Pausa arriba sin hiperextender la zona lumbar.", "imagen": "hip-thrust-mancuerna.gif"},
+          {"nombre": "Curl de Biceps con Mancuernas", "grupo_muscular": ["biceps"], "series": 1, "repeticiones": "12-15", "tempo": "2-0-2-0", "descanso_seg": 60, "RIR": 3, "tecnica": "Movimiento estricto y submaximo.", "imagen": "curl-biceps-mancuernas.gif"}
+        ]},
+        {"dia": 3, "rutina": "C", "ejercicios": [
+          {"nombre": "Sentadilla en Multipower", "grupo_muscular": ["cuadriceps", "gluteos"], "series": 2, "repeticiones": "8-10", "tempo": "3-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Realizar un movimiento comodo sin buscar esfuerzo maximo.", "imagen": "sentadilla-multipower.gif"},
+          {"nombre": "Press de Pecho en Maquina", "grupo_muscular": ["pectoral", "triceps", "deltoides_anterior"], "series": 2, "repeticiones": "8-10", "tempo": "2-0-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Mantener espalda apoyada y recorrido controlado.", "imagen": "press-pecho-maquina.gif"},
+          {"nombre": "Remo con Mancuerna a Una Mano", "grupo_muscular": ["dorsales", "romboides", "biceps"], "series": 2, "repeticiones": "8-10_por_lado", "tempo": "2-1-1-0", "descanso_seg": 90, "RIR": 3, "tecnica": "Mantener el torso estable y evitar rotaciones.", "imagen": "remo-mancuerna-una-mano.gif"},
+          {"nombre": "Curl Femoral en Maquina", "grupo_muscular": ["isquiotibiales"], "series": 1, "repeticiones": "12-15", "tempo": "2-1-2-0", "descanso_seg": 60, "RIR": 3, "tecnica": "Movimiento controlado y sin rebotes.", "imagen": "curl-femoral-maquina.gif"},
+          {"nombre": "Extension de Triceps en Polea", "grupo_muscular": ["triceps"], "series": 1, "repeticiones": "12-15", "tempo": "2-0-2-0", "descanso_seg": 60, "RIR": 3, "tecnica": "Mantener los codos estables y evitar movimientos compensatorios.", "imagen": "extension-triceps-polea.gif"}
+        ]}
+      ]
+    }
+  ],
+  "resumen_volumen": {
+    "semana_1": {"series_por_sesion": 13, "series_totales_semana": 39},
+    "semana_2": {"series_por_sesion": 14, "series_totales_semana": 42},
+    "semana_3": {"series_por_sesion": 13, "series_totales_semana": 39, "intensidad_relativa": "maxima_del_ciclo"},
+    "semana_4": {"series_por_sesion": 8, "series_totales_semana": 24, "volumen_relativo_aproximado": "60_por_ciento"}
+  },
+  "reglas_de_progresion": {
+    "doble_progresion": {
+      "descripcion": "Mantener la carga hasta completar el extremo superior del rango con el RIR objetivo. Una vez conseguido, incrementar ligeramente la carga y volver al extremo inferior del rango.",
+      "incremento_recomendado": {"tren_superior": "2-5_por_ciento", "tren_inferior": "2.5-5_por_ciento"}
+    },
+    "semana_1": "Establecer una carga que deje aproximadamente 3 repeticiones en reserva.",
+    "semana_2": "Intentar sumar repeticiones o una pequena cantidad de carga manteniendo aproximadamente 2 repeticiones en reserva.",
+    "semana_3": "Trabajar cerca del fallo tecnico. Evitar el fallo absoluto en ejercicios compuestos de mayor complejidad.",
+    "semana_4": "Reducir el numero de series aproximadamente al 60 por ciento y utilizar cargas submaximas para facilitar la recuperacion."
+  },
+  "metadatos_plataforma": {
+    "tipo_plantilla": "maestra",
+    "requiere_personalizacion_de_carga": true,
+    "requiere_personalizacion_por_experiencia": false,
+    "compatible_con_progressive_overload": true,
+    "compatible_con_deload": true,
+    "estructura_reutilizable": true,
+    "proxima_plantilla_sugerida": "P02_F3_FUERZA_DEFINICION_FULLBODY_ABC"
+  }
+}
