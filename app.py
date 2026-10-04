@@ -2,7 +2,7 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Dict, Optional
 from datetime import date
 import pandas as pd
@@ -266,6 +266,17 @@ class UsuarioPerfilUpdate(BaseModel):
 class UsuarioLogin(BaseModel):
     usuario: str
     contrasena: str
+
+
+class NutritionModuleRequest(BaseModel):
+    weight: float
+    height: float
+    age: int
+    gender: str
+    goal: str
+    available_foods: list[str] = Field(default_factory=list)
+    preferences: list[str] = Field(default_factory=list)
+    meal_frequency: int = 4
 
 
 class SolicitudResetPassword(BaseModel):
@@ -761,14 +772,20 @@ def crear_rutina(
 
 def distribucion_macros_por_objetivo(objetivo: str):
     objetivo_lower = str(objetivo).lower()
-    if any(term in objetivo_lower for term in ("masa", "músculo", "musculo", "superávit", "superavit")):
+    if any(term in objetivo_lower for term in ("masa", "músculo", "musculo", "superávit", "superavit", "surplus")):
         return {"proteinas": 30, "carbohidratos": 50, "grasas": 20}
     if any(term in objetivo_lower for term in ("grasa", "adelgaz", "perder peso", "déficit", "deficit")):
         return {"proteinas": 40, "carbohidratos": 30, "grasas": 30}
     return {"proteinas": 30, "carbohidratos": 40, "grasas": 30}
 
 
-def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dict):
+def construir_plan_alimenticio(
+    objetivo: str,
+    calorias: int,
+    macros_diarios: dict,
+    meal_frequency: int = 4,
+    available_foods: Optional[list[str]] = None,
+):
     objetivo_lower = str(objetivo).lower()
     distribucion_macros = distribucion_macros_por_objetivo(objetivo)
     if any(term in objetivo_lower for term in ("masa", "músculo", "musculo", "superávit", "superavit")):
@@ -874,17 +891,34 @@ def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dic
             ]},
         ],
     }
-    orden_comidas = ["Desayuno", "Almuerzo", "Merienda", "Cena"]
-    porcentajes_comida = {"Desayuno": 25, "Almuerzo": 35, "Merienda": 15, "Cena": 25}
+    if meal_frequency == 2:
+        comidas_plan = [("Desayuno", "Desayuno"), ("Cena", "Cena")]
+    elif meal_frequency == 3:
+        comidas_plan = [("Desayuno", "Desayuno"), ("Almuerzo", "Almuerzo"), ("Cena", "Cena")]
+    else:
+        comidas_plan = [("Desayuno", "Desayuno"), ("Almuerzo", "Almuerzo")]
+        comidas_plan.extend(("Merienda", f"Merienda {indice}") for indice in range(1, meal_frequency - 2))
+        comidas_plan.append(("Cena", "Cena"))
+    preferencias = [str(alimento).strip().casefold() for alimento in (available_foods or []) if str(alimento).strip()]
+    porcentaje_comida = 100 / meal_frequency
     escala_calorias = max(0, float(calorias)) / 2000
     menu_semanal = []
 
     for indice_dia in range(28):
         dia = f"Día {indice_dia + 1}"
         comidas_dia = []
-        for indice_comida, nombre_comida in enumerate(orden_comidas):
-            recetas_comida = recetas[nombre_comida]
-            receta = recetas_comida[(indice_dia + indice_comida) % len(recetas_comida)]
+        for indice_comida, (categoria_comida, nombre_comida) in enumerate(comidas_plan):
+            recetas_comida = recetas[categoria_comida]
+            recetas_preferidas = [
+                receta_candidata for receta_candidata in recetas_comida
+                if any(
+                    preferencia in receta_candidata["plato"].casefold()
+                    or any(preferencia in alimento[0].casefold() for alimento in receta_candidata["alimentos"])
+                    for preferencia in preferencias
+                )
+            ]
+            opciones_receta = recetas_preferidas or recetas_comida
+            receta = opciones_receta[(indice_dia + indice_comida) % len(opciones_receta)]
             porciones = []
             for nombre, cantidad, unidad, grupo in receta["alimentos"]:
                 cantidad_ajustada = cantidad * escala_calorias * ajuste_por_grupo[grupo]
@@ -894,7 +928,11 @@ def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dic
                     cantidad_ajustada = max(5, round(cantidad_ajustada / 5) * 5)
                 porciones.append({"nombre": nombre, "cantidad": cantidad_ajustada, "unidad": unidad})
 
-            porcentaje = porcentajes_comida[nombre_comida] / 100
+            porcentaje = (
+                {"Desayuno": 25, "Almuerzo": 35, "Merienda": 15, "Cena": 25}[categoria_comida] / 100
+                if meal_frequency == 4
+                else porcentaje_comida / 100
+            )
             macros_comida = {macro: round(cantidad * porcentaje) for macro, cantidad in macros_diarios.items()}
             receta_id = RECIPE_IDS_BY_NAME.get(receta["plato"])
             if not receta_id:
@@ -903,7 +941,7 @@ def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dic
                 "receta_id": receta_id,
                 "comida": nombre_comida,
                 "plato": receta["plato"],
-                "imagen": imagenes_comida[nombre_comida],
+                "imagen": imagenes_comida[categoria_comida],
                 "calorias": round(calorias * porcentaje),
                 "macros": macros_comida,
                 "alimentos": porciones,
@@ -918,6 +956,58 @@ def construir_plan_alimenticio(objetivo: str, calorias: int, macros_diarios: dic
         })
 
     return {"distribucion_macros": distribucion_macros, "menu_alimenticio": menu_semanal}
+
+
+def generar_plan_nutricional(data: NutritionModuleRequest):
+    ajustes_objetivo = {"deficit": -400, "maintenance": 0, "surplus": 300}
+    goal = str(data.goal).strip().lower()
+    if goal not in ajustes_objetivo:
+        raise HTTPException(status_code=422, detail="El objetivo debe ser deficit, maintenance o surplus.")
+    if data.meal_frequency < 2 or data.meal_frequency > 8:
+        raise HTTPException(status_code=422, detail="La frecuencia debe estar entre 2 y 8 comidas diarias.")
+
+    gender = str(data.gender).strip().lower()
+    if gender not in {"m", "male", "masculino", "hombre", "f", "female", "femenino", "mujer"}:
+        raise HTTPException(status_code=422, detail="El sexo debe ser masculino o femenino.")
+    altura_cm = float(data.height) * 100 if float(data.height) <= 3 else float(data.height)
+    weight = float(data.weight)
+    age = int(data.age)
+    if not 30 <= weight <= 350 or not 120 <= altura_cm <= 230 or not 14 <= age <= 100:
+        raise HTTPException(status_code=422, detail="Revisa el peso, la estatura y la edad del perfil.")
+
+    es_hombre = gender in {"m", "male", "masculino", "hombre"}
+    tmb = (10 * weight) + (6.25 * altura_cm) - (5 * age) + (5 if es_hombre else -161)
+    tdee = tmb * 1.2
+    calorias = round(tdee + ajustes_objetivo[goal])
+    objetivo_texto = {"deficit": "Déficit", "maintenance": "Mantenimiento", "surplus": "Superávit"}[goal]
+    distribucion = distribucion_macros_por_objetivo(goal)
+    proteinas = round(calorias * distribucion["proteinas"] / 100 / 4)
+    carbos = round(calorias * distribucion["carbohidratos"] / 100 / 4)
+    grasas = round(calorias * distribucion["grasas"] / 100 / 9)
+    alimentos = list(dict.fromkeys(data.available_foods + data.preferences))
+    plan = construir_plan_alimenticio(
+        objetivo_texto,
+        calorias,
+        {"proteinas": proteinas, "carbohidratos": carbos, "grasas": grasas},
+        data.meal_frequency,
+        alimentos,
+    )
+    return {
+        "title": "Plan de Nutrición Personalizado",
+        "goal": goal,
+        "meals_per_day": data.meal_frequency,
+        "available_foods": alimentos,
+        "imc": round(weight / ((altura_cm / 100) ** 2), 1),
+        "tmb": round(tmb),
+        "tdee": round(tdee),
+        "target_calories": calorias,
+        "calorias": calorias,
+        "proteinas": proteinas,
+        "carbos": carbos,
+        "grasas": grasas,
+        "explicacion_nutricional": "Plan calculado con tus datos biológicos y parámetros nutricionales, sin usar datos de entrenamiento.",
+        **plan,
+    }
 
 
 def calcular_resumen(
@@ -1201,6 +1291,11 @@ def login(datos: UsuarioLogin):
         "peso_inicial": user_row.get("PesoInicial", peso),
         **resumen,
     }
+
+
+@app.post("/api/nutricion/plan")
+def crear_plan_nutricional(datos: NutritionModuleRequest):
+    return generar_plan_nutricional(datos)
 
 
 def buscar_usuario_reset(datos: SolicitudResetPassword):

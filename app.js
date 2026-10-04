@@ -13,8 +13,8 @@ const IMAGENES_EJERCICIOS = {
 let usuarioActual = "";
 let inactivityTimer = null;
 let plantillaRutinaActiva = null;
-let matrizNutricional = null;
 let planNutricionalActivo = [];
+let perfilNutricionalActual = null;
 
 async function leerRespuesta(respuesta, mensajePorDefecto) {
     const texto = await respuesta.text();
@@ -269,14 +269,11 @@ function mostrarDiaNutricional() {
         return;
     }
 
-    try {
-        const selectorDia = document.getElementById("nutrition-day");
-        const dia = window.NutritionalScalingEngine.obtenerMenuDia(planNutricionalActivo, selectorDia.value);
-        localStorage.setItem("nutritionSelectedDay", selectorDia.value);
-        contenedor.innerHTML = renderizarTarjetaDiaAlimenticio(dia);
-    } catch (error) {
-        contenedor.textContent = error.message;
-    }
+    const selectorDia = document.getElementById("nutrition-day");
+    const dia = planNutricionalActivo.find((item, indice) => Number(item.dia_numero ?? indice + 1) === Number(selectorDia.value));
+    if (!dia) return;
+    localStorage.setItem("nutritionSelectedDay", selectorDia.value);
+    contenedor.innerHTML = renderizarTarjetaDiaAlimenticio(dia);
 }
 
 function renderizarTarjetaDiaAlimenticio(dia) {
@@ -318,17 +315,6 @@ function renderizarTarjetaDiaAlimenticio(dia) {
         `;
 }
 
-async function cargarMatrizNutricional() {
-    try {
-        const respuesta = await fetch("nutrition-prototype-matrix.json");
-        const documento = await leerRespuesta(respuesta, "No se pudo cargar la matriz nutricional.");
-        window.NutritionalScalingEngine.validarMatriz(documento);
-        matrizNutricional = documento;
-    } catch (error) {
-        document.getElementById("nutrition-warnings").textContent = error.message;
-    }
-}
-
 function actualizarEncabezadoRutina(objetivo) {
     const mensajes = {
         "Hipertrofia (Masa)": "Rutina enfocada en el desarrollo muscular y la progresión del volumen.",
@@ -342,42 +328,69 @@ function actualizarEncabezadoRutina(objetivo) {
     document.getElementById("routine-goal-message").innerText = mensaje;
 }
 
-async function actualizarDashboard(data) {
-    let datosNutricionales = data;
-    if (matrizNutricional && Array.isArray(data.menu_alimenticio) && data.menu_alimenticio.length) {
-        try {
-            const planAdaptado = window.NutritionalScalingEngine.adaptarMenu(
-                matrizNutricional,
-                data.menu_alimenticio,
-                data,
-                data.calorias
-            );
-            const objetivos = planAdaptado.objetivos;
-            const totalCaloriasMacros = objetivos.proteinas * 4 + objetivos.carbohidratos * 4 + objetivos.grasas * 9;
-            datosNutricionales = {
-                ...data,
-                tmb: objetivos.tmb,
-                tdee: objetivos.tdee,
-                calorias: objetivos.calorias,
-                proteinas: objetivos.proteinas,
-                carbos: objetivos.carbohidratos,
-                grasas: objetivos.grasas,
-                menu_alimenticio: planAdaptado.menu,
-                metadatos_nutricionales: planAdaptado.metadatos,
-                explicacion_nutricional: `Prototipo ${objetivos.prototipo_id}; objetivo ajustado a ${objetivos.calorias} kcal con tus datos reales.`,
-                distribucion_macros: {
-                    proteinas: Math.round(objetivos.proteinas * 4 / totalCaloriasMacros * 100),
-                    carbohidratos: Math.round(objetivos.carbohidratos * 4 / totalCaloriasMacros * 100),
-                    grasas: Math.round(objetivos.grasas * 9 / totalCaloriasMacros * 100)
-                }
-            };
-            document.getElementById("nutrition-reference").textContent = `Prototipo de referencia: ${objetivos.prototipo_id} · ${objetivos.perfil_prototipo} · Factor de actividad ${objetivos.factor_actividad} · Experiencia ${objetivos.factor_experiencia}`;
-            document.getElementById("nutrition-warnings").textContent = planAdaptado.advertencias.join(" ");
-        } catch (error) {
-            document.getElementById("nutrition-warnings").textContent = error.message;
-        }
+function normalizarObjetivoNutricional(valor) {
+    const objetivo = String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    if (objetivo.includes("deficit") || objetivo.includes("grasa")) return "deficit";
+    if (objetivo.includes("superavit") || objetivo.includes("musculo") || objetivo.includes("ganar")) return "surplus";
+    return "maintenance";
+}
+
+async function actualizarPlanNutricional(perfil = perfilNutricionalActual) {
+    if (!perfil) return;
+
+    const mensaje = document.getElementById("nutrition-msg");
+    const selectorObjetivo = document.getElementById("nutrition-goal");
+    const selectorAlimentos = document.getElementById("nutrition-foods");
+    const objetivo = selectorObjetivo.value;
+    const alimentos = [...selectorAlimentos.selectedOptions].map((opcion) => opcion.value);
+    const frecuencia = Number(document.getElementById("nutrition-meal-frequency").value);
+    const preferencias = { goal: objetivo, available_foods: alimentos, meal_frequency: frecuencia };
+    localStorage.setItem("nutritionSettings", JSON.stringify(preferencias));
+
+    try {
+        mensaje.textContent = "Generando plan...";
+        mensaje.style.color = "";
+        const respuesta = await fetch(`${API_URL}/nutricion/plan`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                weight: Number(perfil.peso),
+                height: Number(perfil.estatura),
+                age: Number(perfil.edad),
+                gender: perfil.sexo,
+                goal: objetivo,
+                available_foods: alimentos,
+                preferences: alimentos,
+                meal_frequency: frecuencia
+            })
+        });
+        const plan = await leerRespuesta(respuesta, "No se pudo generar el plan nutricional.");
+        document.getElementById("res-imc").innerText = plan.imc;
+        document.getElementById("res-tmb").innerText = `${plan.tmb} kcal`;
+        document.getElementById("res-tdee").innerText = `${plan.tdee} kcal`;
+        document.getElementById("res-calorias").innerText = `${plan.target_calories} kcal`;
+        document.getElementById("res-proteinas").innerText = `${plan.proteinas} g`;
+        document.getElementById("res-carbos").innerText = `${plan.carbos} g`;
+        document.getElementById("res-grasas").innerText = `${plan.grasas} g`;
+        document.getElementById("res-explicacion").innerText = plan.explicacion_nutricional;
+        const distribucion = plan.distribucion_macros || {};
+        document.getElementById("res-distribucion").innerText =
+            `Distribución orientativa: ${distribucion.carbohidratos ?? "-"}% carbohidratos, ${distribucion.proteinas ?? "-"}% proteína y ${distribucion.grasas ?? "-"}% grasas.`;
+        document.getElementById("home-imc").innerText = plan.imc;
+        document.getElementById("home-calorias").innerText = `${plan.target_calories} kcal`;
+        document.getElementById("home-objetivo").innerText = selectorObjetivo.selectedOptions[0].textContent;
+        renderizarPlanAlimenticio(plan.menu_alimenticio || []);
+        document.getElementById("nutrition-warnings").textContent = "";
+        mensaje.textContent = "Plan actualizado.";
+    } catch (error) {
+        mensaje.style.color = "#ff5252";
+        mensaje.textContent = error.message;
+        document.getElementById("nutrition-warnings").textContent = error.message;
     }
-    data = datosNutricionales;
+}
+
+async function actualizarDashboard(data) {
+    perfilNutricionalActual = data;
 
     document.getElementById("res-imc").innerText = data.imc;
     document.getElementById("res-tmb").innerText = `${data.tmb} kcal`;
@@ -386,21 +399,34 @@ async function actualizarDashboard(data) {
     document.getElementById("res-proteinas").innerText = `${data.proteinas} g`;
     document.getElementById("res-carbos").innerText = `${data.carbos} g`;
     document.getElementById("res-grasas").innerText = `${data.grasas} g`;
-    document.getElementById("nutrition-goal").value = data.objetivo_nutricional || "Mantenimiento";
+    let preferenciasNutricionales = {};
+    try {
+        preferenciasNutricionales = JSON.parse(localStorage.getItem("nutritionSettings") || "{}");
+    } catch (error) {
+        localStorage.removeItem("nutritionSettings");
+    }
+    const selectorObjetivo = document.getElementById("nutrition-goal");
+    selectorObjetivo.value = preferenciasNutricionales.goal || normalizarObjetivoNutricional(data.objetivo_nutricional);
+    document.getElementById("nutrition-meal-frequency").value = String(preferenciasNutricionales.meal_frequency || 4);
+    const foodsSelected = new Set(preferenciasNutricionales.available_foods || []);
+    [...document.getElementById("nutrition-foods").options].forEach((opcion) => {
+        opcion.selected = foodsSelected.has(opcion.value);
+    });
     document.getElementById("training-goal").value = data.objetivo_entrenamiento || "Hipertrofia (Masa)";
     document.getElementById("res-explicacion").innerText = data.explicacion_nutricional;
     const distribucion = data.distribucion_macros || {};
     document.getElementById("res-distribucion").innerText =
         `Distribución orientativa: ${distribucion.carbohidratos ?? "-"}% carbohidratos, ${distribucion.proteinas ?? "-"}% proteína y ${distribucion.grasas ?? "-"}% grasas.`;
-    renderizarPlanAlimenticio(data.menu_alimenticio || []);
+    renderizarPlanAlimenticio([]);
     document.getElementById("home-imc").innerText = data.imc;
     document.getElementById("home-calorias").innerText = `${data.calorias} kcal`;
     document.getElementById("home-objetivo").innerText = data.objetivo_nutricional || "-";
     actualizarEncabezadoRutina(data.objetivo_entrenamiento);
     mostrarPerfil(data);
     renderizarRutina(data.rutina);
+    await actualizarPlanNutricional(data);
     await cargarSeguimiento();
-    return datosNutricionales;
+    return data;
 }
 
 function mostrarSeccion(seccion) {
@@ -875,7 +901,6 @@ document.addEventListener("scroll", actualizarActividad, { capture: true, passiv
 document.addEventListener("touchstart", actualizarActividad, { passive: true });
 document.addEventListener("DOMContentLoaded", async () => {
     inicializarSelectoresEstatura();
-    await cargarMatrizNutricional();
     await restaurarPlantillaRutina();
     await restaurarSesion();
 });
@@ -896,11 +921,9 @@ function cerrarSesion(expiradaPorInactividad = false) {
     if (expiradaPorInactividad) window.alert("Sesión expirada por inactividad");
 }
 
-async function actualizarObjetivoPlan(campo) {
-    const selector = campo === "objetivo_nutricional"
-        ? document.getElementById("nutrition-goal")
-        : document.getElementById("training-goal");
-    const mensaje = document.getElementById(campo === "objetivo_nutricional" ? "nutrition-msg" : "training-msg");
+async function actualizarObjetivoPlan() {
+    const selector = document.getElementById("training-goal");
+    const mensaje = document.getElementById("training-msg");
 
     if (!usuarioActual) return;
 
@@ -909,7 +932,7 @@ async function actualizarObjetivoPlan(campo) {
         const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ [campo]: selector.value })
+            body: JSON.stringify({ objetivo_entrenamiento: selector.value })
         });
         const data = await leerRespuesta(respuesta, "No se pudo actualizar el objetivo.");
         actualizarSesion(data);

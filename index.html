@@ -57,14 +57,6 @@
                 <div class="grid-2">
                     <div>
                         <label for="reg-edad" class="sr-only">Edad</label>
-                    <div class="nutrition-menu-controls">
-                        <label for="nutrition-day">Menú del día</label>
-                        <select id="nutrition-day" onchange="mostrarDiaNutricional()">
-                            <option value="1">Día 1</option>
-                        </select>
-                        <p id="nutrition-reference" class="nutrition-reference"></p>
-                        <div id="nutrition-warnings" class="nutrition-warnings" aria-live="polite"></div>
-                    </div>
                         <input type="number" id="reg-edad" placeholder="Edad" min="14" max="90" required>
                     </div>
                     <div>
@@ -220,16 +212,56 @@
                 <section id="section-nutricion" class="dashboard-section hidden">
                     <div class="section-heading">
                         <p class="eyebrow">PLAN NUTRICIONAL</p>
-                        <h3>Tu combustible diario</h3>
+                        <h3>Plan Nutricional de 28 Días</h3>
                     </div>
                     <div class="plan-selector">
                         <label for="nutrition-goal">Tu Objetivo Nutricional</label>
-                        <select id="nutrition-goal" onchange="actualizarObjetivoPlan('objetivo_nutricional')" required>
-                            <option value="Perder Grasa (Déficit)">Perder Grasa (Déficit)</option>
-                            <option value="Ganar Peso/Músculo (Superávit)">Ganar Peso/Músculo (Superávit)</option>
-                            <option value="Mantenimiento">Mantenimiento</option>
+                        <select id="nutrition-goal" onchange="actualizarPlanNutricional()" required>
+                            <option value="deficit">Déficit</option>
+                            <option value="maintenance">Mantenimiento</option>
+                            <option value="surplus">Superávit</option>
                         </select>
                         <p id="nutrition-msg" class="plan-selector-msg" aria-live="polite"></p>
+                    </div>
+                    <div class="nutrition-menu-controls">
+                        <div class="grid-2">
+                            <div>
+                                <label for="nutrition-meal-frequency">Comidas al día</label>
+                                <select id="nutrition-meal-frequency" onchange="actualizarPlanNutricional()">
+                                    <option value="2">2 comidas</option>
+                                    <option value="3">3 comidas</option>
+                                    <option value="4" selected>4 comidas</option>
+                                    <option value="5">5 comidas</option>
+                                    <option value="6">6 comidas</option>
+                                    <option value="7">7 comidas</option>
+                                    <option value="8">8 comidas</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="nutrition-foods">Alimentos disponibles o preferidos</label>
+                                <select id="nutrition-foods" multiple size="5" onchange="actualizarPlanNutricional()">
+                                    <option value="Pechuga de pollo">Pechuga de pollo</option>
+                                    <option value="Avena integral">Avena integral</option>
+                                    <option value="Arroz integral">Arroz integral</option>
+                                    <option value="Pescado">Pescado</option>
+                                    <option value="Huevo">Huevo</option>
+                                    <option value="Yogur">Yogur</option>
+                                    <option value="Tofu">Tofu</option>
+                                    <option value="Lentejas">Lentejas</option>
+                                    <option value="Pavo">Pavo</option>
+                                    <option value="Ternera">Ternera</option>
+                                    <option value="Garbanzos">Garbanzos</option>
+                                    <option value="Quinoa">Quinoa</option>
+                                    <option value="Frutos rojos">Frutos rojos</option>
+                                    <option value="Aguacate">Aguacate</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label for="nutrition-day">Menú del día</label>
+                        <select id="nutrition-day" onchange="mostrarDiaNutricional()">
+                            <option value="1">Día 1</option>
+                        </select>
+                        <div id="nutrition-warnings" class="nutrition-warnings" aria-live="polite"></div>
                     </div>
                     <div class="metrics-grid">
                         <div class="metric-box"><span>IMC</span><strong id="res-imc">-</strong></div>
@@ -350,7 +382,6 @@
     </div>
 
     <script src="routine_engine.js"></script>
-    <script src="nutrition_engine.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
