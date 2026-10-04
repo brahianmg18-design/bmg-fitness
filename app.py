@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI, HTTPException, Request
+﻿from fastapi import FastAPI, HTTPException, Request, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
@@ -1262,8 +1262,11 @@ def actualizar_perfil_frontend(datos: PerfilFrontendUpdate):
 
 
 @app.post("/api/login")
-def login(datos: UsuarioLogin):
-    p_clean = datos.contrasena.strip()
+def login(payload: UsuarioLogin = Body(...)):
+    usuario = payload.usuario.strip()
+    contrasena = payload.contrasena.strip()
+    print(f"[LOGIN_DEBUG] usuario={usuario!r} | contrasena_longitud={len(contrasena)}")
+
     conn = obtener_conexion()
     cursor = conn.cursor()
     try:
@@ -1280,17 +1283,22 @@ def login(datos: UsuarioLogin):
             FROM usuarios
             WHERE LOWER(usuario) = LOWER(%s)
             """,
-            (datos.usuario.strip(),),
+            (usuario,),
         )
         user_row = cursor.fetchone()
-        if user_row is None or not verificar_password(p_clean, str(user_row["Contraseña"]).strip()):
+        print(f"[LOGIN_DEBUG] user_row_encontrado={user_row is not None}")
+
+        if user_row is None:
             raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
 
         stored_password = str(user_row["Contraseña"]).strip()
+        if not verificar_password(contrasena, stored_password):
+            raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
+
         if not stored_password.startswith(f"{PASSWORD_PREFIX}$"):
             cursor.execute(
                 "UPDATE usuarios SET password = %s WHERE usuario = %s",
-                (hash_password(p_clean), user_row["Usuario"]),
+                (hash_password(contrasena), user_row["Usuario"]),
             )
         conn.commit()
     except HTTPException:

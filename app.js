@@ -153,15 +153,16 @@ async function ejecutarRegistro(e) {
 async function ejecutarLogin(e) {
     e.preventDefault();
     const alertMsg = document.getElementById("alert-msg");
-    
-    const usuario = document.getElementById("login-user").value;
-    const contrasena = document.getElementById("login-pass").value;
+
+    const usuario = document.getElementById("login-user").value.trim();
+    const contrasena = document.getElementById("login-pass").value.trim();
+    const payload = { usuario, contrasena };
 
     try {
         const respuesta = await fetch(`${API_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ usuario, contrasena })
+            body: JSON.stringify(payload)
         });
 
         const data = await leerRespuesta(respuesta, "No se pudo iniciar sesión.");
