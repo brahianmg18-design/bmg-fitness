@@ -216,7 +216,7 @@
                     </div>
                     <div class="plan-selector">
                         <label for="nutrition-goal">Tu Objetivo Nutricional</label>
-                        <select id="nutrition-goal" onchange="actualizarPlanNutricional()" required>
+                        <select id="nutrition-goal" required>
                             <option value="deficit">Déficit</option>
                             <option value="maintenance">Mantenimiento</option>
                             <option value="surplus">Superávit</option>
@@ -224,10 +224,10 @@
                         <p id="nutrition-msg" class="plan-selector-msg" aria-live="polite"></p>
                     </div>
                     <div class="nutrition-menu-controls">
-                        <div class="grid-2">
+                        <div class="nutrition-settings-grid">
                             <div>
                                 <label for="nutrition-meal-frequency">Comidas al día</label>
-                                <select id="nutrition-meal-frequency" onchange="actualizarPlanNutricional()">
+                                <select id="nutrition-meal-frequency">
                                     <option value="2">2 comidas</option>
                                     <option value="3">3 comidas</option>
                                     <option value="4" selected>4 comidas</option>
@@ -238,8 +238,18 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="nutrition-foods">Alimentos disponibles o preferidos</label>
-                                <select id="nutrition-foods" multiple size="5" onchange="actualizarPlanNutricional()">
+                                <label for="nutrition-weight">Peso actual</label>
+                                <div class="nutrition-weight-control">
+                                    <input id="nutrition-weight" type="number" min="30" max="250" step="0.1" placeholder="70" />
+                                    <span>kg</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="nutrition-food-picker">
+                            <label>Alimentos preferidos</label>
+                            <div class="nutrition-food-select-row">
+                                <select id="nutrition-food-choice">
                                     <option value="Pechuga de pollo">Pechuga de pollo</option>
                                     <option value="Avena integral">Avena integral</option>
                                     <option value="Arroz integral">Arroz integral</option>
@@ -254,9 +264,20 @@
                                     <option value="Quinoa">Quinoa</option>
                                     <option value="Frutos rojos">Frutos rojos</option>
                                     <option value="Aguacate">Aguacate</option>
+                                    <option value="Salmon">Salmón</option>
+                                    <option value="Plátano">Plátano</option>
                                 </select>
+                                <button type="button" id="nutrition-add-food" class="secondary-button">+ Agregar</button>
                             </div>
+                            <div id="nutrition-selected-foods" class="nutrition-selected-foods" aria-live="polite"></div>
+                            <select id="nutrition-foods" class="hidden" multiple aria-hidden="true"></select>
                         </div>
+
+                        <div class="nutrition-actions">
+                            <button type="button" id="nutrition-apply-btn" class="primary-button">Aplicar cambios</button>
+                            <button type="button" id="nutrition-cancel-btn" class="secondary-button">Cancelar</button>
+                        </div>
+
                         <label for="nutrition-day">Menú del día</label>
                         <select id="nutrition-day" onchange="mostrarDiaNutricional()">
                             <option value="1">Día 1</option>
@@ -265,6 +286,7 @@
                     </div>
                     <div class="metrics-grid">
                         <div class="metric-box"><span>IMC</span><strong id="res-imc">-</strong></div>
+                        <div class="metric-box"><span>Peso actual</span><strong id="res-peso-actual">-</strong></div>
                         <div class="metric-box"><span>TMB</span><strong id="res-tmb">- kcal</strong></div>
                         <div class="metric-box"><span>Gasto estimado (TDEE)</span><strong id="res-tdee">- kcal</strong></div>
                         <div class="metric-box highlight"><span>Meta calórica</span><strong id="res-calorias">- kcal</strong></div>
@@ -279,14 +301,56 @@
 
                 <section id="section-rutina" class="dashboard-section hidden">
                     <div class="plan-selector">
-                        <label for="training-goal">Tu Objetivo de Entrenamiento</label>
-                        <select id="training-goal" onchange="actualizarObjetivoPlan('objetivo_entrenamiento')" required>
+                        <label for="training-goal">Tu objetivo de entrenamiento</label>
+                        <select id="training-goal" required>
                             <option value="Hipertrofia (Masa)">Hipertrofia (Masa)</option>
                             <option value="Fuerza/Definición">Fuerza/Definición</option>
                             <option value="Acondicionamiento General">Acondicionamiento General</option>
                         </select>
                         <p id="training-msg" class="plan-selector-msg" aria-live="polite"></p>
                     </div>
+
+                    <div class="routine-config-grid">
+                        <div>
+                            <label for="routine-days">Días de entrenamiento por semana</label>
+                            <select id="routine-days">
+                                <option value="2">2 días</option>
+                                <option value="3">3 días</option>
+                                <option value="4" selected>4 días</option>
+                                <option value="5">5 días</option>
+                                <option value="6">6 días</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="routine-muscle-priority">Músculo prioritario</label>
+                            <select id="routine-muscle-priority">
+                                <option value="Pecho">Pecho</option>
+                                <option value="Espalda">Espalda</option>
+                                <option value="Hombros">Hombros</option>
+                                <option value="Bíceps">Bíceps</option>
+                                <option value="Tríceps">Tríceps</option>
+                                <option value="Cuádriceps">Cuádriceps</option>
+                                <option value="Isquiotibiales">Isquiotibiales</option>
+                                <option value="Glúteos">Glúteos</option>
+                                <option value="Pantorrillas">Pantorrillas</option>
+                                <option value="Core/Abdomen">Core/Abdomen</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="routine-intensity">Intensidad semanal</label>
+                            <select id="routine-intensity">
+                                <option value="base">Base</option>
+                                <option value="media" selected>Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="nutrition-actions">
+                        <button type="button" id="routine-apply-btn" class="primary-button">Aplicar cambios</button>
+                        <button type="button" id="routine-cancel-btn" class="secondary-button">Cancelar</button>
+                    </div>
+
                     <div class="routine-template-controls">
                         <div class="routine-template-selectors">
                             <div>
@@ -305,22 +369,10 @@
                                 </select>
                             </div>
                         </div>
-                        <details class="routine-template-import">
-                            <summary>Cargar plantilla JSON</summary>
-                            <label for="routine-template-json">Contenido JSON</label>
-                            <textarea id="routine-template-json" rows="6" spellcheck="false"></textarea>
-                            <button type="button" onclick="cargarPlantillaRutina()">Cargar plantilla</button>
-                        </details>
-                        <p id="routine-template-msg" class="plan-selector-msg" aria-live="polite"></p>
                     </div>
                     <div class="info-banner routine-goal-banner" aria-live="polite">
                         <strong id="routine-goal-title">Objetivo: -</strong>
                         <p id="routine-goal-message"></p>
-                    </div>
-                    <div class="section-heading">
-                        <p class="eyebrow">PLAN DE ENTRENAMIENTO</p>
-                        <h3>Rutina adaptada a tu objetivo</h3>
-                        <p class="subtitle">Cinco ejercicios por día para entrenar con estructura.</p>
                     </div>
                     <div id="routine-phase-summary" class="routine-phase-summary hidden"></div>
                     <div id="routine-container" class="routine-grid"></div>

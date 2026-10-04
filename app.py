@@ -779,6 +779,55 @@ def distribucion_macros_por_objetivo(objetivo: str):
     return {"proteinas": 30, "carbohidratos": 40, "grasas": 30}
 
 
+IMAGENES_COMIDA = {
+    "Desayuno": [
+        {"url": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=900&q=80", "tags": ["avena", "fruta", "yogur", "huevo", "plátano", "aguacate"]},
+        {"url": "https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=900&q=80", "tags": ["huevo", "aguacate", "pan", "desayuno", "proteina"]},
+        {"url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=900&q=80", "tags": ["yogur", "fruta", "granola", "fresa", "plátano"]},
+    ],
+    "Almuerzo": [
+        {"url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=80", "tags": ["pollo", "arroz", "ensalada", "verduras", "quinoa", "lentejas", "salad"]},
+        {"url": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80", "tags": ["pescado", "salmon", "merluza", "quinoa", "verduras", "ensalada"]},
+        {"url": "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=900&q=80", "tags": ["pollo", "camote", "atún", "brócoli", "tofu", "verduras"]},
+    ],
+    "Merienda": [
+        {"url": "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?auto=format&fit=crop&w=900&q=80", "tags": ["yogur", "fruta", "almendra", "manzana", "plátano", "avena"]},
+        {"url": "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=900&q=80", "tags": ["fruta", "batido", "pina", "hummus", "vegetal"]},
+        {"url": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=900&q=80", "tags": ["queso", "yogur", "fruta", "proteina", "avena"]},
+    ],
+    "Cena": [
+        {"url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80", "tags": ["pollo", "pescado", "verduras", "cena", "camote", "espinaca"]},
+        {"url": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=900&q=80", "tags": ["pescado", "salmon", "quinoa", "calabacin", "verduras", "cena"]},
+        {"url": "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=900&q=80", "tags": ["ensalada", "pollo", "wrap", "pavo", "verduras", "tofu", "brócoli"]},
+    ],
+}
+
+
+def seleccionar_imagen_comida(categoria_comida: str, preferencias: Optional[list[str]], dia_numero: int, indice_comida: int) -> str:
+    opciones = IMAGENES_COMIDA.get(categoria_comida, [])
+    if not opciones:
+        return ""
+
+    preferencias_normalizadas = [str(pref).strip().casefold() for pref in (preferencias or []) if str(pref).strip()]
+    candidatos = []
+    for opcion in opciones:
+        etiquetas = [str(etiqueta).strip().casefold() for etiqueta in opcion.get("tags", []) if str(etiqueta).strip()]
+        if preferencias_normalizadas and any(pref in etiquetas or any(pref in etiqueta for etiqueta in etiquetas) for pref in preferencias_normalizadas):
+            candidatos.append(opcion["url"])
+            continue
+        if not preferencias_normalizadas:
+            candidatos.append(opcion["url"])
+
+    if not candidatos:
+        candidatos = [opcion["url"] for opcion in opciones]
+
+    semilla = hashlib.sha256(
+        f"{categoria_comida}|{dia_numero}|{indice_comida}|{'|'.join(preferencias_normalizadas)}".encode("utf-8")
+    ).hexdigest()
+    indice_seleccionado = int(semilla, 16) % len(candidatos)
+    return candidatos[indice_seleccionado]
+
+
 def construir_plan_alimenticio(
     objetivo: str,
     calorias: int,
@@ -795,12 +844,6 @@ def construir_plan_alimenticio(
     else:
         ajuste_por_grupo = {"proteinas": 1.0, "carbohidratos": 1.0, "grasas": 1.0, "vegetales": 1.0, "frutas": 1.0}
 
-    imagenes_comida = {
-        "Desayuno": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=900&q=80",
-        "Almuerzo": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=80",
-        "Merienda": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80",
-        "Cena": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80",
-    }
     recetas = {
         "Desayuno": [
             {"plato": "Avena con yogur y frutos rojos", "alimentos": [
@@ -941,7 +984,7 @@ def construir_plan_alimenticio(
                 "receta_id": receta_id,
                 "comida": nombre_comida,
                 "plato": receta["plato"],
-                "imagen": imagenes_comida[categoria_comida],
+                "imagen": seleccionar_imagen_comida(categoria_comida, preferencias, indice_dia + 1, indice_comida),
                 "calorias": round(calorias * porcentaje),
                 "macros": macros_comida,
                 "alimentos": porciones,
