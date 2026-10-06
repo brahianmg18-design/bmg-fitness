@@ -422,7 +422,7 @@ function renderizarTarjetaDiaAlimenticio(dia) {
                         <h5>${escaparHtml(comida.comida)}</h5>
                         <span>${escaparHtml(comida.calorias)} kcal aprox.</span>
                     </div>
-                    <p class="meal-plan-dish">${escaparHtml(comida.plato)}</p>
+                    <p class="meal-plan-dish"><strong>${escaparHtml(comida.plato)}</strong></p>
                     <p class="meal-plan-meal-macros">P ${escaparHtml(macrosComida.proteinas)} g · C ${escaparHtml(macrosComida.carbohidratos)} g · G ${escaparHtml(macrosComida.grasas)} g</p>
                     <ul class="meal-plan-foods">${alimentos}</ul>
                 </article>

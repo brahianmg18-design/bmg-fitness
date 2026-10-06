@@ -347,12 +347,12 @@ button[type="submit"]:hover {
 
 .nutrition-chip {
     align-items: center;
-    background: rgba(59, 130, 246, 0.14);
-    border: 1px solid rgba(96, 165, 250, 0.4);
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
     border-radius: 999px;
-    color: #dbeafe;
+    color: #0f172a;
     display: inline-flex;
-    gap: 8px;
+    gap: 10px;
     font-size: 13px;
     font-weight: 600;
     max-width: 100%;
@@ -366,9 +366,10 @@ button[type="submit"]:hover {
 .nutrition-chip button {
     background: transparent;
     border: 0;
-    color: #f8fafc;
+    color: #0f172a;
     cursor: pointer;
     font-size: 16px;
+    font-weight: 700;
     line-height: 1;
     padding: 0;
     flex: 0 0 auto;
@@ -426,18 +427,18 @@ button[type="submit"]:hover {
 }
 
 .meal-plan-day-heading h4 {
-    color: #f8fafc;
+    color: #172033;
     margin: 0;
 }
 
 .meal-plan-day-heading strong {
-    color: #38bdf8;
+    color: #0369a1;
     text-align: right;
 }
 
 .meal-plan-day-macros,
 .meal-plan-meal-macros {
-    color: #cbd5e1;
+    color: #334155;
     font-size: 13px;
     margin: 6px 0 14px;
 }
@@ -469,46 +470,51 @@ button[type="submit"]:hover {
 }
 
 .meal-plan-meal-heading h5 {
-    color: #38bdf8;
+    color: #0369a1;
     font-size: 15px;
     margin: 0;
 }
 
 .meal-plan-meal-heading span {
-    color: #cbd5e1;
+    color: #475569;
     flex: 0 0 auto;
     font-size: 12px;
 }
 
 .meal-plan-dish {
-    color: #f8fafc;
+    color: #172033;
     margin: 6px 0;
 }
 
+.meal-plan-dish strong {
+    font-weight: 700;
+}
+
 .meal-plan-meal-macros {
+    color: #334155;
     font-size: 12px;
     margin: 0 0 8px;
 }
 
 .meal-plan-foods {
-    color: #cbd5e1;
+    color: #334155;
     font-size: 13px;
     list-style: none;
     margin: 0;
     padding: 0;
+    line-height: 1.5;
 }
 
 .meal-plan-foods li {
     align-items: baseline;
-    border-bottom: 1px solid #263449;
     display: flex;
     gap: 10px;
     justify-content: space-between;
-    padding: 5px 0;
+    padding: 2px 0;
 }
 
 .meal-plan-foods li strong {
-    color: #f8fafc;
+    color: #334155;
     flex: 0 0 auto;
 }
 
