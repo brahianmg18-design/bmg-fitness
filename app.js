@@ -3,6 +3,7 @@ const API_URL = window.location.protocol === "file:"
     : "/api";
 const SESSION_KEY = "sessionUser";
 const ROUTINE_SETTINGS_KEY = "routineSettings";
+const SIN_PREFERENCIA_MUSCULAR = "sin_preferencia";
 const INACTIVITY_TIMEOUT = 4 * 60 * 1000;
 const IMAGENES_EJERCICIOS = {
     "Sentadilla con barra": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=900&q=85",
@@ -285,19 +286,33 @@ function renderizarChipsPreferencias(preferencias = []) {
     if (!contenedor) return;
 
     const lista = normalizarListaAlimentosPreferidos(preferencias);
-    contenedor.innerHTML = lista.map((alimento) => `
-        <span class="nutrition-chip">
-            <span>${escaparHtml(alimento)}</span>
-            <button type="button" data-food="${escaparHtml(alimento)}" aria-label="Eliminar ${escaparHtml(alimento)}">×</button>
-        </span>
-    `).join("");
+    if (!lista.length) {
+        const mensaje = document.createElement("p");
+        mensaje.className = "nutrition-empty-state";
+        mensaje.textContent = "No has agregado alimentos preferidos.";
+        contenedor.replaceChildren(mensaje);
+        return;
+    }
 
-    contenedor.querySelectorAll("button[data-food]").forEach((boton) => {
-        boton.addEventListener("click", () => {
-            const valor = boton.dataset.food;
-            eliminarPreferenciaAlimento(valor);
-        });
+    const chips = lista.map((alimento) => {
+        const chip = document.createElement("span");
+        chip.className = "nutrition-chip";
+
+        const nombre = document.createElement("span");
+        nombre.className = "nutrition-chip-name";
+        nombre.textContent = alimento;
+
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.dataset.food = alimento;
+        boton.setAttribute("aria-label", `Eliminar ${alimento}`);
+        boton.textContent = "×";
+        boton.addEventListener("click", () => eliminarPreferenciaAlimento(boton.dataset.food));
+
+        chip.append(nombre, boton);
+        return chip;
     });
+    contenedor.replaceChildren(...chips);
 }
 
 function sincronizarPreferenciasAlimentos(preferencias = []) {
@@ -950,6 +965,8 @@ function obtenerEnfoqueDia(diaNumero, diasTotales, musculoPrioritario) {
 }
 
 function ordenarEjerciciosPorPrioridad(ejercicios, musculoPrioritario) {
+    if (musculoPrioritario === SIN_PREFERENCIA_MUSCULAR) return ejercicios;
+
     const prioridadMap = {
         Pecho: ["pecho", "triceps", "hombros", "core"],
         Espalda: ["espalda", "biceps", "core", "hombros"],
@@ -986,7 +1003,10 @@ function construirDiasRutinaVisibles(plantilla, diasSeleccionados, musculoPriori
     return Array.from({ length: diasSeleccionados }, (_, indice) => {
         const diaBase = baseDias[indice % totalBase];
         const diaNumero = indice + 1;
-        const enfoque = obtenerEnfoqueDia(diaNumero, diasSeleccionados, musculoPrioritario);
+        const sinPreferencia = musculoPrioritario === SIN_PREFERENCIA_MUSCULAR;
+        const enfoque = sinPreferencia
+            ? (diaBase.enfoque || diaBase.rutina || "Entrenamiento equilibrado")
+            : obtenerEnfoqueDia(diaNumero, diasSeleccionados, musculoPrioritario);
         return {
             dia: diaNumero,
             rutina: enfoque,
@@ -1088,7 +1108,10 @@ function actualizarVistaRutina() {
         resumenFase.classList.remove("hidden");
 
         document.getElementById("routine-goal-title").innerText = `${config.objetivo_entrenamiento || "Hipertrofia (Masa)"} · ${diaSeleccionado.rutina}`;
-        document.getElementById("routine-goal-message").innerText = `${config.musculo_prioritario || "Pecho"} como prioridad · ${intensidadLabel} · Semana ${semana}`;
+        const mensajePrioridad = config.musculo_prioritario === SIN_PREFERENCIA_MUSCULAR
+            ? "Distribución normal"
+            : `${config.musculo_prioritario || "Pecho"} como prioridad`;
+        document.getElementById("routine-goal-message").innerText = `${mensajePrioridad} · ${intensidadLabel} · Semana ${semana}`;
 
         document.getElementById("routine-container").innerHTML = diaSeleccionado.ejercicios.map((ejercicio, indice) => {
             const nombre = ejercicio.nombre || "Ejercicio";

@@ -326,6 +326,7 @@ button[type="submit"]:hover {
 
 .nutrition-food-select-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 }
 
@@ -339,6 +340,11 @@ button[type="submit"]:hover {
     gap: 8px;
 }
 
+.nutrition-empty-state {
+    color: #64748b;
+    font-size: 13px;
+}
+
 .nutrition-chip {
     align-items: center;
     background: rgba(59, 130, 246, 0.14);
@@ -349,7 +355,12 @@ button[type="submit"]:hover {
     gap: 8px;
     font-size: 13px;
     font-weight: 600;
+    max-width: 100%;
     padding: 7px 10px;
+}
+
+.nutrition-chip-name {
+    overflow-wrap: anywhere;
 }
 
 .nutrition-chip button {
@@ -360,6 +371,7 @@ button[type="submit"]:hover {
     font-size: 16px;
     line-height: 1;
     padding: 0;
+    flex: 0 0 auto;
 }
 
 .nutrition-actions {
