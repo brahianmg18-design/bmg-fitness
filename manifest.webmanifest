@@ -1,7 +1,7 @@
 {
   "id": "/",
   "name": "BMG Fitness",
-  "short_name": "BMG",
+  "short_name": "BMG Fitness",
   "description": "Entrenamiento, nutrición y seguimiento personal con BMG Fitness.",
   "start_url": "/",
   "scope": "/",

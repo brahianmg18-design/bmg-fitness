@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from typing import Dict, Optional
-from datetime import date
+from datetime import date, datetime, timedelta
 import pandas as pd
 import os
 import psycopg2
@@ -58,6 +58,8 @@ LEGACY_USER_COLUMNS = [
     "Usuario", "Contraseña", "Objetivo", "Edad", "Sexo", "Peso", "Estatura", "Actividad"
 ]
 SEGUIMIENTO_COLUMNS = ["Usuario", "Fecha", "Peso"]
+SESSION_TTL_SECONDS = int(os.environ.get("SESSION_TTL_SECONDS", 60 * 60 * 8))
+ACTIVE_SESSIONS: Dict[str, Dict[str, str]] = {}
 EXERCISE_IMAGE_URLS = {
     "Sentadilla con barra": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80",
     "Peso muerto rumano": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80",
@@ -302,6 +304,53 @@ class SeguimientoRegistro(BaseModel):
     fecha: date
     peso: float
     medidas: Optional[Dict[str, float]] = None
+
+
+def crear_sesion_usuario(usuario: str):
+    token = secrets.token_urlsafe(32)
+    expires_at = datetime.utcnow() + timedelta(seconds=SESSION_TTL_SECONDS)
+    ACTIVE_SESSIONS[token] = {
+        "usuario": usuario,
+        "expires_at": expires_at.isoformat(timespec="seconds"),
+    }
+    return token, ACTIVE_SESSIONS[token]["expires_at"]
+
+
+def limpiar_sesion_token(token: Optional[str]):
+    if token:
+        ACTIVE_SESSIONS.pop(token, None)
+
+
+def obtener_token_sesion(request: Request) -> Optional[str]:
+    header = request.headers.get("x-session-token")
+    if header:
+        return header.strip()
+
+    authorization = request.headers.get("authorization")
+    if authorization and authorization.lower().startswith("bearer "):
+        return authorization.split(" ", 1)[1].strip()
+
+    return None
+
+
+def validar_sesion_requerida(request: Request, usuario: str):
+    token = obtener_token_sesion(request)
+    if not token:
+        raise HTTPException(status_code=401, detail="Sesión no válida.")
+
+    sesion = ACTIVE_SESSIONS.get(token)
+    if not sesion:
+        raise HTTPException(status_code=401, detail="Sesión no válida.")
+
+    expires_at = datetime.fromisoformat(sesion["expires_at"])
+    if expires_at < datetime.utcnow():
+        ACTIVE_SESSIONS.pop(token, None)
+        raise HTTPException(status_code=401, detail="La sesión ha expirado.")
+
+    if sesion["usuario"].strip().lower() != usuario.strip().lower():
+        raise HTTPException(status_code=403, detail="No tienes permisos para acceder a esta sesión.")
+
+    return sesion["usuario"]
 
 
 def validar_seguridad(usuario: str, contrasena: str):
@@ -1152,7 +1201,8 @@ def registrar(datos: UsuarioRegistro):
 
 
 @app.get("/api/perfil/{usuario}")
-def obtener_perfil(usuario: str):
+def obtener_perfil(usuario: str, request: Request):
+    validar_sesion_requerida(request, usuario)
     df = cargar_usuarios()
     match = df[df["Usuario"].str.strip().str.lower() == usuario.strip().lower()]
 
@@ -1190,7 +1240,8 @@ def obtener_perfil(usuario: str):
 
 
 @app.put("/api/perfil/{usuario}")
-def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
+def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate, request: Request):
+    validar_sesion_requerida(request, usuario)
     if datos.email is not None:
         validar_correo(datos.email.strip())
     validar_opciones_perfil(datos.nivel_experiencia, datos.objetivo_nutricional, datos.objetivo_entrenamiento)
@@ -1242,8 +1293,9 @@ def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate):
 
 
 @app.get("/api/get-profile")
-def obtener_perfil_frontend(username: str):
-    return obtener_perfil(username)
+def obtener_perfil_frontend(username: str, request: Request):
+    validar_sesion_requerida(request, username)
+    return obtener_perfil(username, request)
 
 
 @app.post("/api/update-profile")
@@ -1324,10 +1376,13 @@ def login(payload: UsuarioLogin = Body(...)):
         edad, sexo, peso, estatura, actividad, objetivo_nutricional,
         dias_entrenamiento, nivel_experiencia, objetivo_entrenamiento,
     )
+    session_token, expires_at = crear_sesion_usuario(user_row["Usuario"])
 
     return {
         "mensaje": "Acceso concedido",
         "usuario": user_row["Usuario"],
+        "session_token": session_token,
+        "session_expires_at": expires_at,
         "edad": edad,
         "sexo": sexo,
         "peso": peso,
@@ -1342,6 +1397,36 @@ def login(payload: UsuarioLogin = Body(...)):
         "peso_inicial": user_row.get("PesoInicial", peso),
         **resumen,
     }
+
+
+@app.get("/api/session/validate")
+@app.post("/api/session/validate")
+def validar_sesion(request: Request):
+    token = obtener_token_sesion(request)
+    if not token:
+        raise HTTPException(status_code=401, detail="Sesión no válida.")
+
+    sesion = ACTIVE_SESSIONS.get(token)
+    if not sesion:
+        raise HTTPException(status_code=401, detail="Sesión no válida.")
+
+    expires_at = datetime.fromisoformat(sesion["expires_at"])
+    if expires_at < datetime.utcnow():
+        ACTIVE_SESSIONS.pop(token, None)
+        raise HTTPException(status_code=401, detail="La sesión ha expirado.")
+
+    return {
+        "valid": True,
+        "usuario": sesion["usuario"],
+        "expires_at": sesion["expires_at"],
+    }
+
+
+@app.post("/api/session/logout")
+def cerrar_sesion(request: Request):
+    token = obtener_token_sesion(request)
+    limpiar_sesion_token(token)
+    return {"mensaje": "Sesión cerrada."}
 
 
 @app.post("/api/nutricion/plan")
@@ -1411,12 +1496,14 @@ def solicitar_reset_password(datos: SolicitudResetPassword):
 
 
 @app.get("/api/seguimiento/{usuario}")
-def obtener_seguimiento(usuario: str):
+def obtener_seguimiento(usuario: str, request: Request):
+    validar_sesion_requerida(request, usuario)
     return construir_resumen_seguimiento(usuario)
 
 
 @app.post("/api/seguimiento/{usuario}")
-def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro):
+def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro, request: Request):
+    validar_sesion_requerida(request, usuario)
     if not usuario.strip():
         raise HTTPException(status_code=400, detail="Usuario no válido.")
     peso = float(datos.peso)

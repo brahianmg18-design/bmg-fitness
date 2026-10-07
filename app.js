@@ -2,6 +2,7 @@ const API_URL = window.location.protocol === "file:"
     ? "http://127.0.0.1:8000/api"
     : "/api";
 const SESSION_KEY = "sessionUser";
+const IOS_INSTALL_KEY = "iosInstallBannerDismissedUntil";
 const ROUTINE_SETTINGS_KEY = "routineSettings";
 const NUTRITION_SUBSTITUTIONS_KEY = "nutritionSubstitutions";
 const SIN_PREFERENCIA_MUSCULAR = "sin_preferencia";
@@ -20,6 +21,44 @@ let planNutricionalActivo = [];
 let perfilNutricionalActual = null;
 let recursosNutricionales = null;
 let bibliotecaRutinaActiva = null;
+
+function esDispositivoIOS() {
+    return /(iPad|iPhone|iPod)/i.test(navigator.userAgent)
+        || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function esAplicacionInstalada() {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+
+function obtenerCabecerasSesion(extraHeaders = {}) {
+    const sesionGuardada = localStorage.getItem(SESSION_KEY);
+    const token = sesionGuardada ? JSON.parse(sesionGuardada).sessionToken : "";
+    return {
+        ...extraHeaders,
+        ...(token ? { "X-Session-Token": token } : {})
+    };
+}
+
+function mostrarBannerInstalacionIOS() {
+    const banner = document.getElementById("ios-install-banner");
+    if (!banner || esAplicacionInstalada() || !esDispositivoIOS()) {
+        return;
+    }
+
+    const dismissedUntil = Number(localStorage.getItem(IOS_INSTALL_KEY) || 0);
+    if (dismissedUntil > Date.now()) {
+        banner.classList.add("hidden");
+        return;
+    }
+
+    banner.classList.remove("hidden");
+    const botonCerrar = document.getElementById("ios-install-close");
+    botonCerrar?.addEventListener("click", () => {
+        localStorage.setItem(IOS_INSTALL_KEY, String(Date.now() + 7 * 24 * 60 * 60 * 1000));
+        banner.classList.add("hidden");
+    }, { once: true });
+}
 
 async function leerRespuesta(respuesta, mensajePorDefecto) {
     const texto = await respuesta.text();
@@ -174,16 +213,19 @@ async function ejecutarLogin(e) {
         if (respuesta.ok) {
             usuarioActual = data.usuario;
             limpiarFormulariosAutenticacion();
-            localStorage.setItem(SESSION_KEY, JSON.stringify({
+            const sesion = {
                 username: usuarioActual,
+                sessionToken: data.session_token || "",
                 userData: data
-            }));
+            };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(sesion));
             document.getElementById("auth-box").classList.add("hidden");
             document.getElementById("dashboard").classList.remove("hidden");
-            
+
             document.getElementById("welcome-title").innerText = `Bienvenido, ${data.usuario}`;
             await actualizarDashboard(data);
             mostrarSeccion('inicio');
+            actualizarActividad();
 
         } else {
             alertMsg.style.color = "#ff5252";
@@ -619,7 +661,7 @@ async function aplicarCambiosNutricionales() {
         if (Object.keys(actualizacionesPerfil).length) {
             const respuestaPerfil = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: obtenerCabecerasSesion({ "Content-Type": "application/json" }),
                 body: JSON.stringify(actualizacionesPerfil)
             });
             const perfilActualizado = await leerRespuesta(respuestaPerfil, "No se pudo guardar el perfil.");
@@ -735,7 +777,9 @@ async function cargarPerfil() {
 
     const profileMsg = document.getElementById("profile-msg");
     try {
-        const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`);
+        const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
+            headers: obtenerCabecerasSesion()
+        });
         const perfil = await leerRespuesta(respuesta, "No se pudo cargar el perfil.");
         mostrarPerfil(perfil);
     } catch (error) {
@@ -854,9 +898,9 @@ async function guardarPerfil(e) {
 
         const response = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActivo)}`, {
             method: "PUT",
-            headers: {
+            headers: obtenerCabecerasSesion({
                 "Content-Type": "application/json"
-            },
+            }),
             body: JSON.stringify(datos)
         });
 
@@ -1279,7 +1323,9 @@ async function cargarSeguimiento() {
     const msg = document.getElementById("seguimiento-msg");
 
     try {
-        const respuesta = await fetch(`${API_URL}/seguimiento/${encodeURIComponent(usuarioActual)}`);
+        const respuesta = await fetch(`${API_URL}/seguimiento/${encodeURIComponent(usuarioActual)}`, {
+            headers: obtenerCabecerasSesion()
+        });
         const data = await leerRespuesta(respuesta, "No se pudo cargar el seguimiento.");
 
         if (!data.registros || !data.registros.length) {
@@ -1342,7 +1388,7 @@ async function guardarSeguimiento(e) {
     try {
         const respuesta = await fetch(`${API_URL}/seguimiento/${encodeURIComponent(usuarioActual)}`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: obtenerCabecerasSesion({ "Content-Type": "application/json" }),
             body: JSON.stringify({ fecha, peso, medidas })
         });
         const data = await leerRespuesta(respuesta, "No se pudo guardar el registro.");
@@ -1385,14 +1431,51 @@ function actualizarSesion(data) {
     }
 }
 
-async function restaurarSesion() {
+async function validarSesionBackend() {
     const sesionGuardada = localStorage.getItem(SESSION_KEY);
-    if (!sesionGuardada) return;
+    if (!sesionGuardada) return false;
 
     try {
         const sesion = JSON.parse(sesionGuardada);
-        if (!sesion.username || !sesion.userData) {
+        const token = sesion.sessionToken;
+        if (!token) return false;
+
+        const respuesta = await fetch(`${API_URL}/session/validate`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Session-Token": token
+            }
+        });
+
+        if (!respuesta.ok) {
+            throw new Error("Sesión no válida.");
+        }
+
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function restaurarSesion() {
+    const sesionGuardada = localStorage.getItem(SESSION_KEY);
+    if (!sesionGuardada) {
+        document.getElementById("auth-box").classList.remove("hidden");
+        document.getElementById("dashboard").classList.add("hidden");
+        return;
+    }
+
+    try {
+        const sesion = JSON.parse(sesionGuardada);
+        if (!sesion.username) {
             localStorage.removeItem(SESSION_KEY);
+            return;
+        }
+
+        const sesionValida = await validarSesionBackend();
+        if (!sesionValida) {
+            cerrarSesion(true);
             return;
         }
 
@@ -1400,11 +1483,13 @@ async function restaurarSesion() {
         document.getElementById("auth-box").classList.add("hidden");
         document.getElementById("dashboard").classList.remove("hidden");
         document.getElementById("welcome-title").innerText = `Bienvenido, ${usuarioActual}`;
-        await actualizarDashboard(sesion.userData);
+        await actualizarDashboard(sesion.userData || { usuario: usuarioActual });
         mostrarSeccion("inicio");
         actualizarActividad();
     } catch (error) {
         localStorage.removeItem(SESSION_KEY);
+        document.getElementById("auth-box").classList.remove("hidden");
+        document.getElementById("dashboard").classList.add("hidden");
     }
 }
 
@@ -1414,6 +1499,7 @@ document.addEventListener("click", actualizarActividad);
 document.addEventListener("scroll", actualizarActividad, { capture: true, passive: true });
 document.addEventListener("touchstart", actualizarActividad, { passive: true });
 document.addEventListener("DOMContentLoaded", async () => {
+    mostrarBannerInstalacionIOS();
     inicializarSelectoresEstatura();
     try {
         recursosNutricionales = await window.NutritionalScalingEngine.cargarRecursos();
@@ -1508,13 +1594,26 @@ function cerrarSesion(expiradaPorInactividad = false) {
         window.clearTimeout(inactivityTimer);
         inactivityTimer = null;
     }
+
+    const sesionGuardada = localStorage.getItem(SESSION_KEY);
+    const token = sesionGuardada ? JSON.parse(sesionGuardada).sessionToken : "";
+    if (token) {
+        fetch(`${API_URL}/session/logout`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Session-Token": token
+            }
+        }).catch(() => {});
+    }
+
     usuarioActual = "";
     localStorage.removeItem(SESSION_KEY);
     sessionStorage.clear();
     document.getElementById("dashboard").classList.add("hidden");
     document.getElementById("auth-box").classList.remove("hidden");
-    document.getElementById("form-login").reset();
-    document.getElementById("form-seguimiento").reset();
+    document.getElementById("form-login")?.reset();
+    document.getElementById("form-seguimiento")?.reset();
     mostrarTab("login");
     if (expiradaPorInactividad) window.alert("Sesión expirada por inactividad");
 }
@@ -1550,7 +1649,7 @@ async function aplicarCambiosRutina() {
 
         const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: obtenerCabecerasSesion({ "Content-Type": "application/json" }),
             body: JSON.stringify({
                 objetivo_entrenamiento: siguiente.objetivo_entrenamiento,
                 dias_entrenamiento: siguiente.dias_entrenamiento,

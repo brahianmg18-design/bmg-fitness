@@ -144,6 +144,59 @@ button[type="submit"]:hover {
     display: none !important;
 }
 
+.ios-install-banner {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    width: min(760px, calc(100vw - 24px));
+    margin: 12px auto 0;
+    padding: 14px 16px;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(14, 116, 144, 0.96), rgba(15, 23, 42, 0.98));
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+    color: #f8fafc;
+}
+
+.ios-install-banner__content {
+    display: grid;
+    gap: 4px;
+    flex: 1;
+}
+
+.ios-install-banner strong {
+    color: #f8fafc;
+    font-size: 15px;
+}
+
+.ios-install-banner p,
+.ios-install-banner ol {
+    color: #dbeafe;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.ios-install-banner ol {
+    padding-left: 18px;
+    margin: 0;
+}
+
+.ios-install-close {
+    background: transparent;
+    color: #f8fafc;
+    border: 0;
+    cursor: pointer;
+    font-size: 28px;
+    line-height: 1;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 999px;
+}
+
 #alert-msg {
     margin-top: 15px;
     font-size: 13px;
@@ -1084,6 +1137,12 @@ button[type="submit"]:hover {
         align-items: flex-start;
         padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
             max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+
+    .ios-install-banner {
+        width: min(100%, calc(100vw - 18px));
+        margin-top: 6px;
+        padding: 12px 14px;
     }
 
     .card,
