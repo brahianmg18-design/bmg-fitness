@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#374151"/>
+  <rect x="26" y="26" width="460" height="460" rx="82" fill="#414d5f" stroke="#64748b" stroke-width="4"/>
+  <text x="256" y="249" fill="#7dd3fc" font-family="Arial, Helvetica, sans-serif" font-size="180" font-weight="700" letter-spacing="-8" text-anchor="middle">BMG</text>
+  <path d="M174 302h164" fill="none" stroke="#7dd3fc" stroke-linecap="round" stroke-width="8"/>
+  <text x="256" y="380" fill="#7dd3fc" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="700" letter-spacing="8" text-anchor="middle">FITNESS</text>
+</svg>

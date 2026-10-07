@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "grupos": [
+    {
+      "id": "pecho",
+      "nombre": "Pecho",
+      "alias_ejercicio": ["pecho_superior"]
+    },
+    {
+      "id": "espalda",
+      "nombre": "Espalda",
+      "alias_ejercicio": ["dorsales", "espalda_media", "romboides", "redondo_mayor", "trapecio_medio", "erectores"]
+    },
+    {
+      "id": "hombros",
+      "nombre": "Hombros",
+      "alias_ejercicio": ["deltoides", "deltoides_anterior", "deltoides_lateral", "deltoides_posterior"]
+    },
+    {
+      "id": "biceps",
+      "nombre": "Bíceps",
+      "alias_ejercicio": ["braquial", "braquiorradial", "antebrazo", "antebrazos"]
+    },
+    {
+      "id": "triceps",
+      "nombre": "Tríceps",
+      "alias_ejercicio": ["triceps_largo"]
+    },
+    {
+      "id": "cuadriceps",
+      "nombre": "Cuádriceps"
+    },
+    {
+      "id": "isquiosurales",
+      "nombre": "Isquiosurales"
+    },
+    {
+      "id": "gluteos",
+      "nombre": "Glúteos"
+    },
+    {
+      "id": "gemelos",
+      "nombre": "Gemelos",
+      "alias_ejercicio": ["soleo"]
+    },
+    {
+      "id": "core",
+      "nombre": "Core/Abdomen",
+      "alias_ejercicio": ["oblicuos", "recto_abdominal"]
+    },
+    {
+      "id": "aductores",
+      "nombre": "Aductores"
+    },
+    {
+      "id": "gluteo_medio",
+      "nombre": "Glúteo medio"
+    },
+    {
+      "id": "trapecio",
+      "nombre": "Trapecio"
+    }
+  ],
+  "regla_prioridad": "La preferencia aumenta frecuencia, volumen o calidad de selección del grupo elegido, pero nunca elimina el resto del cuerpo."
+}

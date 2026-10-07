@@ -1,0 +1,142 @@
+{
+  "version": "1.0.0",
+  "meal_images": {
+    "Desayuno": [
+      {
+        "url": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "avena",
+          "fruta",
+          "yogur",
+          "huevo",
+          "platano",
+          "aguacate"
+        ]
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "huevo",
+          "aguacate",
+          "pan",
+          "desayuno",
+          "proteina"
+        ]
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "yogur",
+          "fruta",
+          "granola",
+          "fresa",
+          "platano"
+        ]
+      }
+    ],
+    "Almuerzo": [
+      {
+        "url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "pollo",
+          "arroz",
+          "ensalada",
+          "verduras",
+          "quinoa",
+          "lentejas"
+        ]
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "pescado",
+          "salmon",
+          "merluza",
+          "quinoa",
+          "verduras",
+          "ensalada"
+        ]
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "pollo",
+          "camote",
+          "atun",
+          "brocoli",
+          "tofu",
+          "verduras"
+        ]
+      }
+    ],
+    "Merienda": [
+      {
+        "url": "https://images.unsplash.com/photo-1490885578174-acda8905c2c6?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "yogur",
+          "fruta",
+          "almendra",
+          "manzana",
+          "platano",
+          "avena"
+        ]
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "fruta",
+          "batido",
+          "pina",
+          "hummus",
+          "vegetal"
+        ]
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "queso",
+          "yogur",
+          "fruta",
+          "proteina",
+          "avena"
+        ]
+      }
+    ],
+    "Cena": [
+      {
+        "url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "pollo",
+          "pescado",
+          "verduras",
+          "cena",
+          "camote",
+          "espinaca"
+        ]
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "pescado",
+          "salmon",
+          "quinoa",
+          "calabacin",
+          "verduras",
+          "cena"
+        ]
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=900&q=80",
+        "tags": [
+          "ensalada",
+          "pollo",
+          "wrap",
+          "pavo",
+          "verduras",
+          "tofu",
+          "brocoli"
+        ]
+      }
+    ]
+  }
+}

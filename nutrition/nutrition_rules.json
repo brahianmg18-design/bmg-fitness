@@ -1,0 +1,88 @@
+{
+  "version": "1.0.0",
+  "energy_model": {
+    "activity_factor": 1.2
+  },
+  "favorite_foods": {
+    "priority_boost": 25,
+    "max_favorite_items_per_meal": 3,
+    "rule": "preferences_increase_priority_but_never_force_selection"
+  },
+  "variety": {
+    "plan_days": 28,
+    "weeks": 4,
+    "avoid_same_preparation_consecutive_days": true,
+    "max_same_preparation_per_7_days": 2,
+    "max_same_main_protein_consecutive_days": 2,
+    "rotate_categories": [
+      "protein",
+      "carb",
+      "fruit",
+      "vegetable",
+      "healthy_fat",
+      "preparation",
+      "cooking_method"
+    ]
+  },
+  "meal_distribution": {
+    "2": {
+      "calorie_percent": [
+        45,
+        55
+      ]
+    },
+    "3": {
+      "calorie_percent": [
+        30,
+        40,
+        30
+      ]
+    },
+    "4": {
+      "calorie_percent": [
+        25,
+        35,
+        15,
+        25
+      ]
+    },
+    "5": {
+      "calorie_percent": [
+        25,
+        30,
+        10,
+        15,
+        20
+      ]
+    },
+    "6": {
+      "calorie_percent": [
+        20,
+        25,
+        10,
+        10,
+        15,
+        20
+      ]
+    }
+  },
+  "generation_score": {
+    "favorite_food_match": 0.3,
+    "macro_calorie_fit": 0.25,
+    "meal_type_fit": 0.15,
+    "variety": 0.15,
+    "recency": 0.1,
+    "category_balance": 0.05
+  },
+  "ui_requirements": {
+    "show_image": true,
+    "show_name": true,
+    "show_ingredients": true,
+    "show_quantities": true,
+    "show_kcal": true,
+    "show_macros": true,
+    "hide_image_url": true,
+    "hide_image_path": true,
+    "hide_image_source_text": true
+  }
+}

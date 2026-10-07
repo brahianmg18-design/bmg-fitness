@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "nombre": "BMG Fitness - Motor de generación",
+  "entrada_obligatoria": [
+    "nivel",
+    "frecuencia_dias",
+    "objetivo_entrenamiento"
+  ],
+  "entrada_opcional": [
+    "preferencia_muscular",
+    "equipamiento",
+    "limitaciones",
+    "ejercicios_excluidos"
+  ],
+  "proceso": [
+    "Validar variables de ejercicio.",
+    "Seleccionar estructura.",
+    "Distribuir grupos y patrones.",
+    "Aplicar prioridad muscular.",
+    "Seleccionar solo IDs existentes.",
+    "Equilibrar compuestos y accesorios.",
+    "Comprobar recuperación.",
+    "Asignar series, repeticiones, RIR y descanso.",
+    "Generar cuatro semanas.",
+    "Validar los 28 días."
+  ],
+  "validaciones": [
+    "No usar calorías, macros, comidas, alimentos, déficit, superávit o peso objetivo.",
+    "No inventar ejercicios.",
+    "No repetir sesión idéntica en días consecutivos.",
+    "No convertir preferencia en exclusividad.",
+    "No dejar grupos principales sin estímulo cuando la frecuencia permita cubrirlos.",
+    "No modificar interfaz gráfica."
+  ],
+  "parametros_generacion": {
+    "series_base_por_nivel": {
+      "principiante": {
+        "compuesto": 3,
+        "aislamiento": 2,
+        "core": 2,
+        "otro": 2
+      },
+      "intermedio": {
+        "compuesto": 3,
+        "aislamiento": 3,
+        "core": 3,
+        "otro": 2
+      },
+      "avanzado": {
+        "compuesto": 4,
+        "aislamiento": 3,
+        "core": 3,
+        "otro": 3
+      }
+    },
+    "rir_adicional_principiante": 1,
+    "sesiones_prioritarias_maximas": 2,
+    "descanso_segundos": {
+      "compuesto": 120,
+      "aislamiento": 75,
+      "core": 60,
+      "acondicionamiento": 45
+    }
+  }
+}

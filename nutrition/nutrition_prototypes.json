@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "description": "Perfiles antropométricos de referencia. No son diagnósticos ni sustituyen el cálculo individual.",
+  "selection": {
+    "strategy": "nearest_prototype",
+    "primary_variables": [
+      "sex",
+      "height_cm",
+      "weight_kg"
+    ],
+    "secondary_variables": [
+      "age"
+    ],
+    "note": "Los datos reales del usuario siempre prevalecen sobre el prototipo."
+  },
+  "profiles": [
+    {
+      "id": "M01",
+      "sex": "male",
+      "age_reference": 30,
+      "height_cm": 165,
+      "weight_kg": 60
+    },
+    {
+      "id": "M02",
+      "sex": "male",
+      "age_reference": 30,
+      "height_cm": 170,
+      "weight_kg": 65
+    },
+    {
+      "id": "M03",
+      "sex": "male",
+      "age_reference": 30,
+      "height_cm": 175,
+      "weight_kg": 70
+    },
+    {
+      "id": "M04",
+      "sex": "male",
+      "age_reference": 30,
+      "height_cm": 180,
+      "weight_kg": 80
+    },
+    {
+      "id": "M05",
+      "sex": "male",
+      "age_reference": 30,
+      "height_cm": 185,
+      "weight_kg": 90
+    },
+    {
+      "id": "M06",
+      "sex": "male",
+      "age_reference": 30,
+      "height_cm": 190,
+      "weight_kg": 100
+    },
+    {
+      "id": "F01",
+      "sex": "female",
+      "age_reference": 30,
+      "height_cm": 155,
+      "weight_kg": 50
+    },
+    {
+      "id": "F02",
+      "sex": "female",
+      "age_reference": 30,
+      "height_cm": 160,
+      "weight_kg": 55
+    },
+    {
+      "id": "F03",
+      "sex": "female",
+      "age_reference": 30,
+      "height_cm": 165,
+      "weight_kg": 60
+    },
+    {
+      "id": "F04",
+      "sex": "female",
+      "age_reference": 30,
+      "height_cm": 170,
+      "weight_kg": 65
+    },
+    {
+      "id": "F05",
+      "sex": "female",
+      "age_reference": 30,
+      "height_cm": 175,
+      "weight_kg": 70
+    },
+    {
+      "id": "F06",
+      "sex": "female",
+      "age_reference": 30,
+      "height_cm": 180,
+      "weight_kg": 80
+    }
+  ],
+  "goal_rules": {
+    "muscle_gain": {
+      "energy_adjustment_kcal": 350,
+      "protein_g_per_kg": [
+        1.6,
+        2.2
+      ],
+      "fat_g_per_kg": [
+        0.7,
+        1.0
+      ],
+      "label": "Aumento de masa muscular"
+    },
+    "fat_loss": {
+      "energy_adjustment_kcal": -350,
+      "protein_g_per_kg": [
+        1.8,
+        2.2
+      ],
+      "fat_g_per_kg": [
+        0.7,
+        1.0
+      ],
+      "label": "Pérdida de grasa"
+    },
+    "recomposition": {
+      "energy_adjustment_kcal": 0,
+      "protein_g_per_kg": [
+        1.8,
+        2.2
+      ],
+      "fat_g_per_kg": [
+        0.7,
+        1.0
+      ],
+      "label": "Tonificación / recomposición"
+    }
+  },
+  "meal_count_options": [
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "default_meal_count": 4
+}

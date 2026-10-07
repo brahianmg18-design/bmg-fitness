@@ -3,6 +3,7 @@ const API_URL = window.location.protocol === "file:"
     : "/api";
 const SESSION_KEY = "sessionUser";
 const ROUTINE_SETTINGS_KEY = "routineSettings";
+const NUTRITION_SUBSTITUTIONS_KEY = "nutritionSubstitutions";
 const SIN_PREFERENCIA_MUSCULAR = "sin_preferencia";
 const INACTIVITY_TIMEOUT = 4 * 60 * 1000;
 const IMAGENES_EJERCICIOS = {
@@ -17,6 +18,8 @@ let inactivityTimer = null;
 let plantillaRutinaActiva = null;
 let planNutricionalActivo = [];
 let perfilNutricionalActual = null;
+let recursosNutricionales = null;
+let bibliotecaRutinaActiva = null;
 
 async function leerRespuesta(respuesta, mensajePorDefecto) {
     const texto = await respuesta.text();
@@ -266,13 +269,19 @@ function normalizarListaAlimentosPreferidos(lista) {
     return resultado;
 }
 
+function normalizarFrecuenciaComidas(valor) {
+    const frecuencia = Number(valor);
+    if ([2, 3, 4, 5, 6].includes(frecuencia)) return frecuencia;
+    return frecuencia > 6 ? 6 : 4;
+}
+
 function obtenerPreferenciasNutricionales() {
     try {
         const guardadas = JSON.parse(localStorage.getItem("nutritionSettings") || "{}");
         return {
             goal: guardadas.goal || "maintenance",
             available_foods: normalizarListaAlimentosPreferidos(guardadas.available_foods || []),
-            meal_frequency: Number(guardadas.meal_frequency || 4),
+            meal_frequency: normalizarFrecuenciaComidas(guardadas.meal_frequency || 4),
             weight: Number(guardadas.weight || perfilNutricionalActual?.peso || 0)
         };
     } catch (error) {
@@ -313,6 +322,15 @@ function renderizarChipsPreferencias(preferencias = []) {
         return chip;
     });
     contenedor.replaceChildren(...chips);
+}
+
+function sincronizarCatalogoSelectorPreferencias() {
+    const selector = document.getElementById("nutrition-food-choice");
+    if (!selector || !recursosNutricionales) return;
+
+    selector.replaceChildren(...recursosNutricionales.catalogos.foods.map((alimento) =>
+        new Option(alimento.nombre, alimento.nombre)
+    ));
 }
 
 function sincronizarPreferenciasAlimentos(preferencias = []) {
@@ -366,7 +384,7 @@ function restaurarEstadoNutricional(perfil = perfilNutricionalActual) {
         selectorObjetivo.value = objetivoGuardado;
     }
     if (selectorComidas) {
-        selectorComidas.value = String(preferencias.meal_frequency || 4);
+        selectorComidas.value = String(normalizarFrecuenciaComidas(preferencias.meal_frequency));
     }
     if (selectorPeso) {
         selectorPeso.value = Number(preferencias.weight || perfil?.peso || 0) ? Number(preferencias.weight || perfil?.peso || 0).toFixed(1) : "";
@@ -388,6 +406,16 @@ function renderizarPlanAlimenticio(menu) {
     mostrarDiaNutricional();
 }
 
+function obtenerSustitucionesNutricionales() {
+    try {
+        const guardadas = JSON.parse(localStorage.getItem(NUTRITION_SUBSTITUTIONS_KEY) || "{}");
+        return guardadas && typeof guardadas === "object" && !Array.isArray(guardadas) ? guardadas : {};
+    } catch (error) {
+        localStorage.removeItem(NUTRITION_SUBSTITUTIONS_KEY);
+        return {};
+    }
+}
+
 function mostrarDiaNutricional() {
     const contenedor = document.getElementById("menu-alimenticio");
     if (!planNutricionalActivo.length) {
@@ -405,14 +433,27 @@ function mostrarDiaNutricional() {
 function renderizarTarjetaDiaAlimenticio(dia) {
         const macrosDia = dia.total_dia || dia.macros || {};
         const comidas = Array.isArray(dia.comidas) ? dia.comidas : [];
-        const comidasHtml = comidas.map((comida) => {
+        const comidasHtml = comidas.map((comida, indiceComida) => {
             const macrosComida = comida.macros || {};
             const alimentos = (comida.alimentos || []).map((alimento) => {
-                if (typeof alimento === "string") {
-                    return `<li>${escaparHtml(alimento)}</li>`;
-                }
-
-                return `<li><span>${escaparHtml(alimento.nombre)}</span><strong>${escaparHtml(alimento.cantidad)} ${escaparHtml(alimento.unidad)}</strong></li>`;
+                const opciones = recursosNutricionales
+                    ? window.NutritionalScalingEngine.obtenerOpcionesSustitucion(recursosNutricionales.catalogos, alimento.alimento_base_id || alimento.alimento_id, comida.receta_id)
+                    : [];
+                const selectorSustitucion = opciones.length > 1
+                    ? `<details class="meal-plan-food-swap">
+                        <summary>Cambiar alimento</summary>
+                        <select data-day="${Number(dia.dia_numero)}" data-meal-index="${indiceComida}" data-food-id="${escaparHtml(alimento.alimento_base_id || alimento.alimento_id)}" aria-label="Sustituir ${escaparHtml(alimento.nombre)}">
+                            ${opciones.map((opcion) => `<option value="${escaparHtml(opcion.id)}"${opcion.id === alimento.alimento_id ? " selected" : ""}>${escaparHtml(opcion.nombre)}</option>`).join("")}
+                        </select>
+                    </details>`
+                    : "";
+                return `<li>
+                    <div class="meal-plan-food-detail">
+                        <span>${escaparHtml(alimento.nombre)}</span>
+                        <strong>${escaparHtml(alimento.cantidad)} ${escaparHtml(alimento.unidad)}</strong>
+                    </div>
+                    ${selectorSustitucion}
+                </li>`;
             }).join("");
 
             return `
@@ -439,6 +480,30 @@ function renderizarTarjetaDiaAlimenticio(dia) {
                 <div class="meal-plan-day-meals">${comidasHtml}</div>
             </section>
         `;
+}
+
+function manejarSustitucionNutricional(evento) {
+    const selector = evento.target;
+    if (!selector.matches(".meal-plan-food-swap select") || !recursosNutricionales) return;
+
+    try {
+        const sustituciones = obtenerSustitucionesNutricionales();
+        window.NutritionalScalingEngine.aplicarSustitucion(
+            planNutricionalActivo,
+            recursosNutricionales.catalogos,
+            selector.dataset.day,
+            selector.dataset.mealIndex,
+            selector.dataset.foodId,
+            selector.value,
+            sustituciones
+        );
+        localStorage.setItem(NUTRITION_SUBSTITUTIONS_KEY, JSON.stringify(sustituciones));
+        mostrarDiaNutricional();
+        document.getElementById("nutrition-warnings").textContent = "Sustitución aplicada; calorías y macronutrientes de la comida recalculados.";
+    } catch (error) {
+        document.getElementById("nutrition-warnings").textContent = error.message;
+        selector.value = selector.querySelector("option[selected]")?.value || selector.value;
+    }
 }
 
 function actualizarEncabezadoRutina(objetivo) {
@@ -470,7 +535,7 @@ async function actualizarPlanNutricional(perfil = perfilNutricionalActual) {
     const selectorAlimentos = document.getElementById("nutrition-foods");
     const objetivo = selectorObjetivo.value;
     const alimentos = normalizarListaAlimentosPreferidos([...selectorAlimentos.options].map((opcion) => opcion.value));
-    const frecuencia = Number(document.getElementById("nutrition-meal-frequency").value);
+    const frecuencia = normalizarFrecuenciaComidas(document.getElementById("nutrition-meal-frequency").value);
     const pesoActual = Number(selectorPeso.value || perfil.peso || 0);
     const preferencias = { goal: objetivo, available_foods: alimentos, meal_frequency: frecuencia, weight: pesoActual };
     localStorage.setItem("nutritionSettings", JSON.stringify(preferencias));
@@ -478,44 +543,42 @@ async function actualizarPlanNutricional(perfil = perfilNutricionalActual) {
     try {
         mensaje.textContent = "Generando plan...";
         mensaje.style.color = "";
-        const respuesta = await fetch(`${API_URL}/nutricion/plan`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                weight: Number(pesoActual || perfil.peso),
-                height: Number(perfil.estatura),
-                age: Number(perfil.edad),
-                gender: perfil.sexo,
-                goal: objetivo,
-                available_foods: alimentos,
-                preferences: alimentos,
-                meal_frequency: frecuencia
-            })
-        });
-        const plan = await leerRespuesta(respuesta, "No se pudo generar el plan nutricional.");
-        document.getElementById("res-imc").innerText = plan.imc;
-        document.getElementById("res-peso-actual").innerText = `${Number(pesoActual || perfil.peso || 0).toFixed(1)} kg`;
-        document.getElementById("res-tmb").innerText = `${plan.tmb} kcal`;
-        document.getElementById("res-tdee").innerText = `${plan.tdee} kcal`;
-        document.getElementById("res-calorias").innerText = `${plan.target_calories} kcal`;
-        document.getElementById("res-proteinas").innerText = `${plan.proteinas} g`;
-        document.getElementById("res-carbos").innerText = `${plan.carbos} g`;
-        document.getElementById("res-grasas").innerText = `${plan.grasas} g`;
-        document.getElementById("res-explicacion").innerText = plan.explicacion_nutricional;
-        const distribucion = plan.distribucion_macros || {};
-        document.getElementById("res-distribucion").innerText =
-            `Distribución orientativa: ${distribucion.carbohidratos ?? "-"}% carbohidratos, ${distribucion.proteinas ?? "-"}% proteína y ${distribucion.grasas ?? "-"}% grasas.`;
-        document.getElementById("home-imc").innerText = plan.imc;
-        document.getElementById("home-calorias").innerText = `${plan.target_calories} kcal`;
-        document.getElementById("home-objetivo").innerText = selectorObjetivo.selectedOptions[0].textContent;
-        renderizarPlanAlimenticio(plan.menu_alimenticio || []);
-        document.getElementById("nutrition-warnings").textContent = "";
+        const plan = window.NutritionalScalingEngine.generarPlan(
+            recursosNutricionales.matriz,
+            recursosNutricionales.catalogos,
+            { ...perfil, peso: pesoActual || perfil.peso },
+            objetivo,
+            frecuencia,
+            alimentos,
+            obtenerSustitucionesNutricionales()
+        );
+        mostrarResumenNutricional(plan, pesoActual || perfil.peso, selectorObjetivo.selectedOptions[0].textContent);
+        renderizarPlanAlimenticio(plan.menu);
+        document.getElementById("nutrition-warnings").textContent = plan.advertencias.join(" ");
         mensaje.textContent = "Plan actualizado.";
     } catch (error) {
         mensaje.style.color = "#ff5252";
         mensaje.textContent = error.message;
         document.getElementById("nutrition-warnings").textContent = error.message;
     }
+}
+
+function mostrarResumenNutricional(plan, peso, objetivoTexto) {
+    const objetivos = plan.objetivos;
+    document.getElementById("res-imc").innerText = objetivos.imc;
+    document.getElementById("res-peso-actual").innerText = `${Number(peso || 0).toFixed(1)} kg`;
+    document.getElementById("res-tmb").innerText = `${objetivos.tmb} kcal`;
+    document.getElementById("res-tdee").innerText = `${objetivos.tdee} kcal`;
+    document.getElementById("res-calorias").innerText = `${objetivos.calorias} kcal`;
+    document.getElementById("res-proteinas").innerText = `${objetivos.proteinas} g`;
+    document.getElementById("res-carbos").innerText = `${objetivos.carbohidratos} g`;
+    document.getElementById("res-grasas").innerText = `${objetivos.grasas} g`;
+    document.getElementById("res-explicacion").innerText = `Referencia antropométrica ${objetivos.prototipo_id}. Cálculo personalizado con tus datos físicos y objetivo nutricional.`;
+    document.getElementById("res-distribucion").innerText =
+        `Distribución orientativa: ${plan.distribucion_macros.carbohidratos}% carbohidratos, ${plan.distribucion_macros.proteinas}% proteína y ${plan.distribucion_macros.grasas}% grasas.`;
+    document.getElementById("home-imc").innerText = objetivos.imc;
+    document.getElementById("home-calorias").innerText = `${objetivos.calorias} kcal`;
+    document.getElementById("home-objetivo").innerText = objetivoTexto;
 }
 
 async function aplicarCambiosNutricionales() {
@@ -533,7 +596,7 @@ async function aplicarCambiosNutricionales() {
     const selectorAlimentos = document.getElementById("nutrition-foods");
     const objetivo = selectorObjetivo.value;
     const alimentos = normalizarListaAlimentosPreferidos([...selectorAlimentos.options].map((opcion) => opcion.value));
-    const frecuencia = Number(selectorComidas.value || 4);
+    const frecuencia = normalizarFrecuenciaComidas(selectorComidas.value);
     const pesoActual = Number(selectorPeso.value || perfilNutricionalActual.peso || 0);
     const objetivoBackend = {
         deficit: "Perder Grasa (Déficit)",
@@ -572,35 +635,18 @@ async function aplicarCambiosNutricionales() {
         };
         localStorage.setItem("nutritionSettings", JSON.stringify(preferencias));
 
-        const respuestaPlan = await fetch(`${API_URL}/nutricion/plan`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                weight: pesoActual,
-                height: Number(perfilNutricionalActual.estatura || 1.7),
-                age: Number(perfilNutricionalActual.edad || 30),
-                gender: perfilNutricionalActual.sexo || "masculino",
-                goal: objetivo,
-                available_foods: alimentos,
-                preferences: alimentos,
-                meal_frequency: frecuencia
-            })
-        });
-        const plan = await leerRespuesta(respuestaPlan, "No se pudo generar el plan nutricional.");
-        document.getElementById("res-imc").innerText = plan.imc;
-        document.getElementById("res-peso-actual").innerText = `${pesoActual.toFixed(1)} kg`;
-        document.getElementById("res-tmb").innerText = `${plan.tmb} kcal`;
-        document.getElementById("res-tdee").innerText = `${plan.tdee} kcal`;
-        document.getElementById("res-calorias").innerText = `${plan.target_calories} kcal`;
-        document.getElementById("res-proteinas").innerText = `${plan.proteinas} g`;
-        document.getElementById("res-carbos").innerText = `${plan.carbos} g`;
-        document.getElementById("res-grasas").innerText = `${plan.grasas} g`;
-        document.getElementById("res-explicacion").innerText = plan.explicacion_nutricional;
-        document.getElementById("home-imc").innerText = plan.imc;
-        document.getElementById("home-calorias").innerText = `${plan.target_calories} kcal`;
-        document.getElementById("home-objetivo").innerText = selectorObjetivo.selectedOptions[0].textContent;
-        renderizarPlanAlimenticio(plan.menu_alimenticio || []);
-        document.getElementById("nutrition-warnings").textContent = "";
+        const plan = window.NutritionalScalingEngine.generarPlan(
+            recursosNutricionales.matriz,
+            recursosNutricionales.catalogos,
+            { ...perfilNutricionalActual, peso: pesoActual },
+            objetivo,
+            frecuencia,
+            alimentos,
+            obtenerSustitucionesNutricionales()
+        );
+        mostrarResumenNutricional(plan, pesoActual, selectorObjetivo.selectedOptions[0].textContent);
+        renderizarPlanAlimenticio(plan.menu);
+        document.getElementById("nutrition-warnings").textContent = plan.advertencias.join(" ");
         mensaje.style.color = "#00e676";
         mensaje.textContent = "Cambios aplicados correctamente.";
     } catch (error) {
@@ -622,6 +668,8 @@ function cancelarCambiosNutricionales() {
 
 async function actualizarDashboard(data) {
     perfilNutricionalActual = data;
+    sincronizarConfiguracionRutina(data);
+    generarRutinaDesdeConfiguracion(data);
 
     document.getElementById("res-imc").innerText = data.imc;
     document.getElementById("res-peso-actual").innerText = `${Number(data.peso || 0).toFixed(1)} kg`;
@@ -639,7 +687,7 @@ async function actualizarDashboard(data) {
     }
     const selectorObjetivo = document.getElementById("nutrition-goal");
     selectorObjetivo.value = preferenciasNutricionales.goal || normalizarObjetivoNutricional(data.objetivo_nutricional || data.objetivo || "Mantenimiento");
-    document.getElementById("nutrition-meal-frequency").value = String(preferenciasNutricionales.meal_frequency || 4);
+    document.getElementById("nutrition-meal-frequency").value = String(normalizarFrecuenciaComidas(preferenciasNutricionales.meal_frequency));
     document.getElementById("nutrition-weight").value = Number(preferenciasNutricionales.weight || data.peso || 0).toFixed(1);
 
     const hiddenFoods = document.getElementById("nutrition-foods");
@@ -649,7 +697,7 @@ async function actualizarDashboard(data) {
         opcion.selected = foodsSelected.has(opcion.value);
     });
     renderizarChipsPreferencias([...foodsSelected]);
-    document.getElementById("training-goal").value = data.objetivo_entrenamiento || "Hipertrofia (Masa)";
+    document.getElementById("training-goal").value = obtenerConfiguracionRutina().objetivo_entrenamiento;
     document.getElementById("res-explicacion").innerText = data.explicacion_nutricional;
     const distribucion = data.distribucion_macros || {};
     document.getElementById("res-distribucion").innerText =
@@ -858,17 +906,19 @@ function crearTarjetaEjercicio(nombreEjercicio, imagenUrl) {
 }
 
 function normalizarDiasRutina(valor) {
-    const elecciones = [2, 3, 4, 5, 6];
+    const elecciones = [1, 2, 3, 4, 5, 6];
     const numerico = Number(valor);
     return elecciones.includes(numerico) ? numerico : 4;
 }
 
 function obtenerConfiguracionRutina() {
     const predeterminada = {
-        objetivo_entrenamiento: "Hipertrofia (Masa)",
-        dias_entrenamiento: 4,
+        objetivo_entrenamiento: perfilNutricionalActual?.objetivo_entrenamiento || "Hipertrofia (Masa)",
+        dias_entrenamiento: perfilNutricionalActual?.dias_entrenamiento || 4,
         musculo_prioritario: "Pecho",
-        intensidad_semanal: "media"
+        intensidad_semanal: "media",
+        nivel_experiencia: perfilNutricionalActual?.nivel_experiencia || "Principiante",
+        equipamiento: "gimnasio_completo"
     };
 
     try {
@@ -879,7 +929,9 @@ function obtenerConfiguracionRutina() {
             dias_entrenamiento: normalizarDiasRutina(guardada.dias_entrenamiento ?? predeterminada.dias_entrenamiento),
             objetivo_entrenamiento: guardada.objetivo_entrenamiento || predeterminada.objetivo_entrenamiento,
             musculo_prioritario: guardada.musculo_prioritario || predeterminada.musculo_prioritario,
-            intensidad_semanal: guardada.intensidad_semanal || predeterminada.intensidad_semanal
+            intensidad_semanal: guardada.intensidad_semanal || predeterminada.intensidad_semanal,
+            nivel_experiencia: guardada.nivel_experiencia || predeterminada.nivel_experiencia,
+            equipamiento: guardada.equipamiento || predeterminada.equipamiento
         };
     } catch (error) {
         localStorage.removeItem(ROUTINE_SETTINGS_KEY);
@@ -895,7 +947,9 @@ function guardarConfiguracionRutina(config = {}) {
         dias_entrenamiento: normalizarDiasRutina(config.dias_entrenamiento ?? actual.dias_entrenamiento),
         objetivo_entrenamiento: config.objetivo_entrenamiento || actual.objetivo_entrenamiento,
         musculo_prioritario: config.musculo_prioritario || actual.musculo_prioritario,
-        intensidad_semanal: config.intensidad_semanal || actual.intensidad_semanal
+        intensidad_semanal: config.intensidad_semanal || actual.intensidad_semanal,
+        nivel_experiencia: config.nivel_experiencia || actual.nivel_experiencia,
+        equipamiento: config.equipamiento || actual.equipamiento
     };
     localStorage.setItem(ROUTINE_SETTINGS_KEY, JSON.stringify(siguiente));
     return siguiente;
@@ -907,16 +961,54 @@ function sincronizarConfiguracionRutina(perfil = perfilNutricionalActual) {
     const dias = normalizarDiasRutina(config.dias_entrenamiento ?? perfil?.dias_entrenamiento ?? 4);
     const prioridad = config.musculo_prioritario || "Pecho";
     const intensidad = config.intensidad_semanal || "media";
+    const nivel = String(config.nivel_experiencia || perfil?.nivel_experiencia || "Principiante").toLowerCase();
+    const equipamiento = config.equipamiento || "gimnasio_completo";
 
     const selectorObjetivo = document.getElementById("training-goal");
     const selectorDias = document.getElementById("routine-days");
     const selectorPrioridad = document.getElementById("routine-muscle-priority");
     const selectorIntensidad = document.getElementById("routine-intensity");
+    const selectorNivel = document.getElementById("routine-level");
+    const selectorEquipamiento = document.getElementById("routine-equipment");
 
     if (selectorObjetivo) selectorObjetivo.value = objetivo;
     if (selectorDias) selectorDias.value = String(dias);
     if (selectorPrioridad) selectorPrioridad.value = prioridad;
     if (selectorIntensidad) selectorIntensidad.value = intensidad;
+    if (selectorNivel) selectorNivel.value = nivel;
+    if (selectorEquipamiento) selectorEquipamiento.value = equipamiento;
+}
+
+function generarRutinaDesdeConfiguracion(perfil = perfilNutricionalActual) {
+    if (!bibliotecaRutinaActiva) return;
+    try {
+        const config = obtenerConfiguracionRutina();
+        const selectorNivel = document.getElementById("routine-level");
+        plantillaRutinaActiva = window.RutinaEngine.generarRutina({
+            nivel: selectorNivel?.value || config.nivel_experiencia || perfil?.nivel_experiencia,
+            frecuencia_dias: normalizarDiasRutina(document.getElementById("routine-days")?.value || config.dias_entrenamiento),
+            objetivo_entrenamiento: document.getElementById("training-goal")?.value || config.objetivo_entrenamiento,
+            preferencia_muscular: document.getElementById("routine-muscle-priority")?.value || config.musculo_prioritario,
+            equipamiento: document.getElementById("routine-equipment")?.value || config.equipamiento,
+            intensidad_semanal: document.getElementById("routine-intensity")?.value || config.intensidad_semanal
+        }, bibliotecaRutinaActiva);
+        const selectorSemana = document.getElementById("routine-week");
+        selectorSemana.replaceChildren(...plantillaRutinaActiva.semanas.map((semana) =>
+            new Option(`Semana ${semana.semana}`, semana.semana)
+        ));
+        selectorSemana.disabled = false;
+        if (!plantillaRutinaActiva.semanas.some((semana) => semana.semana === Number(selectorSemana.value))) {
+            selectorSemana.value = "1";
+        }
+        return true;
+    } catch (error) {
+        plantillaRutinaActiva = null;
+        const mensaje = document.getElementById("training-msg");
+        mensaje.textContent = error.message || "No se pudo generar la rutina.";
+        mensaje.style.color = "#ff5252";
+        document.getElementById("routine-container").replaceChildren();
+        return false;
+    }
 }
 
 function renderizarRutina(rutina) {
@@ -926,6 +1018,10 @@ function renderizarRutina(rutina) {
     }
 
     const routineContainer = document.getElementById("routine-container");
+    if (!bibliotecaRutinaActiva) {
+        routineContainer.replaceChildren();
+        return;
+    }
     routineContainer.innerHTML = rutina.map((dia) => `
         <section class="day-plan">
             <h4>Día ${dia.dia}: ${dia.nombre}</h4>
@@ -995,9 +1091,13 @@ function ordenarEjerciciosPorPrioridad(ejercicios, musculoPrioritario) {
 function construirDiasRutinaVisibles(plantilla, diasSeleccionados, musculoPrioritario) {
     if (!plantilla || !Array.isArray(plantilla.semanas) || !plantilla.semanas.length) return [];
 
-    const semana = plantilla.semanas[0];
+    const semanaSeleccionada = plantilla.biblioteca_dinamica
+        ? Number(document.getElementById("routine-week")?.value || 1)
+        : plantilla.semanas[0].semana;
+    const semana = plantilla.semanas.find((item) => item.semana === semanaSeleccionada) || plantilla.semanas[0];
     const baseDias = Array.isArray(semana.dias) ? semana.dias : [];
     if (!baseDias.length) return [];
+    if (plantilla.biblioteca_dinamica) return baseDias;
 
     const totalBase = baseDias.length;
     return Array.from({ length: diasSeleccionados }, (_, indice) => {
@@ -1158,22 +1258,9 @@ function actualizarVistaRutina() {
 
 async function restaurarPlantillaRutina() {
     try {
-        let guardada = localStorage.getItem("routineTemplate");
-        if (!guardada) {
-            const respuesta = await fetch("rutinas/P01_F3_HIPERTROFIA_FULLBODY_ABC.json");
-            if (!respuesta.ok) throw new Error("No se pudo cargar la plantilla P01 del proyecto.");
-            const plantillaPorDefecto = await respuesta.json();
-            window.RutinaEngine.validarPlantilla(plantillaPorDefecto);
-            guardada = JSON.stringify(plantillaPorDefecto);
-            localStorage.setItem("routineTemplate", guardada);
-        }
-        plantillaRutinaActiva = JSON.parse(guardada);
-        window.RutinaEngine.validarPlantilla(plantillaRutinaActiva);
-        const selectorSemana = document.getElementById("routine-week");
-        selectorSemana.replaceChildren(...plantillaRutinaActiva.semanas.map((semana) => new Option(`Semana ${semana.semana}`, semana.semana)));
-        selectorSemana.disabled = false;
-        selectorSemana.value = String(plantillaRutinaActiva.semanas[0].semana);
+        bibliotecaRutinaActiva = await window.RutinaEngine.cargarBiblioteca();
         sincronizarConfiguracionRutina(perfilNutricionalActual || { objetivo_entrenamiento: "Hipertrofia (Masa)", dias_entrenamiento: 4 });
+        generarRutinaDesdeConfiguracion(perfilNutricionalActual);
         actualizarDiasRutina();
         actualizarVistaRutina();
     } catch (error) {
@@ -1328,6 +1415,15 @@ document.addEventListener("scroll", actualizarActividad, { capture: true, passiv
 document.addEventListener("touchstart", actualizarActividad, { passive: true });
 document.addEventListener("DOMContentLoaded", async () => {
     inicializarSelectoresEstatura();
+    try {
+        recursosNutricionales = await window.NutritionalScalingEngine.cargarRecursos();
+        sincronizarCatalogoSelectorPreferencias();
+    } catch (error) {
+        const mensaje = document.getElementById("nutrition-msg");
+        mensaje.textContent = error.message || "No se pudieron cargar los datos nutricionales.";
+        mensaje.style.color = "#ff5252";
+        document.getElementById("nutrition-warnings").textContent = mensaje.textContent;
+    }
 
     const botonAgregarAlimento = document.getElementById("nutrition-add-food");
     const botonAplicarCambios = document.getElementById("nutrition-apply-btn");
@@ -1339,8 +1435,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const selectorDiasRutina = document.getElementById("routine-days");
     const selectorPrioridadRutina = document.getElementById("routine-muscle-priority");
     const selectorIntensidadRutina = document.getElementById("routine-intensity");
+    const selectorNivelRutina = document.getElementById("routine-level");
+    const selectorEquipamientoRutina = document.getElementById("routine-equipment");
     const botonAplicarRutina = document.getElementById("routine-apply-btn");
     const botonCancelarRutina = document.getElementById("routine-cancel-btn");
+    document.getElementById("menu-alimenticio").addEventListener("change", manejarSustitucionNutricional);
 
     botonAgregarAlimento?.addEventListener("click", agregarPreferenciaAlimento);
     botonAplicarCambios?.addEventListener("click", aplicarCambiosNutricionales);
@@ -1363,20 +1462,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     selectorObjetivoRutina?.addEventListener("change", () => {
         guardarConfiguracionRutina({ objetivo_entrenamiento: selectorObjetivoRutina.value });
+        generarRutinaDesdeConfiguracion();
+        actualizarDiasRutina();
         actualizarVistaRutina();
     });
     selectorDiasRutina?.addEventListener("change", () => {
         guardarConfiguracionRutina({ dias_entrenamiento: Number(selectorDiasRutina.value) });
+        generarRutinaDesdeConfiguracion();
         actualizarDiasRutina();
         actualizarVistaRutina();
     });
     selectorPrioridadRutina?.addEventListener("change", () => {
         guardarConfiguracionRutina({ musculo_prioritario: selectorPrioridadRutina.value });
+        generarRutinaDesdeConfiguracion();
         actualizarDiasRutina();
         actualizarVistaRutina();
     });
     selectorIntensidadRutina?.addEventListener("change", () => {
         guardarConfiguracionRutina({ intensidad_semanal: selectorIntensidadRutina.value });
+        generarRutinaDesdeConfiguracion();
+        actualizarDiasRutina();
+        actualizarVistaRutina();
+    });
+    selectorNivelRutina?.addEventListener("change", () => {
+        guardarConfiguracionRutina({ nivel_experiencia: selectorNivelRutina.value });
+        generarRutinaDesdeConfiguracion();
+        actualizarDiasRutina();
+        actualizarVistaRutina();
+    });
+    selectorEquipamientoRutina?.addEventListener("change", () => {
+        guardarConfiguracionRutina({ equipamiento: selectorEquipamientoRutina.value });
+        generarRutinaDesdeConfiguracion();
+        actualizarDiasRutina();
         actualizarVistaRutina();
     });
     botonAplicarRutina?.addEventListener("click", aplicarCambiosRutina);
@@ -1407,6 +1524,8 @@ async function aplicarCambiosRutina() {
     const selectorDias = document.getElementById("routine-days");
     const selectorPrioridad = document.getElementById("routine-muscle-priority");
     const selectorIntensidad = document.getElementById("routine-intensity");
+    const selectorNivel = document.getElementById("routine-level");
+    const selectorEquipamiento = document.getElementById("routine-equipment");
     const mensaje = document.getElementById("training-msg");
 
     if (!usuarioActual) {
@@ -1419,7 +1538,9 @@ async function aplicarCambiosRutina() {
         objetivo_entrenamiento: selector.value,
         dias_entrenamiento: Number(selectorDias.value || 4),
         musculo_prioritario: selectorPrioridad.value,
-        intensidad_semanal: selectorIntensidad.value
+        intensidad_semanal: selectorIntensidad.value,
+        nivel_experiencia: selectorNivel.value,
+        equipamiento: selectorEquipamiento.value
     };
 
     try {
@@ -1432,7 +1553,12 @@ async function aplicarCambiosRutina() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 objetivo_entrenamiento: siguiente.objetivo_entrenamiento,
-                dias_entrenamiento: siguiente.dias_entrenamiento
+                dias_entrenamiento: siguiente.dias_entrenamiento,
+                nivel_experiencia: {
+                    principiante: "Principiante",
+                    intermedio: "Intermedio",
+                    avanzado: "Avanzado"
+                }[siguiente.nivel_experiencia]
             })
         });
         const data = await leerRespuesta(respuesta, "No se pudo actualizar la rutina.");

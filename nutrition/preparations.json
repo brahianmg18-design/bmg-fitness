@@ -1,0 +1,1218 @@
+{
+  "version": "1.0.0",
+  "description": "Biblioteca de preparaciones base. Las cantidades son una referencia inicial; el motor las escala para cumplir objetivos.",
+  "scaling_rule": "Escalar ingredientes proporcionalmente y recalcular kcal/macros desde foods.json.",
+  "preparations": [
+    {
+      "id": "breakfast_01",
+      "name": "Avena con banano y mantequilla de maní",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "oats",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "banana",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "peanut_butter",
+          "quantity_g": 15
+        },
+        {
+          "food_id": "milk_lowfat",
+          "quantity_g": 200
+        }
+      ],
+      "favorite_match_tags": [
+        "oats",
+        "banana",
+        "peanut_butter"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "breakfast_02",
+      "name": "Avena con fresas y yogur griego",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "oats",
+          "quantity_g": 50
+        },
+        {
+          "food_id": "strawberry",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "greek_yogurt",
+          "quantity_g": 170
+        },
+        {
+          "food_id": "honey",
+          "quantity_g": 10
+        }
+      ],
+      "favorite_match_tags": [
+        "oats",
+        "strawberry",
+        "greek_yogurt"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "breakfast_03",
+      "name": "Arepa con huevos y aguacate",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "corn_arepa",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "eggs",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 50
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 50
+        }
+      ],
+      "favorite_match_tags": [
+        "corn_arepa",
+        "eggs",
+        "avocado"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "breakfast_04",
+      "name": "Arepa con pollo y aguacate",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "corn_arepa",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "chicken_breast",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 40
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 50
+        }
+      ],
+      "favorite_match_tags": [
+        "corn_arepa",
+        "chicken_breast",
+        "avocado"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "breakfast_05",
+      "name": "Tostadas integrales con huevo y aguacate",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "whole_wheat_bread",
+          "quantity_g": 70
+        },
+        {
+          "food_id": "eggs",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 40
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 50
+        }
+      ],
+      "favorite_match_tags": [
+        "whole_wheat_bread",
+        "eggs",
+        "avocado"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "breakfast_06",
+      "name": "Yogur griego con fruta, avena y chía",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "greek_yogurt",
+          "quantity_g": 220
+        },
+        {
+          "food_id": "banana",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "oats",
+          "quantity_g": 40
+        },
+        {
+          "food_id": "chia",
+          "quantity_g": 10
+        }
+      ],
+      "favorite_match_tags": [
+        "greek_yogurt",
+        "banana",
+        "oats"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "breakfast_07",
+      "name": "Omelet de claras, huevo y verduras",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "egg_whites",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "eggs",
+          "quantity_g": 50
+        },
+        {
+          "food_id": "spinach",
+          "quantity_g": 50
+        },
+        {
+          "food_id": "mushrooms",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "corn_arepa",
+          "quantity_g": 60
+        }
+      ],
+      "favorite_match_tags": [
+        "egg_whites",
+        "eggs",
+        "spinach"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "breakfast_08",
+      "name": "Avena de cacao y banano",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "oats",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "banana",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "cocoa",
+          "quantity_g": 8
+        },
+        {
+          "food_id": "peanut_butter",
+          "quantity_g": 12
+        },
+        {
+          "food_id": "milk_lowfat",
+          "quantity_g": 200
+        }
+      ],
+      "favorite_match_tags": [
+        "oats",
+        "banana",
+        "cocoa"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "breakfast_09",
+      "name": "Sándwich integral de pavo y queso",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "whole_wheat_bread",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "turkey_breast",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "fresh_cheese",
+          "quantity_g": 30
+        },
+        {
+          "food_id": "lettuce",
+          "quantity_g": 30
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 50
+        }
+      ],
+      "favorite_match_tags": [
+        "whole_wheat_bread",
+        "turkey_breast"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "breakfast_10",
+      "name": "Quinoa con yogur y mango",
+      "meal_type": "breakfast",
+      "ingredients": [
+        {
+          "food_id": "quinoa",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "greek_yogurt",
+          "quantity_g": 170
+        },
+        {
+          "food_id": "mango",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "chia",
+          "quantity_g": 8
+        }
+      ],
+      "favorite_match_tags": [
+        "quinoa",
+        "greek_yogurt",
+        "mango"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_01",
+      "name": "Pollo con arroz, brócoli y aguacate",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "chicken_breast",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "white_rice",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "broccoli",
+          "quantity_g": 120
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 40
+        }
+      ],
+      "favorite_match_tags": [
+        "chicken_breast",
+        "white_rice",
+        "broccoli",
+        "avocado"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_02",
+      "name": "Carne magra con papa y ensalada",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "lean_beef",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "potato",
+          "quantity_g": 250
+        },
+        {
+          "food_id": "lettuce",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "cucumber",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "olive_oil",
+          "quantity_g": 8
+        }
+      ],
+      "favorite_match_tags": [
+        "lean_beef",
+        "potato"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_03",
+      "name": "Salmón con arroz integral y verduras",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "salmon",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "brown_rice",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "broccoli",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "carrot",
+          "quantity_g": 60
+        }
+      ],
+      "favorite_match_tags": [
+        "salmon",
+        "brown_rice",
+        "broccoli"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_04",
+      "name": "Pavo con pasta y verduras",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "turkey_breast",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "pasta",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "zucchini",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "bell_pepper",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "olive_oil",
+          "quantity_g": 8
+        }
+      ],
+      "favorite_match_tags": [
+        "turkey_breast",
+        "pasta"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_05",
+      "name": "Pescado blanco con yuca y ensalada",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "white_fish",
+          "quantity_g": 170
+        },
+        {
+          "food_id": "yuca",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "lettuce",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 40
+        }
+      ],
+      "favorite_match_tags": [
+        "white_fish",
+        "yuca",
+        "avocado"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_06",
+      "name": "Pollo con batata y ensalada",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "chicken_breast",
+          "quantity_g": 160
+        },
+        {
+          "food_id": "sweet_potato",
+          "quantity_g": 250
+        },
+        {
+          "food_id": "spinach",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "olive_oil",
+          "quantity_g": 8
+        }
+      ],
+      "favorite_match_tags": [
+        "chicken_breast",
+        "sweet_potato"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_07",
+      "name": "Carne molida magra con arroz y frijoles",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "ground_beef_lean",
+          "quantity_g": 140
+        },
+        {
+          "food_id": "white_rice",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "black_beans",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 30
+        }
+      ],
+      "favorite_match_tags": [
+        "ground_beef_lean",
+        "white_rice",
+        "black_beans"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_08",
+      "name": "Lentejas con arroz y huevo",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "lentils",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "white_rice",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "eggs",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "spinach",
+          "quantity_g": 50
+        }
+      ],
+      "favorite_match_tags": [
+        "lentils",
+        "white_rice",
+        "eggs"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_09",
+      "name": "Ensalada de atún, papa y aguacate",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "tuna_water",
+          "quantity_g": 140
+        },
+        {
+          "food_id": "potato",
+          "quantity_g": 220
+        },
+        {
+          "food_id": "lettuce",
+          "quantity_g": 70
+        },
+        {
+          "food_id": "cucumber",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 70
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 50
+        }
+      ],
+      "favorite_match_tags": [
+        "tuna_water",
+        "potato",
+        "avocado"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "lunch_10",
+      "name": "Camarones con arroz y verduras",
+      "meal_type": "lunch",
+      "ingredients": [
+        {
+          "food_id": "shrimp",
+          "quantity_g": 170
+        },
+        {
+          "food_id": "white_rice",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "bell_pepper",
+          "quantity_g": 70
+        },
+        {
+          "food_id": "zucchini",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "olive_oil",
+          "quantity_g": 8
+        }
+      ],
+      "favorite_match_tags": [
+        "shrimp",
+        "white_rice"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "dinner_01",
+      "name": "Pollo con arroz y verduras",
+      "meal_type": "dinner",
+      "ingredients": [
+        {
+          "food_id": "chicken_breast",
+          "quantity_g": 140
+        },
+        {
+          "food_id": "white_rice",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "broccoli",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "carrot",
+          "quantity_g": 60
+        }
+      ],
+      "favorite_match_tags": [
+        "chicken_breast",
+        "white_rice"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "dinner_02",
+      "name": "Tortilla de huevo con papa y espinaca",
+      "meal_type": "dinner",
+      "ingredients": [
+        {
+          "food_id": "eggs",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "potato",
+          "quantity_g": 220
+        },
+        {
+          "food_id": "spinach",
+          "quantity_g": 70
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 60
+        }
+      ],
+      "favorite_match_tags": [
+        "eggs",
+        "potato"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "dinner_03",
+      "name": "Pescado con batata y brócoli",
+      "meal_type": "dinner",
+      "ingredients": [
+        {
+          "food_id": "white_fish",
+          "quantity_g": 160
+        },
+        {
+          "food_id": "sweet_potato",
+          "quantity_g": 220
+        },
+        {
+          "food_id": "broccoli",
+          "quantity_g": 120
+        },
+        {
+          "food_id": "olive_oil",
+          "quantity_g": 8
+        }
+      ],
+      "favorite_match_tags": [
+        "white_fish",
+        "sweet_potato"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "dinner_04",
+      "name": "Pavo con quinoa y ensalada",
+      "meal_type": "dinner",
+      "ingredients": [
+        {
+          "food_id": "turkey_breast",
+          "quantity_g": 150
+        },
+        {
+          "food_id": "quinoa",
+          "quantity_g": 170
+        },
+        {
+          "food_id": "lettuce",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "cucumber",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 30
+        }
+      ],
+      "favorite_match_tags": [
+        "turkey_breast",
+        "quinoa"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "dinner_05",
+      "name": "Salmón con papa y ensalada",
+      "meal_type": "dinner",
+      "ingredients": [
+        {
+          "food_id": "salmon",
+          "quantity_g": 140
+        },
+        {
+          "food_id": "potato",
+          "quantity_g": 220
+        },
+        {
+          "food_id": "lettuce",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "cucumber",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 60
+        }
+      ],
+      "favorite_match_tags": [
+        "salmon",
+        "potato"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "dinner_06",
+      "name": "Arepa rellena de pollo y aguacate",
+      "meal_type": "dinner",
+      "ingredients": [
+        {
+          "food_id": "corn_arepa",
+          "quantity_g": 90
+        },
+        {
+          "food_id": "chicken_breast",
+          "quantity_g": 130
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 40
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 60
+        }
+      ],
+      "favorite_match_tags": [
+        "corn_arepa",
+        "chicken_breast",
+        "avocado"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "dinner_07",
+      "name": "Pasta con carne magra y verduras",
+      "meal_type": "dinner",
+      "ingredients": [
+        {
+          "food_id": "pasta",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "lean_beef",
+          "quantity_g": 130
+        },
+        {
+          "food_id": "tomato",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "zucchini",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "olive_oil",
+          "quantity_g": 8
+        }
+      ],
+      "favorite_match_tags": [
+        "pasta",
+        "lean_beef"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "dinner_08",
+      "name": "Bowl de garbanzos, quinoa y verduras",
+      "meal_type": "dinner",
+      "ingredients": [
+        {
+          "food_id": "chickpeas",
+          "quantity_g": 140
+        },
+        {
+          "food_id": "quinoa",
+          "quantity_g": 140
+        },
+        {
+          "food_id": "broccoli",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "carrot",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 35
+        }
+      ],
+      "favorite_match_tags": [
+        "chickpeas",
+        "quinoa",
+        "avocado"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "snack_01",
+      "name": "Yogur griego con banano y nueces",
+      "meal_type": "snack",
+      "ingredients": [
+        {
+          "food_id": "greek_yogurt",
+          "quantity_g": 200
+        },
+        {
+          "food_id": "banana",
+          "quantity_g": 80
+        },
+        {
+          "food_id": "walnuts",
+          "quantity_g": 15
+        }
+      ],
+      "favorite_match_tags": [
+        "greek_yogurt",
+        "banana"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "snack_02",
+      "name": "Manzana con mantequilla de maní",
+      "meal_type": "snack",
+      "ingredients": [
+        {
+          "food_id": "apple",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "peanut_butter",
+          "quantity_g": 20
+        }
+      ],
+      "favorite_match_tags": [
+        "apple",
+        "peanut_butter"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "snack_03",
+      "name": "Batido de banano, avena y leche",
+      "meal_type": "snack",
+      "ingredients": [
+        {
+          "food_id": "banana",
+          "quantity_g": 100
+        },
+        {
+          "food_id": "oats",
+          "quantity_g": 35
+        },
+        {
+          "food_id": "milk_lowfat",
+          "quantity_g": 250
+        },
+        {
+          "food_id": "peanut_butter",
+          "quantity_g": 10
+        }
+      ],
+      "favorite_match_tags": [
+        "banana",
+        "oats"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "snack_04",
+      "name": "Tostada integral con aguacate y huevo",
+      "meal_type": "snack",
+      "ingredients": [
+        {
+          "food_id": "whole_wheat_bread",
+          "quantity_g": 50
+        },
+        {
+          "food_id": "avocado",
+          "quantity_g": 40
+        },
+        {
+          "food_id": "eggs",
+          "quantity_g": 50
+        }
+      ],
+      "favorite_match_tags": [
+        "whole_wheat_bread",
+        "avocado",
+        "eggs"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "snack_05",
+      "name": "Yogur con fresas, chía y miel",
+      "meal_type": "snack",
+      "ingredients": [
+        {
+          "food_id": "greek_yogurt",
+          "quantity_g": 200
+        },
+        {
+          "food_id": "strawberry",
+          "quantity_g": 120
+        },
+        {
+          "food_id": "chia",
+          "quantity_g": 10
+        },
+        {
+          "food_id": "honey",
+          "quantity_g": 8
+        }
+      ],
+      "favorite_match_tags": [
+        "greek_yogurt",
+        "strawberry"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "snack_06",
+      "name": "Arepa pequeña con queso fresco",
+      "meal_type": "snack",
+      "ingredients": [
+        {
+          "food_id": "corn_arepa",
+          "quantity_g": 60
+        },
+        {
+          "food_id": "fresh_cheese",
+          "quantity_g": 35
+        }
+      ],
+      "favorite_match_tags": [
+        "corn_arepa",
+        "fresh_cheese"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "snack_07",
+      "name": "Naranja con almendras y yogur",
+      "meal_type": "snack",
+      "ingredients": [
+        {
+          "food_id": "orange",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "almonds",
+          "quantity_g": 20
+        },
+        {
+          "food_id": "greek_yogurt",
+          "quantity_g": 150
+        }
+      ],
+      "favorite_match_tags": [
+        "orange",
+        "almonds"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    },
+    {
+      "id": "snack_08",
+      "name": "Bowl de mango, yogur y avena",
+      "meal_type": "snack",
+      "ingredients": [
+        {
+          "food_id": "mango",
+          "quantity_g": 120
+        },
+        {
+          "food_id": "greek_yogurt",
+          "quantity_g": 180
+        },
+        {
+          "food_id": "oats",
+          "quantity_g": 30
+        }
+      ],
+      "favorite_match_tags": [
+        "mango",
+        "greek_yogurt"
+      ],
+      "cooking_methods": [
+        "standard"
+      ],
+      "supports_scaling": true,
+      "supports_substitution": true
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "objetivos": [
+    {
+      "id": "hipertrofia",
+      "nombre": "Hipertrofia / masa muscular",
+      "rangos": {
+        "compuestos": "6-12",
+        "aislamientos": "8-15",
+        "core": "10-20"
+      },
+      "rir": [
+        3,
+        2,
+        1,
+        3
+      ]
+    },
+    {
+      "id": "fuerza",
+      "nombre": "Fuerza",
+      "rangos": {
+        "compuestos": "3-8",
+        "aislamientos": "6-12",
+        "core": "8-15"
+      },
+      "rir": [
+        3,
+        2,
+        1,
+        3
+      ]
+    },
+    {
+      "id": "fuerza_definicion",
+      "nombre": "Fuerza + definición",
+      "rangos": {
+        "compuestos": "5-10",
+        "aislamientos": "8-15",
+        "core": "10-20"
+      },
+      "rir": [
+        3,
+        2,
+        1,
+        3
+      ],
+      "nota": "Definición no requiere ejercicios especiales; la composición corporal depende principalmente del balance energético."
+    },
+    {
+      "id": "acondicionamiento",
+      "nombre": "Acondicionamiento general",
+      "rangos": {
+        "compuestos": "8-15",
+        "aislamientos": "10-20",
+        "core": "10-20"
+      },
+      "rir": [
+        3,
+        2,
+        2,
+        3
+      ]
+    }
+  ]
+}

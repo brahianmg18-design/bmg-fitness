@@ -1,0 +1,125 @@
+{
+  "version": "1.0.0",
+  "description": "Grupos de sustitución funcional. El motor debe recalcular cantidades y macros después de sustituir.",
+  "groups": [
+    {
+      "id": "protein_animal",
+      "food_ids": [
+        "chicken_breast",
+        "turkey_breast",
+        "lean_beef",
+        "ground_beef_lean",
+        "pork_loin",
+        "white_fish",
+        "salmon",
+        "tuna_water",
+        "shrimp"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    },
+    {
+      "id": "eggs",
+      "food_ids": [
+        "eggs",
+        "egg_whites"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    },
+    {
+      "id": "carb_grain",
+      "food_ids": [
+        "white_rice",
+        "brown_rice",
+        "pasta",
+        "quinoa"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    },
+    {
+      "id": "carb_tuber",
+      "food_ids": [
+        "potato",
+        "sweet_potato",
+        "yuca",
+        "plantain"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    },
+    {
+      "id": "bread",
+      "food_ids": [
+        "corn_arepa",
+        "whole_wheat_bread",
+        "white_bread"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    },
+    {
+      "id": "legume",
+      "food_ids": [
+        "black_beans",
+        "lentils",
+        "chickpeas",
+        "peas"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    },
+    {
+      "id": "fruit",
+      "food_ids": [
+        "banana",
+        "apple",
+        "orange",
+        "strawberry",
+        "blueberry",
+        "pineapple",
+        "mango",
+        "papaya",
+        "grapes"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    },
+    {
+      "id": "vegetable",
+      "food_ids": [
+        "tomato",
+        "spinach",
+        "lettuce",
+        "cucumber",
+        "carrot",
+        "broccoli",
+        "cauliflower",
+        "bell_pepper",
+        "onion",
+        "zucchini",
+        "mushrooms",
+        "corn"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    },
+    {
+      "id": "fat",
+      "food_ids": [
+        "avocado",
+        "olive_oil",
+        "peanut_butter",
+        "peanuts",
+        "almonds",
+        "walnuts",
+        "chia",
+        "flaxseed"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    },
+    {
+      "id": "dairy",
+      "food_ids": [
+        "greek_yogurt",
+        "milk_lowfat",
+        "cottage_cheese",
+        "fresh_cheese"
+      ],
+      "rule": "prefer_similar_meal_role_and_recalculate"
+    }
+  ]
+}

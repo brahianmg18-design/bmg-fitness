@@ -1,0 +1,4661 @@
+{
+  "schema_version": "1.0",
+  "nombre": "BMG Fitness - Biblioteca maestra de ejercicios",
+  "reglas": {
+    "no_inventar_ejercicios": true,
+    "usar_solo_ids_existentes": true,
+    "prioridad_muscular_no_exclusiva": true,
+    "evitar_repeticion_identica_consecutiva": true,
+    "respetar_nivel_y_equipamiento": true,
+    "total_ejercicios": 150
+  },
+  "ejercicios": [
+    {
+      "id": "press_banca_barra",
+      "nombre": "Press banca con barra",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra",
+        "banco"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_banca_mancuernas",
+        "press_banca_maquina"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_banca_mancuernas",
+      "nombre": "Press banca con mancuernas",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_banca_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_banca_maquina",
+      "nombre": "Press de pecho en máquina",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_banca_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_inclinado_barra",
+      "nombre": "Press inclinado con barra",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra",
+        "banco_inclinado"
+      ],
+      "musculos_principales": [
+        "pecho_superior"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_inclinado_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_inclinado_mancuernas",
+      "nombre": "Press inclinado con mancuernas",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas",
+        "banco_inclinado"
+      ],
+      "musculos_principales": [
+        "pecho_superior"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_inclinado_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_inclinado_maquina",
+      "nombre": "Press inclinado en máquina",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "pecho_superior"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_inclinado_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "fondos_pecho",
+      "nombre": "Fondos en paralelas para pecho",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "paralelas"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_banca_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "flexiones",
+      "nombre": "Flexiones de brazos",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "flexiones_inclinadas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "flexiones_inclinadas",
+      "nombre": "Flexiones inclinadas",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal",
+        "banco"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "flexiones"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "aperturas_mancuernas",
+      "nombre": "Aperturas con mancuernas",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "aduccion_horizontal",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "aperturas_polea"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "aperturas_polea",
+      "nombre": "Aperturas en polea",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "aduccion_horizontal",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "aperturas_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "pec_deck",
+      "nombre": "Pec deck",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "aduccion_horizontal",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "aperturas_polea"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_suelo_mancuernas",
+      "nombre": "Press de suelo con mancuernas",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_banca_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_smith_horizontal",
+      "nombre": "Press horizontal en Smith",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "smith",
+        "banco"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_banca_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_declinado_maquina",
+      "nombre": "Press declinado en máquina",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_banca_maquina"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "dominadas_pronadas",
+      "nombre": "Dominadas pronadas",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal",
+        "barra_dominadas"
+      ],
+      "musculos_principales": [
+        "dorsales"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "redondo_mayor"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "jalon_pronado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "dominadas_neutras",
+      "nombre": "Dominadas neutras",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal",
+        "barra_dominadas"
+      ],
+      "musculos_principales": [
+        "dorsales"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "redondo_mayor"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "jalon_neutro"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "dominadas_supinas",
+      "nombre": "Dominadas supinas",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal",
+        "barra_dominadas"
+      ],
+      "musculos_principales": [
+        "dorsales"
+      ],
+      "musculos_secundarios": [
+        "biceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "jalon_supino"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "jalon_pronado",
+      "nombre": "Jalón al pecho pronado",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "dorsales"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "redondo_mayor"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "dominadas_pronadas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "jalon_neutro",
+      "nombre": "Jalón al pecho agarre neutro",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "dorsales"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "redondo_mayor"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "dominadas_neutras"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "jalon_supino",
+      "nombre": "Jalón al pecho supino",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "dorsales"
+      ],
+      "musculos_secundarios": [
+        "biceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "dominadas_supinas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "remo_barra",
+      "nombre": "Remo con barra",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra"
+      ],
+      "musculos_principales": [
+        "espalda_media"
+      ],
+      "musculos_secundarios": [
+        "dorsales",
+        "biceps",
+        "erectores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "remo_mancuerna",
+        "remo_maquina"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "remo_mancuerna",
+      "nombre": "Remo con mancuerna",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "dorsales",
+        "espalda_media"
+      ],
+      "musculos_secundarios": [
+        "biceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "remo_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "remo_polea_sentado",
+      "nombre": "Remo sentado en polea",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "espalda_media"
+      ],
+      "musculos_secundarios": [
+        "dorsales",
+        "biceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "remo_maquina"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "remo_maquina",
+      "nombre": "Remo en máquina",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "espalda_media"
+      ],
+      "musculos_secundarios": [
+        "dorsales",
+        "biceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "remo_polea_sentado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "remo_pecho_apoyado",
+      "nombre": "Remo con pecho apoyado",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina",
+        "banco"
+      ],
+      "musculos_principales": [
+        "espalda_media"
+      ],
+      "musculos_secundarios": [
+        "dorsales",
+        "biceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "remo_mancuerna"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "remo_t_barra",
+      "nombre": "Remo T-barra",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra",
+        "maquina"
+      ],
+      "musculos_principales": [
+        "espalda_media"
+      ],
+      "musculos_secundarios": [
+        "dorsales",
+        "biceps",
+        "erectores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "remo_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "pullover_polea",
+      "nombre": "Pullover en polea",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "extension_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "dorsales"
+      ],
+      "musculos_secundarios": [
+        "triceps_largo"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "pullover_mancuerna"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "pullover_mancuerna",
+      "nombre": "Pullover con mancuerna",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "extension_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "dorsales"
+      ],
+      "musculos_secundarios": [
+        "pecho"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "pullover_polea"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "face_pull",
+      "nombre": "Face pull",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "deltoides_posterior"
+      ],
+      "musculos_secundarios": [
+        "trapecio_medio",
+        "romboides"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "reverse_fly"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "encogimientos_barra",
+      "nombre": "Encogimientos con barra",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "elevacion_escapular",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "barra"
+      ],
+      "musculos_principales": [
+        "trapecio"
+      ],
+      "musculos_secundarios": [
+        "antebrazos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "encogimientos_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "encogimientos_mancuernas",
+      "nombre": "Encogimientos con mancuernas",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "elevacion_escapular",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "trapecio"
+      ],
+      "musculos_secundarios": [
+        "antebrazos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "encogimientos_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_militar_barra",
+      "nombre": "Press militar con barra",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "empuje_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra"
+      ],
+      "musculos_principales": [
+        "deltoides_anterior"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_lateral"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_mancuernas_sentado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "press_mancuernas_sentado",
+      "nombre": "Press de hombros con mancuernas",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "empuje_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "deltoides_anterior"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_lateral"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_militar_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_maquina_hombros",
+      "nombre": "Press de hombros en máquina",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "empuje_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "deltoides_anterior"
+      ],
+      "musculos_secundarios": [
+        "triceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_mancuernas_sentado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "arnold_press",
+      "nombre": "Press Arnold",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "empuje_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "deltoides"
+      ],
+      "musculos_secundarios": [
+        "triceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_mancuernas_sentado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "elevaciones_laterales_mancuernas",
+      "nombre": "Elevaciones laterales con mancuernas",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "abduccion_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "deltoides_lateral"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "elevaciones_laterales_polea"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "elevaciones_laterales_polea",
+      "nombre": "Elevaciones laterales en polea",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "abduccion_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "deltoides_lateral"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "elevaciones_laterales_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "elevaciones_laterales_maquina",
+      "nombre": "Elevaciones laterales en máquina",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "abduccion_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "deltoides_lateral"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "elevaciones_laterales_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "reverse_fly",
+      "nombre": "Reverse fly",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "abduccion_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas",
+        "maquina"
+      ],
+      "musculos_principales": [
+        "deltoides_posterior"
+      ],
+      "musculos_secundarios": [
+        "romboides",
+        "trapecio_medio"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "face_pull"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "pajaros_mancuernas",
+      "nombre": "Pájaros con mancuernas",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "abduccion_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "deltoides_posterior"
+      ],
+      "musculos_secundarios": [
+        "romboides"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "reverse_fly"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "elevacion_frontal_disco",
+      "nombre": "Elevación frontal con disco",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "flexion_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "disco"
+      ],
+      "musculos_principales": [
+        "deltoides_anterior"
+      ],
+      "musculos_secundarios": [
+        "pecho_superior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "elevacion_frontal_polea"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "elevacion_frontal_polea",
+      "nombre": "Elevación frontal en polea",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "flexion_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "deltoides_anterior"
+      ],
+      "musculos_secundarios": [
+        "pecho_superior"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "elevacion_frontal_disco"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_barra",
+      "nombre": "Curl con barra",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "barra"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "braquial"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_mancuernas",
+      "nombre": "Curl alterno con mancuernas",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "braquial"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_martillo",
+      "nombre": "Curl martillo",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "braquial",
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "braquiorradial"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_cuerda"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_polea_baja",
+      "nombre": "Curl en polea baja",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "braquial"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_predicador",
+      "nombre": "Curl predicador",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "barra",
+        "banco_predicador"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "braquial"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_predicador_maquina"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_predicador_maquina",
+      "nombre": "Curl predicador en máquina",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "braquial"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_predicador"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_inclinado",
+      "nombre": "Curl inclinado con mancuernas",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas",
+        "banco_inclinado"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "braquial"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_concentrado",
+      "nombre": "Curl concentrado",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuerna"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "braquial"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "extension_triceps_polea",
+      "nombre": "Extensión de tríceps en polea",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "extension_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "extension_cuerda"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "extension_cuerda",
+      "nombre": "Extensión de tríceps con cuerda",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "extension_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea",
+        "cuerda"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "extension_triceps_polea"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "extension_triceps_por_encima",
+      "nombre": "Extensión de tríceps por encima de la cabeza",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "extension_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea",
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "triceps_largo"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "extension_cuerda"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_frances",
+      "nombre": "Press francés",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "extension_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "barra",
+        "banco"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "extension_mancuerna"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "extension_mancuerna",
+      "nombre": "Extensión unilateral con mancuerna",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "extension_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuerna"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_frances"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "fondos_triceps",
+      "nombre": "Fondos para tríceps",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "empuje_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "paralelas"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [
+        "pecho"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "extension_triceps_polea"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_cerrado",
+      "nombre": "Press banca agarre cerrado",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra",
+        "banco"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [
+        "pecho"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "fondos_triceps"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "sentadilla_barra",
+      "nombre": "Sentadilla con barra",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "sentadilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra",
+        "rack"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "aductores",
+        "erectores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "sentadilla_goblet",
+        "prensa_piernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "sentadilla_goblet",
+      "nombre": "Sentadilla goblet",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "sentadilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuerna"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "aductores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "sentadilla_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "sentadilla_smith",
+      "nombre": "Sentadilla en Smith",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "sentadilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "smith"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "aductores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "sentadilla_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "prensa_piernas",
+      "nombre": "Prensa de piernas",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "sentadilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "aductores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "sentadilla_smith"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "hack_squat",
+      "nombre": "Hack squat",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "sentadilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "aductores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "prensa_piernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "sentadilla_bulgara",
+      "nombre": "Sentadilla búlgara",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "unilateral_pierna",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "zancada_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "zancada_mancuernas",
+      "nombre": "Zancadas con mancuernas",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "unilateral_pierna",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "sentadilla_bulgara"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "zancada_reversa",
+      "nombre": "Zancada reversa",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "unilateral_pierna",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "gluteos",
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "zancada_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "step_up",
+      "nombre": "Step-up",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "unilateral_pierna",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "banco",
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "zancada_reversa"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "peso_muerto_rumano_barra",
+      "nombre": "Peso muerto rumano con barra",
+      "grupo_muscular": "isquiosurales",
+      "patron_movimiento": "bisagra_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra"
+      ],
+      "musculos_principales": [
+        "isquiosurales",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "erectores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "peso_muerto_rumano_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "peso_muerto_rumano_mancuernas",
+      "nombre": "Peso muerto rumano con mancuernas",
+      "grupo_muscular": "isquiosurales",
+      "patron_movimiento": "bisagra_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "isquiosurales",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "erectores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "peso_muerto_rumano_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "peso_muerto_trap_bar",
+      "nombre": "Peso muerto con trap bar",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "bisagra_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "trap_bar"
+      ],
+      "musculos_principales": [
+        "gluteos",
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales",
+        "erectores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "peso_muerto_rumano_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "hip_thrust_barra",
+      "nombre": "Hip thrust con barra",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "extension_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra",
+        "banco"
+      ],
+      "musculos_principales": [
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "hip_thrust_maquina"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "hip_thrust_maquina",
+      "nombre": "Hip thrust en máquina",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "extension_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "hip_thrust_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "puente_gluteo",
+      "nombre": "Puente de glúteo",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "extension_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "hip_thrust_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_femoral_tumbado",
+      "nombre": "Curl femoral tumbado",
+      "grupo_muscular": "isquiosurales",
+      "patron_movimiento": "flexion_rodilla",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "isquiosurales"
+      ],
+      "musculos_secundarios": [
+        "gemelos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_femoral_sentado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_femoral_sentado",
+      "nombre": "Curl femoral sentado",
+      "grupo_muscular": "isquiosurales",
+      "patron_movimiento": "flexion_rodilla",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "isquiosurales"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_femoral_tumbado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "extension_cuadriceps",
+      "nombre": "Extensión de cuádriceps",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "extension_rodilla",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "sentadilla_smith"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "aductores_maquina",
+      "nombre": "Aductores en máquina",
+      "grupo_muscular": "aductores",
+      "patron_movimiento": "aduccion_cadera",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "aductores"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "abductores_maquina",
+      "nombre": "Abductores en máquina",
+      "grupo_muscular": "gluteo_medio",
+      "patron_movimiento": "abduccion_cadera",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "gluteo_medio"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "gemelo_de_pie",
+      "nombre": "Elevación de gemelos de pie",
+      "grupo_muscular": "gemelos",
+      "patron_movimiento": "flexion_plantar",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "gemelos"
+      ],
+      "musculos_secundarios": [
+        "soleo"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "gemelo_sentado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "gemelo_sentado",
+      "nombre": "Elevación de gemelos sentado",
+      "grupo_muscular": "gemelos",
+      "patron_movimiento": "flexion_plantar",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "soleo"
+      ],
+      "musculos_secundarios": [
+        "gemelos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "gemelo_de_pie"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "sentadilla_sissy",
+      "nombre": "Sentadilla sissy",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "extension_rodilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "extension_cuadriceps"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_nordico",
+      "nombre": "Curl nórdico",
+      "grupo_muscular": "isquiosurales",
+      "patron_movimiento": "flexion_rodilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "isquiosurales"
+      ],
+      "musculos_secundarios": [
+        "gluteos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_femoral_tumbado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "plancha",
+      "nombre": "Plancha frontal",
+      "grupo_muscular": "core",
+      "patron_movimiento": "estabilidad_core",
+      "tipo": "isometrico",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "core"
+      ],
+      "musculos_secundarios": [
+        "recto_abdominal",
+        "oblicuos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "plancha_lateral"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "plancha_lateral",
+      "nombre": "Plancha lateral",
+      "grupo_muscular": "core",
+      "patron_movimiento": "estabilidad_core",
+      "tipo": "isometrico",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "oblicuos"
+      ],
+      "musculos_secundarios": [
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "plancha"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "dead_bug",
+      "nombre": "Dead bug",
+      "grupo_muscular": "core",
+      "patron_movimiento": "estabilidad_core",
+      "tipo": "anti_extension",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "core"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "bird_dog"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "bird_dog",
+      "nombre": "Bird dog",
+      "grupo_muscular": "core",
+      "patron_movimiento": "estabilidad_core",
+      "tipo": "anti_extension",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "core"
+      ],
+      "musculos_secundarios": [
+        "gluteos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "dead_bug"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "pallof_press",
+      "nombre": "Pallof press",
+      "grupo_muscular": "core",
+      "patron_movimiento": "anti_rotacion",
+      "tipo": "isometrico",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "core"
+      ],
+      "musculos_secundarios": [
+        "oblicuos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "plancha_lateral"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "crunch_polea",
+      "nombre": "Crunch en polea",
+      "grupo_muscular": "core",
+      "patron_movimiento": "flexion_tronco",
+      "tipo": "dinamico",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "recto_abdominal"
+      ],
+      "musculos_secundarios": [
+        "oblicuos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "crunch_maquina"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "crunch_maquina",
+      "nombre": "Crunch en máquina",
+      "grupo_muscular": "core",
+      "patron_movimiento": "flexion_tronco",
+      "tipo": "dinamico",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "recto_abdominal"
+      ],
+      "musculos_secundarios": [
+        "oblicuos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "crunch_polea"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "elevacion_piernas",
+      "nombre": "Elevación de piernas",
+      "grupo_muscular": "core",
+      "patron_movimiento": "flexion_cadera",
+      "tipo": "dinamico",
+      "equipamiento": [
+        "peso_corporal",
+        "barra_dominadas"
+      ],
+      "musculos_principales": [
+        "recto_abdominal"
+      ],
+      "musculos_secundarios": [
+        "flexores_cadera"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "elevacion_rodillas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "elevacion_rodillas",
+      "nombre": "Elevación de rodillas",
+      "grupo_muscular": "core",
+      "patron_movimiento": "flexion_cadera",
+      "tipo": "dinamico",
+      "equipamiento": [
+        "peso_corporal",
+        "barra_dominadas"
+      ],
+      "musculos_principales": [
+        "recto_abdominal"
+      ],
+      "musculos_secundarios": [
+        "flexores_cadera"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "elevacion_piernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "rueda_abdominal",
+      "nombre": "Rueda abdominal",
+      "grupo_muscular": "core",
+      "patron_movimiento": "estabilidad_core",
+      "tipo": "anti_extension",
+      "equipamiento": [
+        "rueda_abdominal"
+      ],
+      "musculos_principales": [
+        "core"
+      ],
+      "musculos_secundarios": [
+        "dorsales"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "dead_bug"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "farmer_walk",
+      "nombre": "Farmer walk",
+      "grupo_muscular": "core",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "carga",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "core",
+        "antebrazos"
+      ],
+      "musculos_secundarios": [
+        "trapecio",
+        "gluteos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "suitcase_carry"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "suitcase_carry",
+      "nombre": "Suitcase carry",
+      "grupo_muscular": "core",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "carga_unilateral",
+      "equipamiento": [
+        "mancuerna"
+      ],
+      "musculos_principales": [
+        "oblicuos",
+        "core"
+      ],
+      "musculos_secundarios": [
+        "antebrazos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "farmer_walk"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "battle_ropes",
+      "nombre": "Battle ropes",
+      "grupo_muscular": "core",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "ciclico",
+      "equipamiento": [
+        "cuerdas"
+      ],
+      "musculos_principales": [
+        "hombros",
+        "brazos"
+      ],
+      "musculos_secundarios": [
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "trineo_empuje",
+      "nombre": "Empuje de trineo",
+      "grupo_muscular": "core",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "empuje",
+      "equipamiento": [
+        "trineo"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "gemelos",
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "caminata_inclinada",
+      "nombre": "Caminata en cinta inclinada",
+      "grupo_muscular": "core",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "locomocion",
+      "equipamiento": [
+        "cinta"
+      ],
+      "musculos_principales": [
+        "cuadriceps",
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "gemelos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "bicicleta_estatica",
+      "nombre": "Bicicleta estática",
+      "grupo_muscular": "core",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "ciclico",
+      "equipamiento": [
+        "bicicleta"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "gemelos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_declinado_barra",
+      "nombre": "Press declinado con barra",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra",
+        "banco"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_pecho_polea",
+      "nombre": "Press de pecho en polea",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "deltoides_anterior"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "remo_mancuerna_unilateral",
+      "nombre": "Remo unilateral con mancuerna",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuerna",
+        "banco"
+      ],
+      "musculos_principales": [
+        "espalda"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "trapecio",
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "remo_mancuerna"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "remo_polea_baja",
+      "nombre": "Remo sentado en polea baja",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "espalda"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "trapecio"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "remo_mancuerna"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "jalon_polea_brazos_rectos",
+      "nombre": "Jalón de brazos rectos en polea",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "espalda"
+      ],
+      "musculos_secundarios": [
+        "core"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "dominadas_agarre_neutro",
+      "nombre": "Dominadas con agarre neutro",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra_dominadas"
+      ],
+      "musculos_principales": [
+        "espalda"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "core"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "dominadas_neutras"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "jalon_agarre_neutro",
+      "nombre": "Jalón al pecho con agarre neutro",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "espalda"
+      ],
+      "musculos_secundarios": [
+        "biceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "jalon_neutro"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "press_militar_mancuernas",
+      "nombre": "Press militar con mancuernas",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "empuje_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "hombros"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_militar_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_arnold",
+      "nombre": "Press Arnold",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "empuje_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "hombros"
+      ],
+      "musculos_secundarios": [
+        "triceps"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_militar_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "elevacion_lateral_polea",
+      "nombre": "Elevación lateral en polea",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "abduccion_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "hombros"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "elevaciones_laterales_mancuernas"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "face_pull_polea",
+      "nombre": "Face pull en polea",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "hombros"
+      ],
+      "musculos_secundarios": [
+        "trapecio"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "pajaros_mancuernas"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "curl_cuerda",
+      "nombre": "Curl de bíceps con cuerda en polea",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "antebrazo"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_barra",
+        "curl_martillo"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "curl_predicador_mancuerna",
+      "nombre": "Curl predicador con mancuerna",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuerna",
+        "banco"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "antebrazo"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_predicador"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "curl_inclinado_mancuernas",
+      "nombre": "Curl inclinado con mancuernas",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [
+        "antebrazo"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "extension_triceps_cuerda",
+      "nombre": "Extensión de tríceps con cuerda",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "extension_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "extension_triceps_polea"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "extension_triceps_sobre_cabeza",
+      "nombre": "Extensión de tríceps sobre la cabeza con cuerda",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "extension_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "sentadilla_front_barra",
+      "nombre": "Sentadilla frontal con barra",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "sentadilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "core",
+        "aductores"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "sentadilla_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "prensa_inclinada",
+      "nombre": "Prensa de piernas inclinada",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "sentadilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "aductores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "prensa_piernas"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "peso_muerto_trap_barra",
+      "nombre": "Peso muerto con barra hexagonal",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "bisagra_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra"
+      ],
+      "musculos_principales": [
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "cuadriceps",
+        "isquiosurales",
+        "espalda",
+        "core"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "peso_muerto_trap_bar"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "hip_thrust_mancuerna",
+      "nombre": "Hip thrust con mancuerna",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "extension_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuerna",
+        "banco"
+      ],
+      "musculos_principales": [
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales",
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "hip_thrust_barra"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "pull_through_polea",
+      "nombre": "Pull-through en polea",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "extension_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales",
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "zancada_hacia_atras",
+      "nombre": "Zancada hacia atrás",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "unilateral_pierna",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "isquiosurales",
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "zancada_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "step_up_mancuernas",
+      "nombre": "Step-up con mancuernas",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "unilateral_pierna",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "isquiosurales",
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "extension_rodilla_unilateral",
+      "nombre": "Extensión de rodilla unilateral en máquina",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "extension_rodilla",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "extension_cuadriceps"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "curl_femoral_unilateral",
+      "nombre": "Curl femoral unilateral",
+      "grupo_muscular": "isquiosurales",
+      "patron_movimiento": "flexion_rodilla",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "isquiosurales"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_femoral_sentado"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "abduccion_cadera_maquina",
+      "nombre": "Abducción de cadera en máquina",
+      "grupo_muscular": "gluteo_medio",
+      "patron_movimiento": "abduccion_hombro",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "gluteo_medio"
+      ],
+      "musculos_secundarios": [
+        "gluteos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "aduccion_cadera_maquina",
+      "nombre": "Aducción de cadera en máquina",
+      "grupo_muscular": "aductores",
+      "patron_movimiento": "aduccion_horizontal",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "aductores"
+      ],
+      "musculos_secundarios": [
+        "cuadriceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "elevacion_gemelos_sentado",
+      "nombre": "Elevación de gemelos sentado",
+      "grupo_muscular": "gemelos",
+      "patron_movimiento": "extension_cadera",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "maquina"
+      ],
+      "musculos_principales": [
+        "gemelos"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "gemelo_de_pie"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "elevacion_gemelos_unilateral",
+      "nombre": "Elevación de gemelos unilateral",
+      "grupo_muscular": "gemelos",
+      "patron_movimiento": "extension_cadera",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "gemelos"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "gemelo_de_pie"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "elevacion_rodillas_colgado",
+      "nombre": "Elevación de rodillas colgado",
+      "grupo_muscular": "core",
+      "patron_movimiento": "flexion_tronco",
+      "tipo": "core",
+      "equipamiento": [
+        "barra_dominadas"
+      ],
+      "musculos_principales": [
+        "core"
+      ],
+      "musculos_secundarios": [
+        "flexores_cadera"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "elevacion_piernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "abdominal_cable",
+      "nombre": "Crunch abdominal en polea",
+      "grupo_muscular": "core",
+      "patron_movimiento": "flexion_tronco",
+      "tipo": "core",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "core"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "crunch_polea"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "remo_ergometro",
+      "nombre": "Remo ergómetro",
+      "grupo_muscular": "core",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "ciclico",
+      "equipamiento": [
+        "remo_ergometro"
+      ],
+      "musculos_principales": [
+        "espalda"
+      ],
+      "musculos_secundarios": [
+        "cuadriceps",
+        "gluteos",
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "caminata_inclinada_cinta",
+      "nombre": "Caminata inclinada en cinta",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "ciclico",
+      "equipamiento": [
+        "cinta"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "gemelos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "escaladora",
+      "nombre": "Escaladora",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "ciclico",
+      "equipamiento": [
+        "escaladora"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "gemelos"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "peso_muerto_sumo",
+      "nombre": "Peso muerto sumo",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "bisagra_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra"
+      ],
+      "musculos_principales": [
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "aductores",
+        "isquiosurales",
+        "cuadriceps",
+        "core"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "peso_muerto_trap_bar"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "fondos_paralelas",
+      "nombre": "Fondos en paralelas",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [
+        "pecho",
+        "hombros",
+        "core"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_banca_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "flexiones_pies_elevados",
+      "nombre": "Flexiones con pies elevados",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "peso_corporal",
+        "banco"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps",
+        "hombros",
+        "core"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "flexiones_inclinadas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "press_mancuernas_neutro",
+      "nombre": "Press de pecho con mancuernas agarre neutro",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "empuje_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "mancuernas",
+        "banco"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [
+        "triceps"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "press_banca_mancuernas"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "apertura_polea_alta",
+      "nombre": "Aperturas en polea desde posición alta",
+      "grupo_muscular": "pecho",
+      "patron_movimiento": "aduccion_horizontal",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "pecho"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "aperturas_mancuernas"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "remo_barra_yates",
+      "nombre": "Remo Yates con barra",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra"
+      ],
+      "musculos_principales": [
+        "espalda"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "trapecio"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "remo_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "remo_invertido",
+      "nombre": "Remo invertido",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra",
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "espalda"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "core"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "jalon_unilateral_polea",
+      "nombre": "Jalón unilateral en polea",
+      "grupo_muscular": "espalda",
+      "patron_movimiento": "traccion_vertical",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "espalda"
+      ],
+      "musculos_secundarios": [
+        "biceps",
+        "core"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "jalon_neutro"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "elevacion_frontal_mancuernas",
+      "nombre": "Elevación frontal con mancuernas",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "empuje_vertical",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "mancuernas"
+      ],
+      "musculos_principales": [
+        "hombros"
+      ],
+      "musculos_secundarios": [
+        "pecho"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "media",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "remo_al_menton_polea",
+      "nombre": "Remo al mentón en polea",
+      "grupo_muscular": "hombros",
+      "patron_movimiento": "traccion_horizontal",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "hombros"
+      ],
+      "musculos_secundarios": [
+        "trapecio"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [],
+      "estabilidad": "alta",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "curl_biceps_polea_baja",
+      "nombre": "Curl de bíceps en polea baja",
+      "grupo_muscular": "biceps",
+      "patron_movimiento": "flexion_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "biceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_barra"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "extension_triceps_unilateral",
+      "nombre": "Extensión unilateral de tríceps en polea",
+      "grupo_muscular": "triceps",
+      "patron_movimiento": "extension_codo",
+      "tipo": "aislamiento",
+      "equipamiento": [
+        "polea"
+      ],
+      "musculos_principales": [
+        "triceps"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "extension_triceps_polea"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "peso_muerto_rumano_smith",
+      "nombre": "Peso muerto rumano en Smith",
+      "grupo_muscular": "isquiosurales",
+      "patron_movimiento": "bisagra_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "smith"
+      ],
+      "musculos_principales": [
+        "isquiosurales"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "espalda",
+        "core"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "peso_muerto_rumano_barra"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "hip_thrust_smith",
+      "nombre": "Hip thrust en Smith",
+      "grupo_muscular": "gluteos",
+      "patron_movimiento": "extension_cadera",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "smith",
+        "banco"
+      ],
+      "musculos_principales": [
+        "gluteos"
+      ],
+      "musculos_secundarios": [
+        "isquiosurales"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "hip_thrust_barra"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "curl_nordico_asistido",
+      "nombre": "Curl nórdico asistido",
+      "grupo_muscular": "isquiosurales",
+      "patron_movimiento": "flexion_rodilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "banco",
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "isquiosurales"
+      ],
+      "musculos_secundarios": [
+        "gluteos"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "curl_femoral_tumbado"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "alta"
+    },
+    {
+      "id": "crunch_bicicleta",
+      "nombre": "Crunch bicicleta",
+      "grupo_muscular": "core",
+      "patron_movimiento": "flexion_tronco",
+      "tipo": "core",
+      "equipamiento": [
+        "peso_corporal"
+      ],
+      "musculos_principales": [
+        "core"
+      ],
+      "musculos_secundarios": [],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "crunch_polea"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "baja"
+    },
+    {
+      "id": "sprint_cinta",
+      "nombre": "Intervalos de carrera en cinta",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "acondicionamiento",
+      "tipo": "ciclico",
+      "equipamiento": [
+        "cinta"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "gemelos"
+      ],
+      "niveles": [
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "acondicionamiento"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "caminata_inclinada_cinta"
+      ],
+      "estabilidad": "alta",
+      "demanda_tecnica": "media"
+    },
+    {
+      "id": "sentadilla_talones_elevados",
+      "nombre": "Sentadilla con talones elevados",
+      "grupo_muscular": "cuadriceps",
+      "patron_movimiento": "sentadilla",
+      "tipo": "compuesto",
+      "equipamiento": [
+        "barra",
+        "disco"
+      ],
+      "musculos_principales": [
+        "cuadriceps"
+      ],
+      "musculos_secundarios": [
+        "gluteos",
+        "aductores"
+      ],
+      "niveles": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "objetivos": [
+        "hipertrofia",
+        "fuerza"
+      ],
+      "priorizable": true,
+      "variantes": [
+        "sentadilla_barra"
+      ],
+      "estabilidad": "media",
+      "demanda_tecnica": "media"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "perfiles": [
+    {
+      "id": "gimnasio_completo",
+      "nombre": "Gimnasio completo",
+      "permitidos": "Todos los equipamientos de la biblioteca."
+    },
+    {
+      "id": "peso_corporal",
+      "nombre": "Peso corporal",
+      "permitidos": [
+        "peso_corporal",
+        "barra_dominadas",
+        "banco"
+      ]
+    },
+    {
+      "id": "mancuernas",
+      "nombre": "Mancuernas",
+      "permitidos": [
+        "mancuernas",
+        "mancuerna",
+        "banco",
+        "peso_corporal"
+      ]
+    },
+    {
+      "id": "maquinas",
+      "nombre": "Máquinas",
+      "permitidos": [
+        "maquina",
+        "polea",
+        "smith",
+        "peso_corporal"
+      ]
+    },
+    {
+      "id": "limitado",
+      "nombre": "Equipamiento limitado",
+      "permitidos": [
+        "mancuernas",
+        "mancuerna",
+        "peso_corporal",
+        "banco"
+      ]
+    }
+  ]
+}

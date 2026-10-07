@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "duracion_dias": 28,
+  "semanas": [
+    {
+      "semana": 1,
+      "nombre": "Adaptación y calibración",
+      "rir": 3,
+      "volumen_factor": 1.0
+    },
+    {
+      "semana": 2,
+      "nombre": "Progresión",
+      "rir": 2,
+      "volumen_factor": 1.05
+    },
+    {
+      "semana": 3,
+      "nombre": "Intensificación",
+      "rir": 1,
+      "volumen_factor": 1.0
+    },
+    {
+      "semana": 4,
+      "nombre": "Descarga",
+      "rir": 3,
+      "volumen_factor": 0.6
+    }
+  ],
+  "reglas": [
+    "Usar doble progresión.",
+    "Si se alcanza el extremo superior con RIR objetivo, subir ligeramente carga.",
+    "No fijar kg únicamente por peso corporal.",
+    "Mantener movimientos base para comparar rendimiento.",
+    "Rotar accesorios cuando aporte variedad.",
+    "No repetir exactamente la misma sesión durante los 28 días salvo justificación de progresión."
+  ]
+}

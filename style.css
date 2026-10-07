@@ -506,16 +506,36 @@ button[type="submit"]:hover {
 }
 
 .meal-plan-foods li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 2px 0;
+}
+
+.meal-plan-food-detail {
     align-items: baseline;
     display: flex;
     gap: 10px;
     justify-content: space-between;
-    padding: 2px 0;
 }
 
 .meal-plan-foods li strong {
     color: #334155;
     flex: 0 0 auto;
+}
+
+.meal-plan-food-swap summary {
+    color: #0369a1;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.meal-plan-food-swap select {
+    font-size: 12px;
+    margin-top: 4px;
+    max-width: 100%;
+    padding: 6px 8px;
+    width: auto;
 }
 
 .profile-panel {
@@ -1062,12 +1082,13 @@ button[type="submit"]:hover {
 @media (max-width: 680px) {
     body {
         align-items: flex-start;
-        padding: 12px;
+        padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+            max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
     }
 
     .card,
     .dashboard-card {
-        padding: 20px;
+        padding: 16px;
     }
 
     .dashboard-header {
@@ -1091,5 +1112,28 @@ button[type="submit"]:hover {
     .metrics-grid,
     .compact-metrics {
         grid-template-columns: 1fr;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        min-height: 44px;
+    }
+
+    .dashboard-nav {
+        overscroll-behavior-x: contain;
+        scroll-padding-inline: 8px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .dashboard-tab {
+        min-height: 44px;
+        padding-inline: 12px;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
     }
 }

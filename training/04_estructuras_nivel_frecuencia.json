@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "niveles": {
+    "principiante": {
+      "criterio": "0-6 meses",
+      "1": [
+        "fullbody"
+      ],
+      "2": [
+        "fullbody_A",
+        "fullbody_B"
+      ],
+      "3": [
+        "fullbody_A",
+        "fullbody_B",
+        "fullbody_C"
+      ],
+      "4": [
+        "torso_A",
+        "pierna_A",
+        "torso_B",
+        "pierna_B"
+      ],
+      "5": [
+        "torso_A",
+        "pierna_A",
+        "torso_B",
+        "pierna_B",
+        "fullbody"
+      ],
+      "6": [
+        "fullbody_A",
+        "fullbody_B",
+        "fullbody_C",
+        "fullbody_A",
+        "fullbody_B",
+        "fullbody_C"
+      ]
+    },
+    "intermedio": {
+      "criterio": "6 meses-2 años",
+      "1": [
+        "fullbody"
+      ],
+      "2": [
+        "fullbody_A",
+        "fullbody_B"
+      ],
+      "3": [
+        "fullbody_A",
+        "fullbody_B",
+        "fullbody_C"
+      ],
+      "4": [
+        "torso_A",
+        "pierna_A",
+        "torso_B",
+        "pierna_B"
+      ],
+      "5": [
+        "push",
+        "pull",
+        "legs",
+        "torso",
+        "pierna"
+      ],
+      "6": [
+        "push_A",
+        "pull_A",
+        "legs_A",
+        "push_B",
+        "pull_B",
+        "legs_B"
+      ]
+    },
+    "avanzado": {
+      "criterio": "+2 años",
+      "1": [
+        "fullbody"
+      ],
+      "2": [
+        "fullbody_A",
+        "fullbody_B"
+      ],
+      "3": [
+        "push",
+        "pull",
+        "legs"
+      ],
+      "4": [
+        "torso_A",
+        "pierna_A",
+        "torso_B",
+        "pierna_B"
+      ],
+      "5": [
+        "push",
+        "pull",
+        "legs",
+        "torso",
+        "pierna"
+      ],
+      "6": [
+        "push_A",
+        "pull_A",
+        "legs_A",
+        "push_B",
+        "pull_B",
+        "legs_B"
+      ]
+    }
+  }
+}

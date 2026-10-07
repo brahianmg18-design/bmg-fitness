@@ -1,0 +1,1412 @@
+{
+  "version": "1.0.0",
+  "description": "Biblioteca base de alimentos para generación dinámica de planes.",
+  "calculation_note": "Valores orientativos por 100 g o ml; el motor debe usar la fuente nutricional definida por el proyecto si existe.",
+  "foods": [
+    {
+      "id": "chicken_breast",
+      "name": "Pechuga de pollo",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 165,
+        "protein_g": 31,
+        "carbs_g": 0,
+        "fat_g": 3.6
+      },
+      "unit": "g",
+      "tags": [
+        "grilled",
+        "baked"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "turkey_breast",
+      "name": "Pechuga de pavo",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 135,
+        "protein_g": 29,
+        "carbs_g": 0,
+        "fat_g": 1.6
+      },
+      "unit": "g",
+      "tags": [
+        "grilled",
+        "baked"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "lean_beef",
+      "name": "Carne de res magra",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 170,
+        "protein_g": 26,
+        "carbs_g": 0,
+        "fat_g": 7
+      },
+      "unit": "g",
+      "tags": [
+        "grilled",
+        "stew"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "ground_beef_lean",
+      "name": "Carne molida magra",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 175,
+        "protein_g": 26,
+        "carbs_g": 0,
+        "fat_g": 7.5
+      },
+      "unit": "g",
+      "tags": [
+        "stew",
+        "pan"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "pork_loin",
+      "name": "Lomo de cerdo",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 165,
+        "protein_g": 27,
+        "carbs_g": 0,
+        "fat_g": 6
+      },
+      "unit": "g",
+      "tags": [
+        "grilled",
+        "baked"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "salmon",
+      "name": "Salmón",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 208,
+        "protein_g": 20,
+        "carbs_g": 0,
+        "fat_g": 13
+      },
+      "unit": "g",
+      "tags": [
+        "baked",
+        "grilled"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "tuna_water",
+      "name": "Atún en agua",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 116,
+        "protein_g": 26,
+        "carbs_g": 0,
+        "fat_g": 1
+      },
+      "unit": "g",
+      "tags": [
+        "salad",
+        "sandwich"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "white_fish",
+      "name": "Pescado blanco",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 120,
+        "protein_g": 25,
+        "carbs_g": 0,
+        "fat_g": 2
+      },
+      "unit": "g",
+      "tags": [
+        "baked",
+        "grilled"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "shrimp",
+      "name": "Camarón",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 99,
+        "protein_g": 24,
+        "carbs_g": 0.2,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "sauteed"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "sardines",
+      "name": "Sardinas",
+      "category": "animal_protein",
+      "nutrition_per_100g": {
+        "kcal": 185,
+        "protein_g": 25,
+        "carbs_g": 0,
+        "fat_g": 10
+      },
+      "unit": "g",
+      "tags": [
+        "salad"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "eggs",
+      "name": "Huevo entero",
+      "category": "eggs",
+      "nutrition_per_100g": {
+        "kcal": 143,
+        "protein_g": 12.6,
+        "carbs_g": 0.7,
+        "fat_g": 9.5
+      },
+      "unit": "g",
+      "tags": [
+        "scrambled",
+        "boiled",
+        "omelet"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "egg_whites",
+      "name": "Claras de huevo",
+      "category": "eggs",
+      "nutrition_per_100g": {
+        "kcal": 52,
+        "protein_g": 10.9,
+        "carbs_g": 0.7,
+        "fat_g": 0.2
+      },
+      "unit": "g",
+      "tags": [
+        "scrambled",
+        "omelet"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "greek_yogurt",
+      "name": "Yogur griego natural",
+      "category": "dairy",
+      "nutrition_per_100g": {
+        "kcal": 73,
+        "protein_g": 9.9,
+        "carbs_g": 3.9,
+        "fat_g": 2
+      },
+      "unit": "g",
+      "tags": [
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "milk_lowfat",
+      "name": "Leche semidescremada",
+      "category": "dairy",
+      "nutrition_per_100g": {
+        "kcal": 47,
+        "protein_g": 3.4,
+        "carbs_g": 4.9,
+        "fat_g": 1.5
+      },
+      "unit": "ml",
+      "tags": [
+        "smoothie",
+        "oats"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "cottage_cheese",
+      "name": "Queso cottage",
+      "category": "dairy",
+      "nutrition_per_100g": {
+        "kcal": 98,
+        "protein_g": 11.1,
+        "carbs_g": 3.4,
+        "fat_g": 4.3
+      },
+      "unit": "g",
+      "tags": [
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "fresh_cheese",
+      "name": "Queso fresco",
+      "category": "dairy",
+      "nutrition_per_100g": {
+        "kcal": 260,
+        "protein_g": 18,
+        "carbs_g": 4,
+        "fat_g": 20
+      },
+      "unit": "g",
+      "tags": [
+        "sandwich",
+        "arepa"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "oats",
+      "name": "Avena en hojuelas",
+      "category": "cereal",
+      "nutrition_per_100g": {
+        "kcal": 389,
+        "protein_g": 16.9,
+        "carbs_g": 66.3,
+        "fat_g": 6.9
+      },
+      "unit": "g",
+      "tags": [
+        "oats",
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "white_rice",
+      "name": "Arroz blanco cocido",
+      "category": "rice",
+      "nutrition_per_100g": {
+        "kcal": 130,
+        "protein_g": 2.7,
+        "carbs_g": 28.2,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "plate"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "brown_rice",
+      "name": "Arroz integral cocido",
+      "category": "rice",
+      "nutrition_per_100g": {
+        "kcal": 123,
+        "protein_g": 2.7,
+        "carbs_g": 25.6,
+        "fat_g": 1
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "plate"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "pasta",
+      "name": "Pasta cocida",
+      "category": "pasta",
+      "nutrition_per_100g": {
+        "kcal": 157,
+        "protein_g": 5.8,
+        "carbs_g": 30.9,
+        "fat_g": 0.9
+      },
+      "unit": "g",
+      "tags": [
+        "pasta"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "quinoa",
+      "name": "Quinoa cocida",
+      "category": "cereal",
+      "nutrition_per_100g": {
+        "kcal": 120,
+        "protein_g": 4.4,
+        "carbs_g": 21.3,
+        "fat_g": 1.9
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "salad"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "corn_arepa",
+      "name": "Arepa de maíz",
+      "category": "bread",
+      "nutrition_per_100g": {
+        "kcal": 218,
+        "protein_g": 5.5,
+        "carbs_g": 44,
+        "fat_g": 2.5
+      },
+      "unit": "g",
+      "tags": [
+        "breakfast",
+        "sandwich"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "whole_wheat_bread",
+      "name": "Pan integral",
+      "category": "bread",
+      "nutrition_per_100g": {
+        "kcal": 247,
+        "protein_g": 13,
+        "carbs_g": 41,
+        "fat_g": 4.2
+      },
+      "unit": "g",
+      "tags": [
+        "sandwich",
+        "toast"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "white_bread",
+      "name": "Pan blanco",
+      "category": "bread",
+      "nutrition_per_100g": {
+        "kcal": 266,
+        "protein_g": 8,
+        "carbs_g": 49,
+        "fat_g": 3.2
+      },
+      "unit": "g",
+      "tags": [
+        "sandwich",
+        "toast"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "potato",
+      "name": "Papa cocida",
+      "category": "tuber",
+      "nutrition_per_100g": {
+        "kcal": 87,
+        "protein_g": 1.9,
+        "carbs_g": 20.1,
+        "fat_g": 0.1
+      },
+      "unit": "g",
+      "tags": [
+        "boiled",
+        "baked"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "sweet_potato",
+      "name": "Batata/camote",
+      "category": "tuber",
+      "nutrition_per_100g": {
+        "kcal": 90,
+        "protein_g": 2,
+        "carbs_g": 20.7,
+        "fat_g": 0.2
+      },
+      "unit": "g",
+      "tags": [
+        "baked",
+        "boiled"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "yuca",
+      "name": "Yuca cocida",
+      "category": "tuber",
+      "nutrition_per_100g": {
+        "kcal": 160,
+        "protein_g": 1.4,
+        "carbs_g": 38,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "boiled"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "plantain",
+      "name": "Plátano maduro",
+      "category": "tuber",
+      "nutrition_per_100g": {
+        "kcal": 122,
+        "protein_g": 1.3,
+        "carbs_g": 31.9,
+        "fat_g": 0.4
+      },
+      "unit": "g",
+      "tags": [
+        "baked",
+        "air_fryer"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "black_beans",
+      "name": "Frijoles negros cocidos",
+      "category": "legume",
+      "nutrition_per_100g": {
+        "kcal": 132,
+        "protein_g": 8.9,
+        "carbs_g": 23.7,
+        "fat_g": 0.5
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "stew"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "lentils",
+      "name": "Lentejas cocidas",
+      "category": "legume",
+      "nutrition_per_100g": {
+        "kcal": 116,
+        "protein_g": 9,
+        "carbs_g": 20.1,
+        "fat_g": 0.4
+      },
+      "unit": "g",
+      "tags": [
+        "stew",
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "chickpeas",
+      "name": "Garbanzos cocidos",
+      "category": "legume",
+      "nutrition_per_100g": {
+        "kcal": 164,
+        "protein_g": 8.9,
+        "carbs_g": 27.4,
+        "fat_g": 2.6
+      },
+      "unit": "g",
+      "tags": [
+        "salad",
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "avocado",
+      "name": "Aguacate",
+      "category": "healthy_fat",
+      "nutrition_per_100g": {
+        "kcal": 160,
+        "protein_g": 2,
+        "carbs_g": 8.5,
+        "fat_g": 14.7
+      },
+      "unit": "g",
+      "tags": [
+        "toast",
+        "bowl",
+        "salad"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "olive_oil",
+      "name": "Aceite de oliva",
+      "category": "healthy_fat",
+      "nutrition_per_100g": {
+        "kcal": 884,
+        "protein_g": 0,
+        "carbs_g": 0,
+        "fat_g": 100
+      },
+      "unit": "g",
+      "tags": [
+        "dressing",
+        "cooking"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "peanut_butter",
+      "name": "Mantequilla de maní",
+      "category": "healthy_fat",
+      "nutrition_per_100g": {
+        "kcal": 588,
+        "protein_g": 25,
+        "carbs_g": 20,
+        "fat_g": 50
+      },
+      "unit": "g",
+      "tags": [
+        "toast",
+        "oats",
+        "smoothie"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "peanuts",
+      "name": "Maní",
+      "category": "nuts_seeds",
+      "nutrition_per_100g": {
+        "kcal": 567,
+        "protein_g": 25.8,
+        "carbs_g": 16.1,
+        "fat_g": 49.2
+      },
+      "unit": "g",
+      "tags": [
+        "snack",
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "almonds",
+      "name": "Almendras",
+      "category": "nuts_seeds",
+      "nutrition_per_100g": {
+        "kcal": 579,
+        "protein_g": 21.2,
+        "carbs_g": 21.6,
+        "fat_g": 49.9
+      },
+      "unit": "g",
+      "tags": [
+        "snack",
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "walnuts",
+      "name": "Nueces",
+      "category": "nuts_seeds",
+      "nutrition_per_100g": {
+        "kcal": 654,
+        "protein_g": 15.2,
+        "carbs_g": 13.7,
+        "fat_g": 65.2
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "snack"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "chia",
+      "name": "Semillas de chía",
+      "category": "nuts_seeds",
+      "nutrition_per_100g": {
+        "kcal": 486,
+        "protein_g": 16.5,
+        "carbs_g": 42.1,
+        "fat_g": 30.7
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "smoothie"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "flaxseed",
+      "name": "Linaza",
+      "category": "nuts_seeds",
+      "nutrition_per_100g": {
+        "kcal": 534,
+        "protein_g": 18.3,
+        "carbs_g": 28.9,
+        "fat_g": 42.2
+      },
+      "unit": "g",
+      "tags": [
+        "oats",
+        "smoothie"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "banana",
+      "name": "Banano",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 89,
+        "protein_g": 1.1,
+        "carbs_g": 22.8,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "smoothie",
+        "snack"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "apple",
+      "name": "Manzana",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 52,
+        "protein_g": 0.3,
+        "carbs_g": 13.8,
+        "fat_g": 0.2
+      },
+      "unit": "g",
+      "tags": [
+        "snack",
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "orange",
+      "name": "Naranja",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 47,
+        "protein_g": 0.9,
+        "carbs_g": 11.8,
+        "fat_g": 0.1
+      },
+      "unit": "g",
+      "tags": [
+        "snack",
+        "smoothie"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "strawberry",
+      "name": "Fresa",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 32,
+        "protein_g": 0.7,
+        "carbs_g": 7.7,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "smoothie"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "blueberry",
+      "name": "Arándano",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 57,
+        "protein_g": 0.7,
+        "carbs_g": 14.5,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "pineapple",
+      "name": "Piña",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 50,
+        "protein_g": 0.5,
+        "carbs_g": 13.1,
+        "fat_g": 0.1
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "smoothie"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "mango",
+      "name": "Mango",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 60,
+        "protein_g": 0.8,
+        "carbs_g": 15,
+        "fat_g": 0.4
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "smoothie"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "papaya",
+      "name": "Papaya",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 43,
+        "protein_g": 0.5,
+        "carbs_g": 10.8,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "smoothie"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "grapes",
+      "name": "Uvas",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 69,
+        "protein_g": 0.7,
+        "carbs_g": 18.1,
+        "fat_g": 0.2
+      },
+      "unit": "g",
+      "tags": [
+        "snack",
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "tomato",
+      "name": "Tomate",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 18,
+        "protein_g": 0.9,
+        "carbs_g": 3.9,
+        "fat_g": 0.2
+      },
+      "unit": "g",
+      "tags": [
+        "salad",
+        "omelet"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "spinach",
+      "name": "Espinaca",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 23,
+        "protein_g": 2.9,
+        "carbs_g": 3.6,
+        "fat_g": 0.4
+      },
+      "unit": "g",
+      "tags": [
+        "omelet",
+        "salad"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "lettuce",
+      "name": "Lechuga",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 15,
+        "protein_g": 1.4,
+        "carbs_g": 2.9,
+        "fat_g": 0.2
+      },
+      "unit": "g",
+      "tags": [
+        "salad",
+        "wrap"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "cucumber",
+      "name": "Pepino",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 15,
+        "protein_g": 0.7,
+        "carbs_g": 3.6,
+        "fat_g": 0.1
+      },
+      "unit": "g",
+      "tags": [
+        "salad",
+        "wrap"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "carrot",
+      "name": "Zanahoria",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 41,
+        "protein_g": 0.9,
+        "carbs_g": 9.6,
+        "fat_g": 0.2
+      },
+      "unit": "g",
+      "tags": [
+        "salad",
+        "stew"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "broccoli",
+      "name": "Brócoli",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 34,
+        "protein_g": 2.8,
+        "carbs_g": 6.6,
+        "fat_g": 0.4
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "plate"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "cauliflower",
+      "name": "Coliflor",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 25,
+        "protein_g": 1.9,
+        "carbs_g": 5,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "plate"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "bell_pepper",
+      "name": "Pimentón",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 31,
+        "protein_g": 1,
+        "carbs_g": 6,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "omelet",
+        "stir_fry"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "onion",
+      "name": "Cebolla",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 40,
+        "protein_g": 1.1,
+        "carbs_g": 9.3,
+        "fat_g": 0.1
+      },
+      "unit": "g",
+      "tags": [
+        "stew",
+        "omelet"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "zucchini",
+      "name": "Calabacín",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 17,
+        "protein_g": 1.2,
+        "carbs_g": 3.1,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "stir_fry",
+        "plate"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "mushrooms",
+      "name": "Champiñones",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 22,
+        "protein_g": 3.1,
+        "carbs_g": 3.3,
+        "fat_g": 0.3
+      },
+      "unit": "g",
+      "tags": [
+        "omelet",
+        "stir_fry"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "corn",
+      "name": "Maíz dulce",
+      "category": "vegetable",
+      "nutrition_per_100g": {
+        "kcal": 86,
+        "protein_g": 3.2,
+        "carbs_g": 19,
+        "fat_g": 1.2
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "salad"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "peas",
+      "name": "Arvejas",
+      "category": "legume",
+      "nutrition_per_100g": {
+        "kcal": 81,
+        "protein_g": 5.4,
+        "carbs_g": 14.5,
+        "fat_g": 0.4
+      },
+      "unit": "g",
+      "tags": [
+        "bowl",
+        "stew"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "cocoa",
+      "name": "Cacao sin azúcar",
+      "category": "other",
+      "nutrition_per_100g": {
+        "kcal": 228,
+        "protein_g": 19.6,
+        "carbs_g": 57.9,
+        "fat_g": 13.1
+      },
+      "unit": "g",
+      "tags": [
+        "oats",
+        "smoothie"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "honey",
+      "name": "Miel",
+      "category": "other",
+      "nutrition_per_100g": {
+        "kcal": 304,
+        "protein_g": 0.3,
+        "carbs_g": 82.4,
+        "fat_g": 0
+      },
+      "unit": "g",
+      "tags": [
+        "oats",
+        "bowl"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    },
+    {
+      "id": "raisins",
+      "name": "Pasas",
+      "category": "fruit",
+      "nutrition_per_100g": {
+        "kcal": 299,
+        "protein_g": 3.1,
+        "carbs_g": 79.2,
+        "fat_g": 0.5
+      },
+      "unit": "g",
+      "tags": [
+        "oats",
+        "snack"
+      ],
+      "allowed_in": {
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "snack": true
+      }
+    }
+  ]
+}

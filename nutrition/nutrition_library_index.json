@@ -1,0 +1,58 @@
+{
+  "version": "1.0.0",
+  "module": "bmg_fitness_nutrition",
+  "files": [
+    {
+      "file": "nutrition_prototypes.json",
+      "purpose": "Perfiles antropométricos y reglas de objetivos."
+    },
+    {
+      "file": "foods.json",
+      "purpose": "Biblioteca nutricional de alimentos."
+    },
+    {
+      "file": "preparations.json",
+      "purpose": "Biblioteca de platos/preparaciones."
+    },
+    {
+      "file": "substitutions.json",
+      "purpose": "Sustituciones funcionales."
+    },
+    {
+      "file": "nutrition_rules.json",
+      "purpose": "Variedad, preferencias, distribución y reglas UI."
+    }
+  ],
+  "architecture": {
+    "input": [
+      "sex",
+      "age",
+      "weight_kg",
+      "height_cm",
+      "nutrition_goal",
+      "meal_count",
+      "favorite_foods"
+    ],
+    "independent_from_exercise": true,
+    "flow": [
+      "user_data",
+      "prototype_selection",
+      "energy_macro_calculation",
+      "preparation_scoring",
+      "ingredient_scaling",
+      "macro_validation",
+      "variety_validation",
+      "28_day_plan"
+    ]
+  },
+  "goals": [
+    "muscle_gain",
+    "fat_loss",
+    "recomposition"
+  ],
+  "meal_count": {
+    "min": 2,
+    "max": 6,
+    "default": 4
+  }
+}

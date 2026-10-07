@@ -1,83 +1,70 @@
 {
   "nutrition_prototype_matrix": {
-    "version": "1.0",
-    "description": "Matriz maestra de perfiles antropométricos de referencia para generación dinámica de planes nutricionales.",
-    "purpose": "Seleccionar el prototipo más cercano al usuario y ajustar posteriormente calorías y macronutrientes según sus datos reales.",
+    "version": "2.0",
+    "description": "Perfiles antropométricos de referencia para personalizar cálculos con los datos reales del usuario.",
+    "purpose": "Seleccionar una referencia cercana; el prototipo no determina las calorías ni sustituye los datos personales.",
     "selection_strategy": {
       "method": "nearest_prototype",
-      "primary_variables": ["sex", "height_cm", "weight_kg"],
-      "secondary_variables": ["age_years", "training_level", "training_frequency_days", "nutrition_goal"],
-      "important_note": "Los prototipos son puntos de referencia y no representan categorías corporales rígidas. El plan final debe personalizarse con los datos reales del usuario."
+      "primary_variables": ["sex", "height_cm", "weight_kg", "age_years"],
+      "important_note": "Los perfiles son puntos de referencia y no categorías corporales rígidas."
     },
     "energy_model": {
-      "reference_age_years": 30,
-      "activity_model": {
-        "description": "El TDEE base se calcula a partir del metabolismo basal y del factor de actividad correspondiente.",
-        "activity_factors": {"2_days": 1.375, "3_days": 1.45, "4_days": 1.55, "5_days": 1.6, "6_days": 1.725, "7_days": 1.725}
+      "activity_factor": 1.2,
+      "goal_adjustment_kcal": {
+        "fat_loss": -350,
+        "maintenance": 0,
+        "recomposition": -100,
+        "muscle_gain": 300
       },
-      "training_level_adjustment": {"beginner": 1.0, "intermediate": 1.05, "advanced": 1.1},
-      "goal_adjustment": {"fat_loss": -350, "maintenance": 0, "muscle_gain": 350}
+      "recomposition_rule": "Aplicar un déficit ligero solo si el IMC es igual o mayor a 25; de lo contrario, usar mantenimiento."
     },
     "macro_model": {
-      "protein": {
-        "unit": "g_per_kg_bodyweight",
-        "default_range": {
-          "fat_loss": {"min": 1.6, "max": 2.2},
-          "maintenance": {"min": 1.6, "max": 2.0},
-          "muscle_gain": {"min": 1.6, "max": 2.2}
-        }
+      "protein_g_per_kg": {
+        "fat_loss": 1.9,
+        "maintenance": 1.8,
+        "recomposition": 1.8,
+        "muscle_gain": 1.8
       },
-      "fat": {"unit": "g_per_kg_bodyweight", "default_range": {"min": 0.7, "max": 1.0}},
-      "carbohydrates": {"method": "remaining_calories", "description": "Las calorías restantes después de proteína y grasas se asignan a carbohidratos."}
+      "fat_g_per_kg": 0.8,
+      "carbohydrates_method": "Asignar a carbohidratos las calorías restantes después de proteína y grasa."
     },
     "meal_structure": {
-      "meals_per_day": 4,
-      "meals": [
-        {"id": "breakfast", "name": "Desayuno"},
-        {"id": "lunch", "name": "Almuerzo"},
-        {"id": "pre_workout", "name": "Merienda / Pre-entreno"},
-        {"id": "dinner", "name": "Cena"}
-      ]
+      "allowed_meals_per_day": [2, 3, 4, 5, 6],
+      "default_meals_per_day": 4,
+      "distributions": {
+        "2": [45, 55],
+        "3": [25, 40, 35],
+        "4": [25, 35, 15, 25],
+        "5": [20, 30, 15, 15, 20],
+        "6": [20, 25, 10, 10, 15, 20]
+      }
     },
     "prototypes": [
-      {"id": "M01", "sex": "male", "reference": {"height_cm": 165, "weight_kg": 60, "age_years": 30}, "profile": "small_light"},
-      {"id": "M02", "sex": "male", "reference": {"height_cm": 170, "weight_kg": 65, "age_years": 30}, "profile": "light"},
-      {"id": "M03", "sex": "male", "reference": {"height_cm": 175, "weight_kg": 70, "age_years": 30}, "profile": "average"},
-      {"id": "M04", "sex": "male", "reference": {"height_cm": 180, "weight_kg": 80, "age_years": 30}, "profile": "medium_high"},
-      {"id": "M05", "sex": "male", "reference": {"height_cm": 185, "weight_kg": 90, "age_years": 30}, "profile": "large"},
-      {"id": "M06", "sex": "male", "reference": {"height_cm": 190, "weight_kg": 100, "age_years": 30}, "profile": "very_large"},
-      {"id": "F01", "sex": "female", "reference": {"height_cm": 155, "weight_kg": 50, "age_years": 30}, "profile": "small_light"},
-      {"id": "F02", "sex": "female", "reference": {"height_cm": 160, "weight_kg": 55, "age_years": 30}, "profile": "light"},
-      {"id": "F03", "sex": "female", "reference": {"height_cm": 165, "weight_kg": 60, "age_years": 30}, "profile": "average"},
-      {"id": "F04", "sex": "female", "reference": {"height_cm": 170, "weight_kg": 65, "age_years": 30}, "profile": "medium_high"},
-      {"id": "F05", "sex": "female", "reference": {"height_cm": 175, "weight_kg": 70, "age_years": 30}, "profile": "large"},
-      {"id": "F06", "sex": "female", "reference": {"height_cm": 180, "weight_kg": 80, "age_years": 30}, "profile": "very_large"}
+      {"id": "M01", "sex": "male", "reference": {"height_cm": 165, "weight_kg": 60, "age_years": 30}, "profile": "referencia_01"},
+      {"id": "M02", "sex": "male", "reference": {"height_cm": 170, "weight_kg": 65, "age_years": 30}, "profile": "referencia_02"},
+      {"id": "M03", "sex": "male", "reference": {"height_cm": 175, "weight_kg": 70, "age_years": 30}, "profile": "referencia_03"},
+      {"id": "M04", "sex": "male", "reference": {"height_cm": 180, "weight_kg": 80, "age_years": 30}, "profile": "referencia_04"},
+      {"id": "M05", "sex": "male", "reference": {"height_cm": 185, "weight_kg": 90, "age_years": 30}, "profile": "referencia_05"},
+      {"id": "M06", "sex": "male", "reference": {"height_cm": 190, "weight_kg": 100, "age_years": 30}, "profile": "referencia_06"},
+      {"id": "F01", "sex": "female", "reference": {"height_cm": 155, "weight_kg": 50, "age_years": 30}, "profile": "referencia_01"},
+      {"id": "F02", "sex": "female", "reference": {"height_cm": 160, "weight_kg": 55, "age_years": 30}, "profile": "referencia_02"},
+      {"id": "F03", "sex": "female", "reference": {"height_cm": 165, "weight_kg": 60, "age_years": 30}, "profile": "referencia_03"},
+      {"id": "F04", "sex": "female", "reference": {"height_cm": 170, "weight_kg": 65, "age_years": 30}, "profile": "referencia_04"},
+      {"id": "F05", "sex": "female", "reference": {"height_cm": 175, "weight_kg": 70, "age_years": 30}, "profile": "referencia_05"},
+      {"id": "F06", "sex": "female", "reference": {"height_cm": 180, "weight_kg": 80, "age_years": 30}, "profile": "referencia_06"}
     ],
-    "personalization_rules": {
-      "weight_adjustment": true,
-      "height_adjustment": true,
-      "age_adjustment": true,
-      "sex_adjustment": true,
-      "training_level_adjustment": true,
-      "training_frequency_adjustment": true,
-      "goal_adjustment": true,
-      "body_fat_optional": true,
-      "final_plan_must_be_calculated_from_real_user_data": true
-    },
     "nutrition_goals": {
-      "fat_loss": {"id": "fat_loss", "name": "Pérdida de grasa", "calorie_adjustment_kcal": -350},
-      "maintenance": {"id": "maintenance", "name": "Mantenimiento", "calorie_adjustment_kcal": 0},
-      "muscle_gain": {"id": "muscle_gain", "name": "Ganancia muscular", "calorie_adjustment_kcal": 350}
+      "fat_loss": {"id": "fat_loss", "name": "Disminuir peso / grasa"},
+      "maintenance": {"id": "maintenance", "name": "Tonificar / recomposición"},
+      "muscle_gain": {"id": "muscle_gain", "name": "Aumentar masa muscular"}
     },
     "monthly_plan": {
       "duration_days": 28,
       "weeks": 4,
-      "meals_per_day": 4,
       "unique_days_required": 28,
       "repeat_exact_week": false,
-      "progressive_portion_adjustment": true,
       "meal_variety_required": true,
-      "training_time_adaptation": {"morning_training": true, "afternoon_training": true, "evening_training": true}
+      "maximum_consecutive_recipe_repeats": 0
     }
   }
 }

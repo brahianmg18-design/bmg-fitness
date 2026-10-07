@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "objetivo": "Integrar los JSON anteriores en el módulo de ejercicio de BMG Fitness.",
+  "reglas_integracion": [
+    "Conservar exactamente la interfaz visual existente.",
+    "Modificar únicamente lógica, datos y contenido de las rutinas.",
+    "Separar completamente las variables de nutrición.",
+    "Usar la biblioteca como fuente única de ejercicios.",
+    "Generar un programa real de 28 días.",
+    "La preferencia muscular debe aumentar prioridad sin excluir el cuerpo completo.",
+    "Mantener progresión de cuatro semanas.",
+    "No crear nuevos componentes visuales salvo que sean imprescindibles para mostrar datos ya existentes.",
+    "No romper endpoints ni autenticación existentes.",
+    "Mantener compatibilidad con la estructura actual del frontend y backend."
+  ],
+  "orden_de_integracion": [
+    "01_biblioteca_ejercicios.json",
+    "02_patrones_movimiento.json",
+    "03_grupos_musculares.json",
+    "04_estructuras_nivel_frecuencia.json",
+    "05_objetivos_entrenamiento.json",
+    "06_equipamiento.json",
+    "07_reglas_prioridad_muscular.json",
+    "08_progresion_28_dias.json",
+    "09_motor_generacion.json"
+  ]
+}

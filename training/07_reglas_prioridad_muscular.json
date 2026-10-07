@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "modelo": "prioridad_muscular_no_exclusiva",
+  "niveles": {
+    "normal": 1.0,
+    "preferencia": 1.25,
+    "alta": 1.4
+  },
+  "reglas": [
+    "La preferencia no convierte el resto del cuerpo en opcional.",
+    "Aumentar prioridad mediante frecuencia, series o selección.",
+    "No entrenar un grupo prioritario en días consecutivos si compromete recuperación.",
+    "No superar rangos razonables de volumen solo por prioridad.",
+    "Mantener estímulo del resto del cuerpo.",
+    "Con dos preferencias, repartir la prioridad.",
+    "Nunca seleccionar exclusivamente ejercicios del grupo prioritario."
+  ],
+  "ejemplo_pecho": {
+    "preferencia": "pecho",
+    "sesiones_prioritarias": 2,
+    "ejemplos": [
+      "pecho+espalda",
+      "piernas",
+      "espalda+pecho+brazos",
+      "piernas+hombros"
+    ]
+  },
+  "ejemplo_piernas": {
+    "preferencia": "piernas",
+    "sesiones_prioritarias": 2,
+    "ejemplos": [
+      "pierna-cuadriceps",
+      "torso",
+      "pierna-cadena-posterior",
+      "torso+accesorios"
+    ]
+  }
+}

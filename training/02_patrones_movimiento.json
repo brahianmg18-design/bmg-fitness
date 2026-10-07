@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "patrones": [
+    {
+      "id": "empuje_horizontal",
+      "nombre": "Empuje horizontal"
+    },
+    {
+      "id": "empuje_vertical",
+      "nombre": "Empuje vertical"
+    },
+    {
+      "id": "traccion_horizontal",
+      "nombre": "Tracción horizontal"
+    },
+    {
+      "id": "traccion_vertical",
+      "nombre": "Tracción vertical"
+    },
+    {
+      "id": "sentadilla",
+      "nombre": "Patrón de sentadilla"
+    },
+    {
+      "id": "bisagra_cadera",
+      "nombre": "Bisagra de cadera"
+    },
+    {
+      "id": "extension_cadera",
+      "nombre": "Extensión de cadera"
+    },
+    {
+      "id": "unilateral_pierna",
+      "nombre": "Unilateral de pierna"
+    },
+    {
+      "id": "flexion_rodilla",
+      "nombre": "Flexión de rodilla"
+    },
+    {
+      "id": "extension_rodilla",
+      "nombre": "Extensión de rodilla"
+    },
+    {
+      "id": "flexion_codo",
+      "nombre": "Flexión de codo"
+    },
+    {
+      "id": "extension_codo",
+      "nombre": "Extensión de codo"
+    },
+    {
+      "id": "abduccion_hombro",
+      "nombre": "Abducción de hombro"
+    },
+    {
+      "id": "aduccion_horizontal",
+      "nombre": "Aducción horizontal"
+    },
+    {
+      "id": "estabilidad_core",
+      "nombre": "Estabilidad del core"
+    },
+    {
+      "id": "flexion_tronco",
+      "nombre": "Flexión de tronco"
+    },
+    {
+      "id": "anti_rotacion",
+      "nombre": "Anti-rotación"
+    },
+    {
+      "id": "acondicionamiento",
+      "nombre": "Acondicionamiento"
+    },
+    {
+      "id": "abduccion_cadera",
+      "nombre": "Abducci?n de cadera"
+    },
+    {
+      "id": "aduccion_cadera",
+      "nombre": "Aducci?n de cadera"
+    },
+    {
+      "id": "elevacion_escapular",
+      "nombre": "Elevaci?n escapular"
+    },
+    {
+      "id": "extension_hombro",
+      "nombre": "Extensi?n de hombro"
+    },
+    {
+      "id": "flexion_cadera",
+      "nombre": "Flexi?n de cadera"
+    },
+    {
+      "id": "flexion_hombro",
+      "nombre": "Flexi?n de hombro"
+    },
+    {
+      "id": "flexion_plantar",
+      "nombre": "Flexi?n plantar"
+    }
+  ]
+}

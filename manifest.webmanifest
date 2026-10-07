@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "BMG Fitness",
+  "short_name": "BMG",
+  "description": "Entrenamiento, nutrición y seguimiento personal con BMG Fitness.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#374151",
+  "theme_color": "#374151",
+  "orientation": "any",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

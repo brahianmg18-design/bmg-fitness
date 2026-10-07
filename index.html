@@ -2,8 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma BMG Fitness</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#374151">
+    <meta name="description" content="BMG Fitness: entrenamiento, nutrición y seguimiento personal.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="BMG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>BMG Fitness</title>
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/icons/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -217,9 +226,9 @@
                     <div class="plan-selector">
                         <label for="nutrition-goal">Tu Objetivo Nutricional</label>
                         <select id="nutrition-goal" required>
-                            <option value="deficit">Déficit</option>
-                            <option value="maintenance">Mantenimiento</option>
-                            <option value="surplus">Superávit</option>
+                            <option value="deficit">Disminuir peso / grasa</option>
+                            <option value="maintenance">Tonificar / recomposición</option>
+                            <option value="surplus">Aumentar masa muscular</option>
                         </select>
                         <p id="nutrition-msg" class="plan-selector-msg" aria-live="polite"></p>
                     </div>
@@ -233,8 +242,6 @@
                                     <option value="4" selected>4 comidas</option>
                                     <option value="5">5 comidas</option>
                                     <option value="6">6 comidas</option>
-                                    <option value="7">7 comidas</option>
-                                    <option value="8">8 comidas</option>
                                 </select>
                             </div>
                             <div>
@@ -314,6 +321,7 @@
                         <div>
                             <label for="routine-days">Días de entrenamiento por semana</label>
                             <select id="routine-days">
+                                <option value="1">1 día</option>
                                 <option value="2">2 días</option>
                                 <option value="3">3 días</option>
                                 <option value="4" selected>4 días</option>
@@ -343,6 +351,24 @@
                                 <option value="base">Base</option>
                                 <option value="media" selected>Media</option>
                                 <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="routine-level">Nivel de entrenamiento</label>
+                            <select id="routine-level">
+                                <option value="principiante">Principiante</option>
+                                <option value="intermedio">Intermedio</option>
+                                <option value="avanzado">Avanzado</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="routine-equipment">Equipamiento disponible</label>
+                            <select id="routine-equipment">
+                                <option value="gimnasio_completo">Gimnasio completo</option>
+                                <option value="peso_corporal">Peso corporal</option>
+                                <option value="mancuernas">Mancuernas</option>
+                                <option value="maquinas">Máquinas</option>
+                                <option value="limitado">Equipamiento limitado</option>
                             </select>
                         </div>
                     </div>
@@ -435,6 +461,15 @@
     </div>
 
     <script src="routine_engine.js"></script>
+    <script src="nutrition_engine.js"></script>
     <script src="app.js"></script>
+    <script>
+        if ("serviceWorker" in navigator && window.isSecureContext) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("/service-worker.js")
+                    .catch((error) => console.error("No se pudo registrar el Service Worker de BMG Fitness:", error));
+            });
+        }
+    </script>
 </body>
 </html>
