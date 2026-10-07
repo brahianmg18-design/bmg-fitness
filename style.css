@@ -5,14 +5,22 @@
     padding: 0;
 }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     background: #e7edf3;
     color: #172033;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    max-width: 100vw;
     min-height: 100vh;
     padding: 20px;
+    overflow-x: hidden;
 }
 
 .container {
@@ -144,48 +152,51 @@ button[type="submit"]:hover {
     display: none !important;
 }
 
-.ios-install-banner {
+.install-banner {
     position: sticky;
     top: 0;
     z-index: 20;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
-    width: min(760px, calc(100vw - 24px));
+    width: min(420px, calc(100vw - 20px));
     margin: 12px auto 0;
-    padding: 14px 16px;
+    padding: 10px 12px;
     border: 1px solid rgba(56, 189, 248, 0.4);
-    border-radius: 14px;
+    border-radius: 12px;
     background: linear-gradient(135deg, rgba(14, 116, 144, 0.96), rgba(15, 23, 42, 0.98));
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
     color: #f8fafc;
 }
 
-.ios-install-banner__content {
-    display: grid;
-    gap: 4px;
+.install-banner__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     flex: 1;
 }
 
-.ios-install-banner strong {
+.install-banner strong {
     color: #f8fafc;
-    font-size: 15px;
+    font-size: 14px;
+    line-height: 1.4;
 }
 
-.ios-install-banner p,
-.ios-install-banner ol {
-    color: #dbeafe;
+.install-banner__action {
+    background: transparent;
+    border: 0;
+    color: #f8fafc;
+    cursor: pointer;
+    font-weight: 700;
     font-size: 13px;
-    line-height: 1.5;
+    padding: 0;
+    white-space: nowrap;
 }
 
-.ios-install-banner ol {
-    padding-left: 18px;
-    margin: 0;
-}
-
-.ios-install-close {
+.install-banner__close,
+.install-modal__close {
     background: transparent;
     color: #f8fafc;
     border: 0;
@@ -195,6 +206,57 @@ button[type="submit"]:hover {
     min-width: 32px;
     min-height: 32px;
     border-radius: 999px;
+}
+
+.install-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.52);
+    z-index: 30;
+    padding: 18px 12px max(18px, env(safe-area-inset-bottom));
+}
+
+.install-modal__sheet {
+    width: min(420px, 100%);
+    background: #ffffff;
+    color: #172033;
+    border-radius: 18px 18px 12px 12px;
+    box-shadow: 0 22px 40px rgba(15, 23, 42, 0.24);
+    padding: 18px 18px 12px;
+}
+
+.install-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.install-modal__header h3 {
+    color: #0f172a;
+    font-size: 18px;
+    margin: 0;
+}
+
+.install-modal__close {
+    color: #0f172a;
+}
+
+.install-modal__steps {
+    margin: 0;
+    padding-left: 18px;
+    color: #334155;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.install-banner.hidden,
+.install-modal.hidden {
+    display: none !important;
 }
 
 #alert-msg {
@@ -1135,14 +1197,7 @@ button[type="submit"]:hover {
 @media (max-width: 680px) {
     body {
         align-items: flex-start;
-        padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
-            max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-    }
-
-    .ios-install-banner {
-        width: min(100%, calc(100vw - 18px));
-        margin-top: 6px;
-        padding: 12px 14px;
+        padding: max(12px, env(safe-area-inset-top)) 8px max(12px, env(safe-area-inset-bottom)) 8px;
     }
 
     .card,
@@ -1171,6 +1226,19 @@ button[type="submit"]:hover {
     .metrics-grid,
     .compact-metrics {
         grid-template-columns: 1fr;
+    }
+
+    .install-banner {
+        width: min(100%, calc(100vw - 18px));
+        margin-top: 6px;
+        padding: 10px 12px;
+    }
+
+    .install-banner__content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
     }
 
     button,

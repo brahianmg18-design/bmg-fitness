@@ -17,23 +17,29 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="ios-install-banner" class="ios-install-banner hidden" role="status" aria-live="polite">
-        <div class="ios-install-banner__content">
-            <strong>Instala BMG Fitness en tu iPhone</strong>
-            <p>Para instalar BMG Fitness:</p>
-            <ol>
-                <li>Pulsa el botón Compartir del navegador.</li>
-                <li>Selecciona 'Añadir a pantalla de inicio'.</li>
-                <li>Confirma la instalación.</li>
-            </ol>
+    <div id="pwa-install-banner" class="install-banner hidden" role="status" aria-live="polite">
+        <div class="install-banner__content">
+            <strong id="install-banner-title">Instala BMG Fitness</strong>
+            <button id="install-banner-action" type="button" class="install-banner__action">Ver cómo instalar →</button>
         </div>
-        <button id="ios-install-close" type="button" class="ios-install-close" aria-label="Cerrar aviso de instalación">×</button>
+        <button id="install-banner-close" type="button" class="install-banner__close" aria-label="Cerrar aviso de instalación">×</button>
     </div>
+
+    <div id="install-modal" class="install-modal hidden" role="dialog" aria-modal="true" aria-labelledby="install-modal-title">
+        <div class="install-modal__sheet" role="document">
+            <div class="install-modal__header">
+                <h3 id="install-modal-title">Instalación de BMG Fitness</h3>
+                <button id="install-modal-close" type="button" class="install-modal__close" aria-label="Cerrar instrucciones">×</button>
+            </div>
+            <ol id="install-modal-steps" class="install-modal__steps"></ol>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Caja de Autenticación -->
         <div id="auth-box" class="card">
             <h2>BMG Fitness Platform</h2>
-            
+
             <div class="tabs">
                 <button id="tab-login" class="active" onclick="mostrarTab('login')">Iniciar Sesión</button>
                 <button id="tab-register" onclick="mostrarTab('register')">Crear Cuenta</button>

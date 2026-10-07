@@ -21,28 +21,74 @@ let planNutricionalActivo = [];
 let perfilNutricionalActual = null;
 let recursosNutricionales = null;
 let bibliotecaRutinaActiva = null;
+let deferredInstallPrompt = null;
 
 function esDispositivoIOS() {
     return /(iPad|iPhone|iPod)/i.test(navigator.userAgent)
         || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 }
 
+function esDispositivoAndroid() {
+    return /Android/i.test(navigator.userAgent)
+        || (navigator.userAgentData && navigator.userAgentData.platform === "Android");
+}
+
 function esAplicacionInstalada() {
     return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
 }
 
-function obtenerCabecerasSesion(extraHeaders = {}) {
-    const sesionGuardada = localStorage.getItem(SESSION_KEY);
-    const token = sesionGuardada ? JSON.parse(sesionGuardada).sessionToken : "";
-    return {
-        ...extraHeaders,
-        ...(token ? { "X-Session-Token": token } : {})
-    };
+function ocultarAvisoInstalacion() {
+    const banner = document.getElementById("pwa-install-banner");
+    if (banner) {
+        banner.classList.add("hidden");
+    }
 }
 
-function mostrarBannerInstalacionIOS() {
-    const banner = document.getElementById("ios-install-banner");
-    if (!banner || esAplicacionInstalada() || !esDispositivoIOS()) {
+function cerrarModalInstalacion() {
+    const modal = document.getElementById("install-modal");
+    if (modal) {
+        modal.classList.add("hidden");
+    }
+}
+
+function mostrarModalInstalacion(tipo) {
+    const modal = document.getElementById("install-modal");
+    const stepsList = document.getElementById("install-modal-steps");
+    const title = document.getElementById("install-modal-title");
+    if (!modal || !stepsList || !title) return;
+
+    const pasos = {
+        ios: [
+            "Pulsa el botón Compartir del navegador.",
+            "Selecciona 'Añadir a pantalla de inicio'.",
+            "Confirma la instalación."
+        ],
+        android: [
+            "Abre el menú del navegador y busca 'Instalar app' o 'Añadir a pantalla de inicio'.",
+            "Selecciona la opción de instalación que aparezca en tu navegador.",
+            "Confirma la instalación en la pantalla final."
+        ]
+    };
+
+    title.textContent = tipo === "ios" ? "Instalación en iPhone/iPad" : "Instalación en Android";
+    stepsList.replaceChildren(...(pasos[tipo] || pasos.android).map((paso) => {
+        const item = document.createElement("li");
+        item.textContent = paso;
+        return item;
+    }));
+    modal.classList.remove("hidden");
+}
+
+function actualizarEstadoAvisoInstalacion() {
+    const banner = document.getElementById("pwa-install-banner");
+    const title = document.getElementById("install-banner-title");
+    const actionButton = document.getElementById("install-banner-action");
+
+    if (!banner || !title || !actionButton) return;
+
+    if (esAplicacionInstalada()) {
+        ocultarAvisoInstalacion();
+        cerrarModalInstalacion();
         return;
     }
 
@@ -52,12 +98,108 @@ function mostrarBannerInstalacionIOS() {
         return;
     }
 
-    banner.classList.remove("hidden");
-    const botonCerrar = document.getElementById("ios-install-close");
-    botonCerrar?.addEventListener("click", () => {
+    if (esDispositivoIOS()) {
+        title.textContent = "Instala BMG Fitness en tu iPhone";
+        actionButton.textContent = "Ver cómo instalar →";
+        actionButton.dataset.action = "ios";
+        banner.classList.remove("hidden");
+        return;
+    }
+
+    if (esDispositivoAndroid()) {
+        title.textContent = "Instala BMG Fitness en tu Android";
+        actionButton.textContent = deferredInstallPrompt ? "Instalar ahora →" : "Ver cómo instalar →";
+        actionButton.dataset.action = deferredInstallPrompt ? "android-install" : "android-help";
+        banner.classList.remove("hidden");
+        return;
+    }
+
+    banner.classList.add("hidden");
+    cerrarModalInstalacion();
+}
+
+async function instalarPwaAndroid() {
+    if (!deferredInstallPrompt) {
+        mostrarModalInstalacion("android");
+        return;
+    }
+
+    try {
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        if (choice.outcome === "accepted") {
+            ocultarAvisoInstalacion();
+            cerrarModalInstalacion();
+        }
+    } catch (error) {
+        mostrarModalInstalacion("android");
+    }
+}
+
+function inicializarAvisoInstalacion() {
+    const banner = document.getElementById("pwa-install-banner");
+    const actionButton = document.getElementById("install-banner-action");
+    const closeButton = document.getElementById("install-banner-close");
+    const modal = document.getElementById("install-modal");
+    const modalCloseButton = document.getElementById("install-modal-close");
+
+    if (!banner || !actionButton || !closeButton) {
+        return;
+    }
+
+    actionButton.addEventListener("click", async () => {
+        const action = actionButton.dataset.action || "ios";
+
+        if (action === "ios") {
+            mostrarModalInstalacion("ios");
+            return;
+        }
+
+        if (action === "android-install") {
+            await instalarPwaAndroid();
+            return;
+        }
+
+        mostrarModalInstalacion("android");
+    });
+
+    closeButton.addEventListener("click", () => {
         localStorage.setItem(IOS_INSTALL_KEY, String(Date.now() + 7 * 24 * 60 * 60 * 1000));
         banner.classList.add("hidden");
-    }, { once: true });
+    });
+
+    modalCloseButton?.addEventListener("click", cerrarModalInstalacion);
+    modal?.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            cerrarModalInstalacion();
+        }
+    });
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        if (!esAplicacionInstalada() && esDispositivoAndroid()) {
+            actualizarEstadoAvisoInstalacion();
+        }
+    });
+
+    window.addEventListener("appinstalled", () => {
+        deferredInstallPrompt = null;
+        ocultarAvisoInstalacion();
+        cerrarModalInstalacion();
+    });
+
+    actualizarEstadoAvisoInstalacion();
+}
+
+function obtenerCabecerasSesion(extraHeaders = {}) {
+    const sesionGuardada = localStorage.getItem(SESSION_KEY);
+    const token = sesionGuardada ? JSON.parse(sesionGuardada).sessionToken : "";
+    return {
+        ...extraHeaders,
+        ...(token ? { "X-Session-Token": token } : {})
+    };
 }
 
 async function leerRespuesta(respuesta, mensajePorDefecto) {
@@ -1499,7 +1641,7 @@ document.addEventListener("click", actualizarActividad);
 document.addEventListener("scroll", actualizarActividad, { capture: true, passive: true });
 document.addEventListener("touchstart", actualizarActividad, { passive: true });
 document.addEventListener("DOMContentLoaded", async () => {
-    mostrarBannerInstalacionIOS();
+    inicializarAvisoInstalacion();
     inicializarSelectoresEstatura();
     try {
         recursosNutricionales = await window.NutritionalScalingEngine.cargarRecursos();
