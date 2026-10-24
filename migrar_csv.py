@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv() # Esto lee automáticamente el archivo .env
 import csv
 import os
 

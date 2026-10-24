@@ -15,6 +15,7 @@ import hashlib
 import hmac
 import secrets
 import shutil
+from dotenv import load_dotenv
 
 app = FastAPI(title="BMG Fitness API")
 
@@ -28,13 +29,15 @@ async def manejar_error_no_controlado(request: Request, exc: Exception):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://bmg-fitness.vercel.app", "http://localhost:8000", "http://127.0.0.1:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Carga las variables del archivo .env ubicado junto a app.py.
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if os.getenv("VERCEL"):
     STORAGE_DIR = os.getenv("BMG_STORAGE_DIR", "/tmp/bmg-fitness")

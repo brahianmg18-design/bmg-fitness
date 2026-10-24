@@ -135,24 +135,61 @@
 
         <!-- Dashboard del Usuario -->
         <div id="dashboard" class="dashboard-card hidden">
-            <header class="dashboard-header">
-                <div>
-                    <p class="eyebrow">BMG FITNESS / PANEL PERSONAL</p>
-                    <h2 id="welcome-title">Bienvenido</h2>
-                    <p class="subtitle">Tu información, nutrición y entrenamiento en un solo lugar.</p>
+            <!-- ESTADO 1: BARRA SUPERIOR CON BOTÓN DESPLEGABLE -->
+            <header class="app-topbar">
+                <div class="brand-info">
+                    <div class="brand-logo">BMG</div>
+                    <div class="brand-text">
+                        <h2>BMG Fitness</h2>
+                        <p>Tu panel de entrenamiento</p>
+                    </div>
                 </div>
-                <button onclick="cerrarSesion()" class="btn-danger">Cerrar sesión</button>
+                <button id="menu-toggle-btn" class="hamburger-btn" aria-label="Abrir menú" onclick="toggleMenu()">
+                    <span>=</span>
+                </button>
             </header>
 
-            <nav class="dashboard-nav" aria-label="Navegación del dashboard">
-                <button class="dashboard-tab active" data-section="inicio" onclick="mostrarSeccion('inicio')">Inicio</button>
-                <button class="dashboard-tab" data-section="perfil" onclick="mostrarSeccion('perfil')">Mi perfil</button>
-                <button class="dashboard-tab" data-section="nutricion" onclick="mostrarSeccion('nutricion')">Plan nutricional</button>
-                <button class="dashboard-tab" data-section="rutina" onclick="mostrarSeccion('rutina')">Rutina de ejercicios</button>
-                <button class="dashboard-tab" data-section="seguimiento" onclick="mostrarSeccion('seguimiento')">Seguimiento</button>
-            </nav>
+            <!-- ESTADO 2: MENÚ DESPLEGABLE TIPO MODAL -->
+            <div id="navigation-overlay" class="navigation-overlay hidden">
+                <div class="menu-container">
+                    <div class="menu-header">
+                        <h3>Menú de navegación</h3>
+                        <button class="close-menu-btn" aria-label="Cerrar menú" onclick="toggleMenu()">✕</button>
+                    </div>
+                    
+                    <nav class="dashboard-nav" aria-label="Navegación del dashboard">
+                        <button class="dashboard-tab active" data-section="inicio" onclick="seleccionarOpcion('inicio')">
+                            <span class="nav-icon">⌂</span> Inicio
+                        </button>
+                        <button class="dashboard-tab" data-section="perfil" onclick="seleccionarOpcion('perfil')">
+                            <span class="nav-icon">👤</span> Mi perfil
+                        </button>
+                        <button class="dashboard-tab" data-section="rutina" onclick="seleccionarOpcion('rutina')">
+                            <span class="nav-icon">🏋</span> Entrenamiento
+                        </button>
+                        <button class="dashboard-tab" data-section="nutricion" onclick="seleccionarOpcion('nutricion')">
+                            <span class="nav-icon">🍴</span> Plan nutricional
+                        </button>
+                        <button class="dashboard-tab" data-section="seguimiento" onclick="seleccionarOpcion('seguimiento')">
+                            <span class="nav-icon">📊</span> Seguimiento
+                        </button>
+                    </nav>
 
+                    <div class="menu-footer">
+                        <button onclick="cerrarSesion(); toggleMenu();" class="btn-logout">
+                            <span class="nav-icon">➔</span> Cerrar sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO PRINCIPAL -->
             <main>
+                <div class="welcome-banner">
+                    <h2 id="welcome-title">Bienvenido</h2>
+                    <p class="subtitle">Aquí aparece el contenido principal del dashboard.</p>
+                </div>
+
                 <section id="section-inicio" class="dashboard-section">
                     <div class="section-heading">
                         <p class="eyebrow">RESUMEN DE HOY</p>
@@ -177,63 +214,62 @@
                         <h3>Mi perfil</h3>
                         <p class="subtitle">Actualiza tus datos para recalcular tu plan.</p>
                     </div>
-                        <div class="profile-summary" aria-label="Datos actuales del perfil">
-                            <div id="current-imc-card" class="profile-metric profile-bmi imc-unknown"><span>Índice de masa corporal</span><strong id="current-imc">-</strong><small id="current-imc-status">Sin datos</small></div>
-                            <div class="profile-metric"><span>Edad</span><strong id="current-edad">-</strong></div>
-                            <div class="profile-metric"><span>Sexo</span><strong id="current-sexo">-</strong></div>
-                            <div class="profile-metric"><span>Peso</span><strong id="current-peso">-</strong></div>
-                            <div class="profile-metric"><span>Estatura</span><strong id="current-estatura">-</strong></div>
-                            <div class="profile-metric"><span>Nivel de actividad</span><strong id="current-actividad">-</strong></div>
-                            <div class="profile-metric"><span>Nivel de experiencia</span><strong id="current-experiencia">-</strong></div>
-                            <div class="profile-metric"><span>Días de entrenamiento</span><strong id="current-dias">-</strong></div>
-                            <div class="profile-metric"><span>Correo electrónico</span><strong id="current-email">-</strong></div>
-                        </div>
+                    <div class="profile-summary" aria-label="Datos actuales del perfil">
+                        <div id="current-imc-card" class="profile-metric profile-bmi imc-unknown"><span>Índice de masa corporal</span><strong id="current-imc">-</strong><small id="current-imc-status">Sin datos</small></div>
+                        <div class="profile-metric"><span>Edad</span><strong id="current-edad">-</strong></div>
+                        <div class="profile-metric"><span>Sexo</span><strong id="current-sexo">-</strong></div>
+                        <div class="profile-metric"><span>Peso</span><strong id="current-peso">-</strong></div>
+                        <div class="profile-metric"><span>Estatura</span><strong id="current-estatura">-</strong></div>
+                        <div class="profile-metric"><span>Nivel de actividad</span><strong id="current-actividad">-</strong></div>
+                        <div class="profile-metric"><span>Nivel de experiencia</span><strong id="current-experiencia">-</strong></div>
+                        <div class="profile-metric"><span>Días de entrenamiento</span><strong id="current-dias">-</strong></div>
+                        <div class="profile-metric"><span>Correo electrónico</span><strong id="current-email">-</strong></div>
+                    </div>
                     <form id="form-profile" onsubmit="guardarPerfil(event)">
-                    <div class="grid-2">
-                        <div>
-                            <label for="profile-edad">Edad</label>
-                            <input type="number" id="profile-edad" min="14" max="90" required>
+                        <div class="grid-2">
+                            <div>
+                                <label for="profile-edad">Edad</label>
+                                <input type="number" id="profile-edad" min="14" max="90" required>
+                            </div>
+                            <div>
+                                <label for="profile-sexo">Sexo</label>
+                                <select id="profile-sexo" required>
+                                    <option value="masculino">Masculino</option>
+                                    <option value="femenino">Femenino</option>
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <label for="profile-sexo">Sexo</label>
-                            <select id="profile-sexo" required>
-                                <option value="masculino">Masculino</option>
-                                <option value="femenino">Femenino</option>
-                            </select>
+                        <label for="profile-email">Correo electrónico</label>
+                        <input type="email" id="profile-email" required>
+                        <div class="grid-2">
+                            <div>
+                                <label for="profile-peso">Peso (kg)</label>
+                                <input type="number" id="profile-peso" min="1" step="0.1" placeholder="Ejemplo: 70" required>
+                            </div>
+                            <div>
+                                <label for="profile-estatura">Estatura (m)</label>
+                                <select id="profile-estatura" required></select>
+                                <small>Ejemplo habitual: 1.68 m</small>
+                            </div>
                         </div>
-                    </div>
-                    <label for="profile-email">Correo electrónico</label>
-                    <input type="email" id="profile-email" required>
-                    <div class="grid-2">
-                        <div>
-                            <label for="profile-peso">Peso (kg)</label>
-                            <input type="number" id="profile-peso" min="1" step="0.1" placeholder="Ejemplo: 70" required>
-                        </div>
-                        <div>
-                            <label for="profile-estatura">Estatura (m)</label>
-                            <select id="profile-estatura" required>
-                            </select>
-                            <small>Ejemplo habitual: 1.68 m</small>
-                        </div>
-                    </div>
-                    <label for="profile-actividad">Actividad física</label>
-                    <select id="profile-actividad" required>
-                        <option value="1.2">Sedentario: Poco o ningún ejercicio (0 a 1 días/semana)</option>
-                        <option value="1.375">Ligeramente activo: Ejercicio ligero (1 a 3 días/semana)</option>
-                        <option value="1.55">Moderadamente activo: Ejercicio moderado (3 a 5 días/semana)</option>
-                        <option value="1.725">Muy activo: Ejercicio fuerte / intenso (6 a 7 días/semana)</option>
-                        <option value="1.9">Hiperactivo / Atleta: Entrenamiento muy intenso o doble sesión diaria</option>
-                    </select>
-                    <label for="profile-nivel-experiencia">Nivel de experiencia</label>
-                    <select id="profile-nivel-experiencia" required>
-                        <option value="Principiante">Principiante (0-6 meses de entrenamiento constante)</option>
-                        <option value="Intermedio">Intermedio (6 meses a 2 años de entrenamiento constante)</option>
-                        <option value="Avanzado">Avanzado (+2 años de entrenamiento constante)</option>
-                    </select>
-                    <label for="profile-dias">Días de entrenamiento por semana</label>
-                    <input type="number" id="profile-dias" min="1" max="7" required>
-                    <button type="submit">Guardar cambios</button>
-                </form>
+                        <label for="profile-actividad">Actividad física</label>
+                        <select id="profile-actividad" required>
+                            <option value="1.2">Sedentario: Poco o ningún ejercicio (0 a 1 días/semana)</option>
+                            <option value="1.375">Ligeramente activo: Ejercicio ligero (1 a 3 días/semana)</option>
+                            <option value="1.55">Moderadamente activo: Ejercicio moderado (3 a 5 días/semana)</option>
+                            <option value="1.725">Muy activo: Ejercicio fuerte / intenso (6 a 7 días/semana)</option>
+                            <option value="1.9">Hiperactivo / Atleta: Entrenamiento muy intenso o doble sesión diaria</option>
+                        </select>
+                        <label for="profile-nivel-experiencia">Nivel de experiencia</label>
+                        <select id="profile-nivel-experiencia" required>
+                            <option value="Principiante">Principiante (0-6 meses de entrenamiento constante)</option>
+                            <option value="Intermedio">Intermedio (6 meses a 2 años de entrenamiento constante)</option>
+                            <option value="Avanzado">Avanzado (+2 años de entrenamiento constante)</option>
+                        </select>
+                        <label for="profile-dias">Días de entrenamiento por semana</label>
+                        <input type="number" id="profile-dias" min="1" max="7" required>
+                        <button type="submit">Guardar cambios</button>
+                    </form>
                     <p id="profile-msg" aria-live="polite"></p>
                 </section>
 

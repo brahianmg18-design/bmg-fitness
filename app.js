@@ -1,6 +1,6 @@
 const API_URL = window.location.protocol === "file:"
     ? "http://127.0.0.1:8000/api"
-    : "/api";
+    : "https://bmg-fitness.vercel.app";
 const SESSION_KEY = "sessionUser";
 const IOS_INSTALL_KEY = "iosInstallBannerDismissedUntil";
 const ROUTINE_SETTINGS_KEY = "routineSettings";
@@ -1829,4 +1829,20 @@ function cancelarCambiosRutina() {
 
 async function actualizarObjetivoPlan() {
     await aplicarCambiosRutina();
+}
+
+// Función para abrir y cerrar el menú desplegable
+function toggleMenu() {
+    const overlay = document.getElementById('navigation-overlay');
+    if (overlay) {
+        overlay.classList.toggle('hidden');
+    }
+}
+
+// Función que ejecuta la navegación existente y luego cierra el menú desplegable
+function seleccionarOpcion(seccion) {
+    if (typeof mostrarSeccion === 'function') {
+        mostrarSeccion(seccion);
+    }
+    toggleMenu();
 }
