@@ -1,6 +1,9 @@
 fastapi
 uvicorn
-pydantic
+python-dotenv
 pandas
 psycopg2-binary
-python-dotenv
+pydantic
+starlette
+anyio
+click

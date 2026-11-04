@@ -1,6 +1,6 @@
 const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
     ? "http://127.0.0.1:8000/api"
-    : "https://bmg-fitness.vercel.app";
+    : "https://bmg-fitness.onrender.com/api";
 const SESSION_KEY = "sessionUser";
 const IOS_INSTALL_KEY = "iosInstallBannerDismissedUntil";
 const ROUTINE_SETTINGS_KEY = "routineSettings";
