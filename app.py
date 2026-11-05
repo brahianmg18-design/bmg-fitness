@@ -3,10 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from typing import Dict, Optional
+from typing import Dict, Literal, Optional
 from datetime import date, datetime, timedelta
 import pandas as pd
 import os
+import logging
 import psycopg2
 from psycopg2.extras import Json, RealDictCursor, execute_values
 import math
@@ -15,16 +16,30 @@ import hashlib
 import hmac
 import secrets
 import shutil
+import traceback
 from dotenv import load_dotenv
 
 app = FastAPI(title="BMG Fitness API")
+logger = logging.getLogger(__name__)
 
 
 @app.exception_handler(Exception)
 async def manejar_error_no_controlado(request: Request, exc: Exception):
+    logger.error(
+        "Error no controlado en el backend (%s)\n%s",
+        type(exc).__name__,
+        "".join(traceback.format_tb(exc.__traceback__)),
+    )
+    es_fallo_conexion_bd = isinstance(exc, (psycopg2.OperationalError, psycopg2.InterfaceError))
     return JSONResponse(
-        status_code=500,
-        content={"detail": "Error interno del servidor. Inténtalo de nuevo más tarde."},
+        status_code=503 if es_fallo_conexion_bd else 500,
+        content={
+            "detail": (
+                "El servicio no está disponible temporalmente. Inténtalo de nuevo más tarde."
+                if es_fallo_conexion_bd
+                else "Error interno del servidor. Inténtalo de nuevo más tarde."
+            )
+        },
     )
 
 app.add_middleware(
@@ -244,12 +259,12 @@ class UsuarioRegistro(BaseModel):
     usuario: str
     contrasena: str
     email: str
-    edad: int = 30
-    sexo: str = "masculino"
-    peso: float = 70.0
-    estatura: float = 170.0
-    actividad: float = 1.55
-    nivel_experiencia: str
+    edad: int = Field(ge=14, le=90)
+    sexo: Literal["masculino", "femenino"]
+    peso: float = Field(gt=0, le=500)
+    estatura: float = Field(ge=1.2, le=2.2)
+    actividad: Literal[1.2, 1.375, 1.55, 1.725, 1.9]
+    nivel_experiencia: Literal["Principiante", "Intermedio", "Avanzado"]
     objetivo_nutricional: str = "Mantenimiento"
     objetivo_entrenamiento: str = "Hipertrofia (Masa)"
     dias_entrenamiento: int = 4
@@ -459,6 +474,15 @@ def obtener_conexion():
                 dias_entrenamiento INTEGER NOT NULL DEFAULT 4,
                 peso_inicial DOUBLE PRECISION
             )
+        """)
+        cursor.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS usuarios_email_unique_ci_idx
+            ON usuarios (LOWER(BTRIM(email)))
+            WHERE email IS NOT NULL AND BTRIM(email) <> ''
+        """)
+        cursor.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS usuarios_usuario_unique_ci_idx
+            ON usuarios (LOWER(BTRIM(usuario)))
         """)
         cursor.execute("""
             DO $$
@@ -1164,9 +1188,29 @@ def registrar(datos: UsuarioRegistro):
     validar_correo(datos.email.strip())
     validar_opciones_perfil(datos.nivel_experiencia, datos.objetivo_nutricional, datos.objetivo_entrenamiento)
 
-    conn = obtener_conexion()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
     try:
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT usuario FROM usuarios WHERE LOWER(usuario) = LOWER(%s) LIMIT 1",
+            (datos.usuario.strip(),),
+        )
+        if cursor.fetchone():
+            raise HTTPException(status_code=409, detail="El nombre de usuario ya se encuentra registrado.")
+
+        cursor.execute(
+            """
+            SELECT usuario FROM usuarios
+            WHERE email IS NOT NULL AND LOWER(BTRIM(email)) = LOWER(BTRIM(%s))
+            LIMIT 1
+            """,
+            (datos.email.strip(),),
+        )
+        if cursor.fetchone():
+            raise HTTPException(status_code=409, detail="El correo electrónico ya se encuentra registrado.")
+
         cursor.execute("""
             INSERT INTO usuarios (
                 usuario, password, email, edad, sexo, peso, estatura,
@@ -1190,15 +1234,36 @@ def registrar(datos: UsuarioRegistro):
             datos.peso,
         ))
         conn.commit()
-    except psycopg2.errors.UniqueViolation:
-        conn.rollback()
-        raise HTTPException(status_code=400, detail="El nombre de usuario ya se encuentra registrado.")
-    except Exception as e:
-        conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al registrar usuario: {str(e)}")
+    except HTTPException:
+        if conn is not None:
+            conn.rollback()
+        raise
+    except psycopg2.errors.UniqueViolation as error:
+        if conn is not None:
+            conn.rollback()
+        constraint = getattr(getattr(error, "diag", None), "constraint_name", None)
+        if constraint in {"usuarios_pkey", "usuarios_usuario_unique_ci_idx"}:
+            detail = "El nombre de usuario ya se encuentra registrado."
+        elif constraint == "usuarios_email_unique_ci_idx":
+            detail = "El correo electrónico ya se encuentra registrado."
+        else:
+            detail = "Ya existe un registro con alguno de esos datos."
+        raise HTTPException(status_code=409, detail=detail) from error
+    except (psycopg2.OperationalError, psycopg2.InterfaceError) as error:
+        if conn is not None:
+            conn.rollback()
+        logger.error("No se pudo completar el registro por un error de conexión a PostgreSQL (%s).", type(error).__name__)
+        raise HTTPException(status_code=503, detail="El servicio de registro no está disponible temporalmente.") from error
+    except Exception as error:
+        if conn is not None:
+            conn.rollback()
+        logger.error("Error interno durante el registro (%s).", type(error).__name__)
+        raise HTTPException(status_code=500, detail="No se pudo completar el registro por un error interno.") from error
     finally:
-        cursor.close()
-        conn.close()
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
 
     return {"mensaje": "Usuario registrado exitosamente."}
 
@@ -1265,28 +1330,47 @@ def actualizar_perfil(usuario: str, datos: UsuarioPerfilUpdate, request: Request
     if not campos:
         raise HTTPException(status_code=400, detail="No hay datos para actualizar.")
 
-    conn = obtener_conexion()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
     try:
+        conn = obtener_conexion()
+        cursor = conn.cursor()
         asignaciones = ", ".join(f"{campo} = %s" for campo in campos)
         cursor.execute(
             f"UPDATE usuarios SET {asignaciones} WHERE LOWER(usuario) = LOWER(%s)",
             (*campos.values(), usuario.strip()),
         )
         if cursor.rowcount == 0:
-            conn.rollback()
             raise HTTPException(status_code=404, detail="Usuario no encontrado.")
         conn.commit()
-    except Exception as e:
-        conn.rollback()
-        if isinstance(e, HTTPException):
-            raise
-        raise HTTPException(status_code=500, detail=f"Error al actualizar: {str(e)}")
+    except HTTPException:
+        if conn is not None:
+            conn.rollback()
+        raise
+    except psycopg2.errors.UniqueViolation as error:
+        if conn is not None:
+            conn.rollback()
+        constraint = getattr(getattr(error, "diag", None), "constraint_name", None)
+        if constraint == "usuarios_email_unique_ci_idx":
+            raise HTTPException(status_code=409, detail="El correo electrónico ya está asociado a otra cuenta.") from error
+        raise HTTPException(status_code=409, detail="Uno de los datos ya está registrado.") from error
+    except (psycopg2.OperationalError, psycopg2.InterfaceError) as error:
+        if conn is not None:
+            conn.rollback()
+        logger.error("Fallo de conexión al actualizar perfil (%s).", type(error).__name__)
+        raise HTTPException(status_code=503, detail="El servicio no está disponible temporalmente.") from error
+    except Exception as error:
+        if conn is not None:
+            conn.rollback()
+        logger.error("Error interno al actualizar perfil (%s).", type(error).__name__)
+        raise HTTPException(status_code=500, detail="No se pudo actualizar el perfil por un error interno.") from error
     finally:
-        cursor.close()
-        conn.close()
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
 
-    perfil = obtener_perfil(usuario)
+    perfil = obtener_perfil(usuario, request)
     resumen = calcular_resumen(
         perfil["edad"], perfil["sexo"], perfil["peso"], perfil["estatura"],
         perfil["actividad"], perfil["objetivo_nutricional"], perfil["dias_entrenamiento"],
@@ -1320,11 +1404,27 @@ def actualizar_perfil_frontend(datos: PerfilFrontendUpdate):
 def login(payload: UsuarioLogin = Body(...)):
     usuario = payload.usuario.strip()
     contrasena = payload.contrasena.strip()
-    print(f"[LOGIN_DEBUG] usuario={usuario!r} | contrasena_longitud={len(contrasena)}")
+    if not usuario or not contrasena:
+        raise HTTPException(
+            status_code=422,
+            detail="El usuario y la contraseña son obligatorios.",
+        )
 
-    conn = obtener_conexion()
-    cursor = conn.cursor()
     try:
+        conn = obtener_conexion()
+    except (psycopg2.OperationalError, psycopg2.InterfaceError) as error:
+        logger.error(
+            "Fallo de conexión con la base de datos durante el inicio de sesión (%s)\n%s",
+            type(error).__name__,
+            "".join(traceback.format_tb(error.__traceback__)),
+        )
+        raise HTTPException(
+            status_code=503,
+            detail="El servicio de autenticación no está disponible temporalmente.",
+        ) from error
+    cursor = None
+    try:
+        cursor = conn.cursor()
         cursor.execute(
             """
             SELECT usuario AS "Usuario", password AS "Contraseña",
@@ -1341,7 +1441,6 @@ def login(payload: UsuarioLogin = Body(...)):
             (usuario,),
         )
         user_row = cursor.fetchone()
-        print(f"[LOGIN_DEBUG] user_row_encontrado={user_row is not None}")
 
         if user_row is None:
             raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
@@ -1359,11 +1458,30 @@ def login(payload: UsuarioLogin = Body(...)):
     except HTTPException:
         conn.rollback()
         raise
-    except Exception as e:
+    except (psycopg2.OperationalError, psycopg2.InterfaceError) as error:
+        logger.error(
+            "Fallo de conexión con la base de datos durante el inicio de sesión (%s)\n%s",
+            type(error).__name__,
+            "".join(traceback.format_tb(error.__traceback__)),
+        )
+        raise HTTPException(
+            status_code=503,
+            detail="El servicio de autenticación no está disponible temporalmente.",
+        ) from error
+    except Exception as error:
         conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al iniciar sesión: {str(e)}")
+        logger.error(
+            "Error interno durante la consulta de inicio de sesión (%s)\n%s",
+            type(error).__name__,
+            "".join(traceback.format_tb(error.__traceback__)),
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno al iniciar sesión.",
+        ) from error
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
         conn.close()
 
     edad = int(float(user_row.get("Edad", 30) or 30))
@@ -1465,29 +1583,39 @@ def verificar_usuario_reset(datos: SolicitudResetPassword):
 @app.post("/api/restablecer-password")
 def restablecer_password(datos: SolicitudResetPassword):
     if not datos.nueva_contrasena or not datos.confirmar_contrasena:
-        raise HTTPException(status_code=400, detail="La nueva contraseña y su confirmación son obligatorias.")
+        raise HTTPException(status_code=400, detail="La nueva contrase?a y su confirmaci?n son obligatorias.")
     if datos.nueva_contrasena != datos.confirmar_contrasena:
-        raise HTTPException(status_code=400, detail="Las contraseñas no coinciden.")
+        raise HTTPException(status_code=400, detail="Las contrase?as no coinciden.")
 
-    df, coincidencia = buscar_usuario_reset(datos)
+    _, coincidencia = buscar_usuario_reset(datos)
     validar_seguridad(datos.usuario.strip(), datos.nueva_contrasena.strip())
     usuario_guardado = coincidencia.iloc[0]["Usuario"]
-    conn = obtener_conexion()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
     try:
+        conn = obtener_conexion()
+        cursor = conn.cursor()
         cursor.execute(
             "UPDATE usuarios SET password = %s WHERE usuario = %s",
             (hash_password(datos.nueva_contrasena.strip()), usuario_guardado),
         )
         conn.commit()
-    except Exception as e:
-        conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al restablecer la contraseña: {str(e)}")
+    except (psycopg2.OperationalError, psycopg2.InterfaceError) as error:
+        if conn is not None:
+            conn.rollback()
+        logger.error("Fallo de conexi?n al restablecer contrase?a (%s).", type(error).__name__)
+        raise HTTPException(status_code=503, detail="El servicio no est? disponible temporalmente.") from error
+    except Exception as error:
+        if conn is not None:
+            conn.rollback()
+        logger.error("Error interno al restablecer contrase?a (%s).", type(error).__name__)
+        raise HTTPException(status_code=500, detail="No se pudo restablecer la contrase?a por un error interno.") from error
     finally:
-        cursor.close()
-        conn.close()
-    return {"mensaje": "Contraseña actualizada correctamente. Ya puedes iniciar sesión."}
-
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+    return {"mensaje": "Contrase?a actualizada correctamente. Ya puedes iniciar sesi?n."}
 
 @app.post("/api/reset-password")
 def solicitar_reset_password(datos: SolicitudResetPassword):
@@ -1508,7 +1636,7 @@ def obtener_seguimiento(usuario: str, request: Request):
 def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro, request: Request):
     validar_sesion_requerida(request, usuario)
     if not usuario.strip():
-        raise HTTPException(status_code=400, detail="Usuario no válido.")
+        raise HTTPException(status_code=400, detail="Usuario no v?lido.")
     peso = float(datos.peso)
     if not math.isfinite(peso) or peso <= 0:
         raise HTTPException(status_code=400, detail="El peso debe ser mayor a 0.")
@@ -1518,14 +1646,16 @@ def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro, request: Req
         if valor is not None and math.isfinite(float(valor)) and float(valor) > 0
     }
 
-    conn = obtener_conexion()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
     try:
+        conn = obtener_conexion()
+        cursor = conn.cursor()
         cursor.execute(
             """
-                 SELECT usuario, email, edad, sexo, estatura, actividad,
-                     nivel_experiencia, objetivo_nutricional, objetivo_entrenamiento,
-                     dias_entrenamiento, peso_inicial
+            SELECT usuario, email, edad, sexo, estatura, actividad,
+                   nivel_experiencia, objetivo_nutricional, objetivo_entrenamiento,
+                   dias_entrenamiento, peso_inicial
             FROM usuarios
             WHERE LOWER(usuario) = LOWER(%s)
             FOR UPDATE
@@ -1553,14 +1683,24 @@ def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro, request: Req
         )
         conn.commit()
     except HTTPException:
-        conn.rollback()
+        if conn is not None:
+            conn.rollback()
         raise
+    except (psycopg2.OperationalError, psycopg2.InterfaceError) as error:
+        if conn is not None:
+            conn.rollback()
+        logger.error("Fallo de conexi?n al guardar seguimiento (%s).", type(error).__name__)
+        raise HTTPException(status_code=503, detail="El servicio no est? disponible temporalmente.") from error
     except Exception as error:
-        conn.rollback()
-        raise HTTPException(status_code=500, detail=f"No se pudo guardar el histórico: {error}")
+        if conn is not None:
+            conn.rollback()
+        logger.error("Error interno al guardar seguimiento (%s).", type(error).__name__)
+        raise HTTPException(status_code=500, detail="No se pudo guardar el seguimiento por un error interno.") from error
     finally:
-        cursor.close()
-        conn.close()
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
 
     perfil["peso"] = peso
     resumen = calcular_resumen(
@@ -1570,6 +1710,5 @@ def registrar_seguimiento(usuario: str, datos: SeguimientoRegistro, request: Req
     )
     historico = construir_resumen_seguimiento(perfil["usuario"])
     return {"mensaje": "Registro guardado correctamente.", **perfil, **resumen, **historico}
-
 
 app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="frontend")

@@ -202,26 +202,115 @@ function obtenerCabecerasSesion(extraHeaders = {}) {
     };
 }
 
-async function leerRespuesta(respuesta, mensajePorDefecto) {
-    const texto = await respuesta.text();
-    let datos = {};
+class ErrorRespuestaApi extends Error {}
+class ErrorHttpApi extends Error {
+    constructor(status, message) {
+        super(message);
+        this.status = status;
+    }
+}
+class ErrorConexionApi extends Error {}
+class ErrorTiempoApi extends Error {}
 
+function mensajeHttpPredeterminado(status, mensajePorDefecto) {
+    if (status === 401) {
+        return /iniciar sesi[o\u00f3]n/i.test(mensajePorDefecto)
+            ? "Usuario o contrase\u00f1a incorrectos."
+            : "Tu sesi\u00f3n no es v\u00e1lida. Inicia sesi\u00f3n nuevamente.";
+    }
+    if (status === 403) return "No tienes autorizaci\u00f3n para realizar esta acci\u00f3n.";
+    if (status === 404) return "No se encontr\u00f3 el recurso solicitado.";
+    if (status === 422) return "Revisa los datos ingresados e intenta nuevamente.";
+    if (status === 408 || status === 504) return "La solicitud tard\u00f3 demasiado. Int\u00e9ntalo nuevamente.";
+    if (status === 502 || status === 503) return "El servicio del servidor no esta disponible temporalmente.";
+    if (status >= 500) return "El servidor tuvo un error interno. Intentalo mas tarde.";
+    return `${mensajePorDefecto} (HTTP ${status})`;
+}
+
+function describirErrorValidacion(error) {
+    const campo = Array.isArray(error.loc) ? String(error.loc[error.loc.length - 1]) : "dato";
+    const nombres = {
+        usuario: "Usuario", contrasena: "Contrase\u00f1a", email: "Correo electr\u00f3nico",
+        edad: "Edad", sexo: "Sexo", peso: "Peso", estatura: "Estatura",
+        actividad: "Actividad", nivel_experiencia: "Nivel de experiencia",
+        dias_entrenamiento: "D\u00edas de entrenamiento", fecha: "Fecha", medidas: "Medidas"
+    };
+    const nombre = nombres[campo] || campo;
+    if (error.type === "missing") return `${nombre}: campo obligatorio.`;
+    if (String(error.type || "").includes("parsing")) return `${nombre}: formato no v\u00e1lido.`;
+    if (/greater|less|finite|valid number/i.test(error.msg || "")) return `${nombre}: revisa el valor ingresado.`;
+    return `${nombre}: ${error.msg || "dato no v\u00e1lido."}`;
+}
+
+async function leerRespuesta(respuesta, mensajePorDefecto) {
+    let texto;
+    try {
+        texto = await respuesta.text();
+    } catch (error) {
+        if (error.name === "AbortError") throw error;
+        throw new ErrorRespuestaApi("El servidor respondi\u00f3, pero no se pudo leer su respuesta.");
+    }
+
+    let datos = {};
     if (texto) {
         try {
             datos = JSON.parse(texto);
         } catch (error) {
             if (!respuesta.ok) {
-                throw new Error(`${mensajePorDefecto} (HTTP ${respuesta.status})`);
+                throw new ErrorHttpApi(
+                    respuesta.status,
+                    `${mensajeHttpPredeterminado(respuesta.status, mensajePorDefecto)} La respuesta del servidor no ten\u00eda un formato legible.`
+                );
             }
-            throw new Error("El servidor devolvió una respuesta no válida.");
+            throw new ErrorRespuestaApi("El servidor devolvi\u00f3 una respuesta con formato inv\u00e1lido.");
         }
     }
 
+    if (texto && (!datos || typeof datos !== "object" || Array.isArray(datos))) {
+        if (!respuesta.ok) {
+            throw new ErrorHttpApi(respuesta.status, mensajeHttpPredeterminado(respuesta.status, mensajePorDefecto));
+        }
+        throw new ErrorRespuestaApi("El servidor devolvio una respuesta con formato inesperado.");
+    }
+
     if (!respuesta.ok) {
-        throw new Error(datos.detail || datos.message || `${mensajePorDefecto} (HTTP ${respuesta.status})`);
+        const detalle = Array.isArray(datos.detail)
+            ? datos.detail.map(describirErrorValidacion).filter(Boolean).join(" ")
+            : datos.detail;
+        throw new ErrorHttpApi(
+            respuesta.status,
+            detalle || datos.message || mensajeHttpPredeterminado(respuesta.status, mensajePorDefecto)
+        );
     }
 
     return datos;
+}
+async function solicitarApi(url, opciones = {}, mensajePorDefecto = "No se pudo completar la solicitud.") {
+    const controlador = new AbortController();
+    const temporizador = window.setTimeout(() => controlador.abort(), 45000);
+
+    try {
+        let respuesta;
+        try {
+            respuesta = await fetch(url, { ...opciones, signal: controlador.signal });
+        } catch (error) {
+            if (controlador.signal.aborted || error.name === "AbortError") {
+                throw new ErrorTiempoApi("La solicitud excedi\u00f3 el tiempo de espera. Int\u00e9ntalo nuevamente.");
+            }
+            throw new ErrorConexionApi("No se pudo conectar con el servidor. Comprueba tu conexi\u00f3n e int\u00e9ntalo de nuevo.");
+        }
+
+        try {
+            return await leerRespuesta(respuesta, mensajePorDefecto);
+        } catch (error) {
+            if (controlador.signal.aborted || error.name === "AbortError") {
+                throw new ErrorTiempoApi("La solicitud excedi\u00f3 el tiempo de espera. Int\u00e9ntalo nuevamente.");
+            }
+            throw error;
+        }
+    } finally {
+        window.clearTimeout(temporizador);
+    }
 }
 
 function limpiarFormulariosAutenticacion() {
@@ -297,7 +386,6 @@ function mostrarRecuperacion() {
 async function ejecutarRegistro(e) {
     e.preventDefault();
     const alertMsg = document.getElementById("alert-msg");
-    
     const usuario = document.getElementById("reg-user").value;
     const contrasena = document.getElementById("reg-pass").value;
     const email = document.getElementById("reg-email").value;
@@ -307,75 +395,61 @@ async function ejecutarRegistro(e) {
     const estatura = parseFloat(document.getElementById("reg-estatura").value);
     const actividad = parseFloat(document.getElementById("reg-actividad").value);
     const nivel_experiencia = document.getElementById("reg-nivel-experiencia").value;
-
     alertMsg.style.color = "#00e676";
     alertMsg.innerText = "Procesando registro...";
 
     try {
-        const respuesta = await fetch(`${API_URL}/registro`, {
+        await solicitarApi(`${API_URL}/registro`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ usuario, contrasena, email, edad, sexo, peso, estatura, actividad, nivel_experiencia })
-        });
-
-        const data = await leerRespuesta(respuesta, "No se pudo completar el registro.");
-
-        if (respuesta.ok) {
-            alertMsg.style.color = "#00e676";
-            alertMsg.innerText = "¡Cuenta creada con éxito! Ya puedes iniciar sesión";
-            document.getElementById("form-register").reset();
-            setTimeout(() => mostrarTab('login'), 1200);
-        } else {
-            alertMsg.style.color = "#ff5252";
-            alertMsg.innerText = data.detail;
-        }
+        }, "No se pudo completar el registro.");
+        alertMsg.style.color = "#00e676";
+        alertMsg.innerText = "\u00a1Cuenta creada con \u00e9xito! Ya puedes iniciar sesi\u00f3n";
+        document.getElementById("form-register").reset();
+        setTimeout(() => mostrarTab("login"), 1200);
     } catch (error) {
         alertMsg.style.color = "#ff5252";
-        alertMsg.innerText = "Error al conectar con el servidor backend.";
+        if (error instanceof ErrorHttpApi) {
+            alertMsg.innerText = error.message;
+        } else if (error instanceof ErrorConexionApi) {
+            alertMsg.innerText = "Error al conectar con el servidor backend.";
+        } else {
+            alertMsg.innerText = error.message || "No se pudo completar el registro.";
+        }
     }
 }
 
 async function ejecutarLogin(e) {
     e.preventDefault();
     const alertMsg = document.getElementById("alert-msg");
-
     const usuario = document.getElementById("login-user").value.trim();
     const contrasena = document.getElementById("login-pass").value.trim();
     const payload = { usuario, contrasena };
 
     try {
-        const respuesta = await fetch(`${API_URL}/login`, {
+        const data = await solicitarApi(`${API_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
-        });
-
-        const data = await leerRespuesta(respuesta, "No se pudo iniciar sesión.");
-
-        if (respuesta.ok) {
-            usuarioActual = data.usuario;
-            limpiarFormulariosAutenticacion();
-            const sesion = {
-                username: usuarioActual,
-                sessionToken: data.session_token || "",
-                userData: data
-            };
-            localStorage.setItem(SESSION_KEY, JSON.stringify(sesion));
-            document.getElementById("auth-box").classList.add("hidden");
-            document.getElementById("dashboard").classList.remove("hidden");
-
-            document.getElementById("welcome-title").innerText = `Bienvenido, ${data.usuario}`;
-            await actualizarDashboard(data);
-            mostrarSeccion('inicio');
-            actualizarActividad();
-
-        } else {
-            alertMsg.style.color = "#ff5252";
-            alertMsg.innerText = data.detail;
-        }
+        }, "No se pudo iniciar sesi\u00f3n.");
+        usuarioActual = data.usuario;
+        limpiarFormulariosAutenticacion();
+        const sesion = {
+            username: usuarioActual,
+            sessionToken: data.session_token || "",
+            userData: data
+        };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(sesion));
+        document.getElementById("auth-box").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        document.getElementById("welcome-title").innerText = `Bienvenido, ${data.usuario}`;
+        await actualizarDashboard(data);
+        mostrarSeccion("inicio");
+        actualizarActividad();
     } catch (error) {
         alertMsg.style.color = "#ff5252";
-        alertMsg.innerText = "Error al conectar con el servidor backend.";
+        alertMsg.innerText = error.message || "No se pudo iniciar sesi\u00f3n.";
     }
 }
 
@@ -409,12 +483,11 @@ async function solicitarRecuperacion(e) {
         }
 
         const endpoint = segundoPaso ? "/restablecer-password" : "/verificar-usuario";
-        const respuesta = await fetch(`${API_URL}${endpoint}`, {
+        const data = await solicitarApi(`${API_URL}${endpoint}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos)
-        });
-        const data = await leerRespuesta(respuesta, "No se pudo solicitar la recuperación.");
+        }, "No se pudo solicitar la recuperación.");
 
         if (!segundoPaso) {
             passwordFields.classList.remove("hidden");
@@ -801,12 +874,11 @@ async function aplicarCambiosNutricionales() {
         }
 
         if (Object.keys(actualizacionesPerfil).length) {
-            const respuestaPerfil = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
+            const perfilActualizado = await solicitarApi(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
                 method: "PUT",
                 headers: obtenerCabecerasSesion({ "Content-Type": "application/json" }),
                 body: JSON.stringify(actualizacionesPerfil)
-            });
-            const perfilActualizado = await leerRespuesta(respuestaPerfil, "No se pudo guardar el perfil.");
+            }, "No se pudo guardar el perfil.");
             perfilNutricionalActual = { ...perfilNutricionalActual, ...perfilActualizado };
             actualizarSesion(perfilActualizado);
         }
@@ -919,10 +991,9 @@ async function cargarPerfil() {
 
     const profileMsg = document.getElementById("profile-msg");
     try {
-        const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
+        const perfil = await solicitarApi(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
             headers: obtenerCabecerasSesion()
-        });
-        const perfil = await leerRespuesta(respuesta, "No se pudo cargar el perfil.");
+        }, "No se pudo cargar el perfil.");
         mostrarPerfil(perfil);
     } catch (error) {
         profileMsg.style.color = "#ff5252";
@@ -1001,19 +1072,13 @@ function nombreActividad(valor) {
 async function guardarPerfil(e) {
     e.preventDefault();
     const profileMsg = document.getElementById("profile-msg");
-
-    const usuarioActivo =
-        localStorage.getItem("usuarioActual") ||
-        localStorage.getItem("usuario") ||
-        localStorage.getItem("currentUser") ||
-        localStorage.getItem("user") ||
-        sessionStorage.getItem("usuarioActual") ||
-        sessionStorage.getItem("usuario") ||
+    const usuarioActivo = localStorage.getItem("usuarioActual") || localStorage.getItem("usuario") ||
+        localStorage.getItem("currentUser") || localStorage.getItem("user") ||
+        sessionStorage.getItem("usuarioActual") || sessionStorage.getItem("usuario") ||
         (typeof usuarioActual !== "undefined" && usuarioActual ? usuarioActual : null) ||
         (typeof usuarioLogueado !== "undefined" ? usuarioLogueado : null);
-
     if (!usuarioActivo) {
-        if (profileMsg) profileMsg.textContent = "Error: No se pudo identificar el usuario activo. Por favor vuelve a iniciar sesión.";
+        if (profileMsg) profileMsg.textContent = "No se pudo identificar el usuario activo. Inicia sesi\u00f3n nuevamente.";
         return;
     }
 
@@ -1023,37 +1088,25 @@ async function guardarPerfil(e) {
     const actividadVal = parseFloat(document.getElementById("profile-actividad").value);
     const diasVal = parseInt(document.getElementById("profile-dias").value);
     const emailInput = document.getElementById("profile-email");
-
     const datos = {
-        edad: isNaN(edadVal) ? null : edadVal,
+        edad: Number.isNaN(edadVal) ? null : edadVal,
         sexo: document.getElementById("profile-sexo").value,
-        peso: isNaN(pesoVal) ? null : pesoVal,
-        estatura: isNaN(estaturaVal) ? null : estaturaVal,
-        actividad: isNaN(actividadVal) ? null : actividadVal,
+        peso: Number.isNaN(pesoVal) ? null : pesoVal,
+        estatura: Number.isNaN(estaturaVal) ? null : estaturaVal,
+        actividad: Number.isNaN(actividadVal) ? null : actividadVal,
         nivel_experiencia: document.getElementById("profile-nivel-experiencia").value,
-        dias_entrenamiento: isNaN(diasVal) ? null : diasVal,
+        dias_entrenamiento: Number.isNaN(diasVal) ? null : diasVal,
         email: emailInput && emailInput.value ? emailInput.value.trim() : null
     };
 
     try {
         if (profileMsg) profileMsg.textContent = "Guardando cambios...";
-
-        const response = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActivo)}`, {
+        const result = await solicitarApi(`${API_URL}/perfil/${encodeURIComponent(usuarioActivo)}`, {
             method: "PUT",
-            headers: obtenerCabecerasSesion({
-                "Content-Type": "application/json"
-            }),
+            headers: obtenerCabecerasSesion({ "Content-Type": "application/json" }),
             body: JSON.stringify(datos)
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.detail || result.mensaje || "Error al actualizar el perfil.");
-        }
-
-        if (profileMsg) profileMsg.textContent = "¡Perfil actualizado correctamente!";
-
+        }, "No se pudo actualizar el perfil.");
+        if (profileMsg) profileMsg.textContent = "\u00a1Perfil actualizado correctamente!";
         const sesionGuardada = localStorage.getItem(SESSION_KEY);
         if (sesionGuardada) {
             const sesion = JSON.parse(sesionGuardada);
@@ -1063,7 +1116,7 @@ async function guardarPerfil(e) {
         await actualizarDashboard(result);
     } catch (error) {
         console.error("Error en guardarPerfil:", error);
-        if (profileMsg) profileMsg.textContent = error.message || "No ha sido posible conectarse con el servidor.";
+        if (profileMsg) profileMsg.textContent = error.message || "No se pudo actualizar el perfil.";
     }
 }
 
@@ -1459,23 +1512,18 @@ async function restaurarPlantillaRutina() {
 
 async function cargarSeguimiento() {
     if (!usuarioActual) return;
-
     const tbody = document.getElementById("seguimiento-registros");
     const progreso = document.getElementById("seguimiento-progreso");
     const msg = document.getElementById("seguimiento-msg");
-
     try {
-        const respuesta = await fetch(`${API_URL}/seguimiento/${encodeURIComponent(usuarioActual)}`, {
+        const data = await solicitarApi(`${API_URL}/seguimiento/${encodeURIComponent(usuarioActual)}`, {
             headers: obtenerCabecerasSesion()
-        });
-        const data = await leerRespuesta(respuesta, "No se pudo cargar el seguimiento.");
-
+        }, "No se pudo cargar el seguimiento.");
         if (!data.registros || !data.registros.length) {
             tbody.innerHTML = `<tr><td colspan="4">Sin registros disponibles.</td></tr>`;
-            progreso.innerText = "Sin registros aún.";
+            progreso.innerText = "Sin registros a\u00fan.";
             return;
         }
-
         const registros = [...data.registros].sort((a, b) => String(b.fecha).localeCompare(String(a.fecha)));
         tbody.innerHTML = registros.map((registro) => `
             <tr>
@@ -1485,12 +1533,11 @@ async function cargarSeguimiento() {
                 <td>${formatearMedidas(registro.medidas)}</td>
             </tr>
         `).join("");
-
-        progreso.innerText = data.progreso || "Sin registros aún.";
+        progreso.innerText = data.progreso || "Sin registros a\u00fan.";
         if (msg) msg.innerText = "";
     } catch (error) {
         tbody.innerHTML = `<tr><td colspan="4">Sin registros disponibles.</td></tr>`;
-        progreso.innerText = error.message;
+        progreso.innerText = error.message || "No se pudo cargar el seguimiento.";
     }
 }
 
@@ -1528,12 +1575,11 @@ async function guardarSeguimiento(e) {
     }
 
     try {
-        const respuesta = await fetch(`${API_URL}/seguimiento/${encodeURIComponent(usuarioActual)}`, {
+        const data = await solicitarApi(`${API_URL}/seguimiento/${encodeURIComponent(usuarioActual)}`, {
             method: "POST",
             headers: obtenerCabecerasSesion({ "Content-Type": "application/json" }),
             body: JSON.stringify({ fecha, peso, medidas })
-        });
-        const data = await leerRespuesta(respuesta, "No se pudo guardar el registro.");
+        }, "No se pudo guardar el registro.");
 
         document.getElementById("form-seguimiento").reset();
         document.getElementById("seguimiento-progreso").innerText = data.progreso || "Sin registros aún.";
@@ -1576,27 +1622,26 @@ function actualizarSesion(data) {
 async function validarSesionBackend() {
     const sesionGuardada = localStorage.getItem(SESSION_KEY);
     if (!sesionGuardada) return false;
-
+    let sesion;
     try {
-        const sesion = JSON.parse(sesionGuardada);
-        const token = sesion.sessionToken;
-        if (!token) return false;
-
-        const respuesta = await fetch(`${API_URL}/session/validate`, {
+        sesion = JSON.parse(sesionGuardada);
+    } catch (error) {
+        return false;
+    }
+    const token = sesion.sessionToken;
+    if (!token) return false;
+    try {
+        const data = await solicitarApi(`${API_URL}/session/validate`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-Session-Token": token
             }
-        });
-
-        if (!respuesta.ok) {
-            throw new Error("Sesión no válida.");
-        }
-
-        return true;
+        }, "No se pudo verificar la sesi\u00f3n.");
+        return Boolean(data.valid);
     } catch (error) {
-        return false;
+        if (error instanceof ErrorHttpApi && error.status === 401) return false;
+        throw error;
     }
 }
 
@@ -1629,9 +1674,14 @@ async function restaurarSesion() {
         mostrarSeccion("inicio");
         actualizarActividad();
     } catch (error) {
-        localStorage.removeItem(SESSION_KEY);
         document.getElementById("auth-box").classList.remove("hidden");
         document.getElementById("dashboard").classList.add("hidden");
+        if (error instanceof ErrorConexionApi || error instanceof ErrorTiempoApi ||
+            error instanceof ErrorRespuestaApi || error instanceof ErrorHttpApi) {
+            document.getElementById("alert-msg").innerText = error.message;
+            return;
+        }
+        localStorage.removeItem(SESSION_KEY);
     }
 }
 
@@ -1740,13 +1790,13 @@ function cerrarSesion(expiradaPorInactividad = false) {
     const sesionGuardada = localStorage.getItem(SESSION_KEY);
     const token = sesionGuardada ? JSON.parse(sesionGuardada).sessionToken : "";
     if (token) {
-        fetch(`${API_URL}/session/logout`, {
+        solicitarApi(`${API_URL}/session/logout`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-Session-Token": token
             }
-        }).catch(() => {});
+        }, "No se pudo cerrar la sesi\u00f3n.").catch(() => {});
     }
 
     usuarioActual = "";
@@ -1768,13 +1818,11 @@ async function aplicarCambiosRutina() {
     const selectorNivel = document.getElementById("routine-level");
     const selectorEquipamiento = document.getElementById("routine-equipment");
     const mensaje = document.getElementById("training-msg");
-
     if (!usuarioActual) {
-        mensaje.textContent = "Debes iniciar sesión para guardar los cambios.";
+        mensaje.textContent = "Debes iniciar sesi\u00f3n para guardar los cambios.";
         mensaje.style.color = "#ff5252";
         return;
     }
-
     const siguiente = {
         objetivo_entrenamiento: selector.value,
         dias_entrenamiento: Number(selectorDias.value || 4),
@@ -1783,13 +1831,11 @@ async function aplicarCambiosRutina() {
         nivel_experiencia: selectorNivel.value,
         equipamiento: selectorEquipamiento.value
     };
-
     try {
         mensaje.textContent = "Guardando cambios...";
         mensaje.style.color = "";
         guardarConfiguracionRutina(siguiente);
-
-        const respuesta = await fetch(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
+        const data = await solicitarApi(`${API_URL}/perfil/${encodeURIComponent(usuarioActual)}`, {
             method: "PUT",
             headers: obtenerCabecerasSesion({ "Content-Type": "application/json" }),
             body: JSON.stringify({
@@ -1801,14 +1847,13 @@ async function aplicarCambiosRutina() {
                     avanzado: "Avanzado"
                 }[siguiente.nivel_experiencia]
             })
-        });
-        const data = await leerRespuesta(respuesta, "No se pudo actualizar la rutina.");
+        }, "No se pudo actualizar la rutina.");
         actualizarSesion(data);
         perfilNutricionalActual = { ...perfilNutricionalActual, ...data };
         sincronizarConfiguracionRutina(perfilNutricionalActual);
         actualizarDiasRutina();
         actualizarVistaRutina();
-        mensaje.textContent = "✓ Cambios aplicados correctamente.";
+        mensaje.textContent = "Cambios aplicados correctamente.";
         mensaje.style.color = "#00e676";
     } catch (error) {
         mensaje.textContent = error.message || "No fue posible actualizar tu rutina. Intenta nuevamente.";
